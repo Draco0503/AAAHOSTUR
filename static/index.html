@@ -6,8 +6,12 @@
     <title>ASOCIACIÓN ESPAÑOLA DE ANTIGUOS ALUMNOS DE LA ESCUELA DE HOSTELERÍA Y TURISMO</title>
     <link rel="stylesheet" href="css/aaahostur.css">
     <link rel="shortcut icon" href="resources/icon.jpg" type="image/x-icon">
+    <link rel="stylesheet" href="css/font-awesome-4.7.0/css/font-awesome.min.css">
 </head>
 <body>
+    <button onclick="goToTop()" id="up-btn" title="Inicio">
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </button>
     <header id="up">
         <div class="nav primary-nav">
             <a href="index.html"><img id="logo" src="resources/logo.png" alt="aaahostur hosteleria turismo"></a>
@@ -36,19 +40,60 @@
             </div>
         </nav>
     </header>
-    <main style="height: 1000px;">
-
+    <main>
+        <div class="w80 container" style="height: 800px;">
+            
+        </div>
     </main>
-    <footer>
-
+    <footer class="nav">
+        <div class="nav center">
+            <div class="foo-col">
+                <h2 class="yellow-title">Sobre nosotros</h2>
+                <p>Asociación Española de Antiguos Alumnos de las Escuelas de Hostelería y Tursimo</p>
+            </div>
+            <div class="foo-col">
+                <h2 class="yellow-title">Links de Interés</h2>
+                <ul class="links">
+                    <li><h4><a href="#">Contáctanos</a></h4></li>
+                    <li><h4><a href="#">Escuelas</a></h4></li>
+                    <li><h4><a href="#">Nuestros Servicios</a></h4></li>
+                </ul>
+            </div>
+            <div class="foo-col">
+                <h2 class="yellow-title">Contactos</h2>
+            </div>
+        </div>
+        <div class="nav darker-blue p1-tb b2-top">
+            <ul>
+                <li>© 2023</li>
+                <li class="yellow-title">&#8212;</li>
+                <li><a href="#">EMPRESA</a></li>
+                <li class="yellow-title">&#8212;</li>
+                <li>Todos los derechos reservados</li>
+                <li class="yellow-title">&#8212;</li>
+                <li><a href="#">Aviso legal</a></li>
+                <li class="yellow-title">&#8212;</li>
+                <li><a href="#">Política de Privacidad</a></li>
+            </ul>
+        </div>
     </footer>
     <script>
         window.onscroll = function() { hideOnScroll() };
         function hideOnScroll() {
+
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20)
+                document.getElementById("up-btn").style.display = "block";
+            else
+                document.getElementById("up-btn").style.display = "none";
+
             if (document.body.scrollTop > 120 || document.documentElement.scrollTop > 120)
                 document.getElementById("navbar-logo").style.visibility = "visible";
             else
                 document.getElementById("navbar-logo").style.visibility = "hidden";
+        }
+
+        function goToTop() {
+            document.getElementById("up").scrollIntoView();
         }
     </script>
 </body>
