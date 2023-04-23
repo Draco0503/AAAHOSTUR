@@ -177,6 +177,7 @@ main {
     font-weight: bold;
     border: 1px solid var(--aaahostur-color-black);
     border-radius: 50%;
+    transition: 0.4s ease;
 }
 
 #up-btn:hover {
@@ -199,7 +200,7 @@ footer ul {
     list-style-type: none;
 }
 
-footer ul > li {
+footer .latest-foo > li, footer .links > li {
     display: inline;
     padding: 0.5rem;
 }
@@ -234,6 +235,7 @@ footer .center {
 .foo-col > h2 {
     text-transform: uppercase;
 }
+
 .foo-col > h2::after {
     display: block;
     content: "";
@@ -243,6 +245,39 @@ footer .center {
     border-color: var(--aaahostur-primary-color-not-that-yellow);
     margin-top: 1rem;
     margin-bottom: 1.5rem;
+}
+
+.foo-col > p {
+    padding-right: 5vw;
+    margin-bottom: 1rem;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul.social-links > li {
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    text-align: center;
+}
+
+.icon {
+    margin-right: 0.7rem;
+    font-size: 1.7rem;
+    cursor: pointer;
+    background: var(--aaahostur-primary-color-not-that-yellow);
+    transition: 0.4s ease;
+}
+.icon > a {
+    color: var(--aaahostur-primary-color-dark-blue);
+}
+
+.icon:hover {
+    background: var(--aaahostur-primary-color-not-that-yellow-hover);
 }
 
 /* SCROLLBAR SETTINGS */
