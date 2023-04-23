@@ -18,7 +18,9 @@
     padding: 0;
     font-family: Arial, Helvetica, sans-serif;
 }
-
+.prueba{
+    color: var(--aaahostur-color-green);
+}
 .black-text {
     color: var(--aaahostur-color-black);
 }
