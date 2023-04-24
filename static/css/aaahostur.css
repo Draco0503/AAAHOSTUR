@@ -26,6 +26,7 @@
     font-family: Calibri;
     font-size: 16pt;
 }
+
 .black-text2 {
     color: var(--aaahostur-color-black);
     text-align: center;
@@ -33,6 +34,7 @@
     font-family: Calibri;
     font-size: 18pt;
 }
+
 .darker-blue-text {
     color: var(--aaahostur-primary-color-darker-blue);
     text-align: center;
