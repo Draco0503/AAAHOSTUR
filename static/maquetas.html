@@ -2,16 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASOCIACIÓN ESPAÑOLA DE ANTIGUOS ALUMNOS DE LA ESCUELA DE HOSTELERÍA Y TURISMO</title>
+    <title>Maquetas de Diseño</title>
     <link rel="stylesheet" href="css/aaahostur.css">
-    <link rel="shortcut icon" href="resources/icon.jpg" type="image/x-icon">
     <link rel="stylesheet" href="css/font-awesome-4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-    <button onclick="goToTop()" id="up-btn" title="Inicio">
-        <i class="fa fa-arrow-up" aria-hidden="true"></i>
-    </button>
     <header id="up">
         <div class="nav primary-nav">
             <a href="index.html"><img id="logo" src="resources/logo.png" alt="aaahostur hosteleria turismo"></a>
@@ -41,18 +38,57 @@
         </nav>
     </header>
     <main>
-        <div class="w80 container">
-            <p class="black-text">Hola Buenas</p>
-            <p class="darker-blue-text">Hola Buenas</p>
-            <p class="black-text">Bienvenidos a la página web de la Asociación Española de Antiguos Alumnos de Escuelas de Hostelería y Turismo.</p>
-            <p class="black-text2">Desde ésta página podrás conocer todas las actividades que llevamos a cabo desde la Asociación así como los intereses que defiende.
-                Podrás unirte a nosotros y comenzar a formar parte de la gran familia que hemos conformado con los mayores profesionales del sector, 
-                contactarnos para gestionar tu puesto de trabajo, tus candidaturas profesionales o para rediseñar tu currículum para adaptarlo a las nuevas necesidades del mercado.</p>
-
-                
-            <p class="darker-blue-text">Igualmente podrás disfrutar de una amplia variedad de eventos que desde la Asociación ponemos en marcha para nuestros asociados, 
-                con gratuidades y/o precios especiales. Si te dedicas a la hotelería… ¡este es tu sitio!, ¡esta es tu Asociación!</p>
-            <p class="darker-blue-text2">Los dos ultimos textos son en el azul oscuro del logo  y los dos primeros en negro, con los dos del medio con el mismo tamaño de letra y los otros dos de afuera con un tamaño de letra diferente que comparten</p>
+        <div class="w80 container pad-2rem">
+            <h1>This is for titles</h1>
+            <h2>This is for subtitles</h2>
+            <hr>
+            <form class="" action="">
+                <input class="pad-o5rem font-16pt" type="button" value="Button">
+                <br>
+                <label class="font-14pt custom-cr-input" for="" onclick="changeCheckboxState(this)">
+                    Checkbox
+                    <input type="checkbox" name="" id="cb1">
+                    <span class="checkmark"></span>
+                </label>
+                <label class="font-14pt custom-cr-input" for="" onclick="changeCheckboxState(this)">
+                    Checkbox checked
+                    <input type="checkbox" name="" id="cb2" >
+                    <span class="checkmark"></span>
+                </label>
+                <br>
+                <label class="dis-block font-16pt" for="">Input type date</label>
+                <input class="w80 pad-input font-14pt" type="date" name="" id="">
+                <br>
+                <label class="dis-block font-16pt" for="">Input type email</label>
+                <input class="w80 pad-input font-14pt" type="email" name="" id="">
+                <br>
+                <input class="w80 font-16pt" type="file" name="" id="">
+                <br>
+                <label class="dis-block font-16pt" for="">Input type number</label>
+                <input class="w80 pad-input font-14pt" type="number" name="" id="" value="0">
+                <br>
+                <label class="dis-block font-16pt" for="">Input type text</label>
+                <input class="w80 pad-input font-14pt" type="text">
+                <br>
+                <label class="dis-block font-16pt" for="">Input type select</label>
+                <select class="w80 pad-input font-14pt" name="" id="">
+                    <option value="">Seleccione uno...</option>
+                    <option value="">Cocina</option>
+                    <option value="">Turismo</option>
+                    <option value="">Mixto</option>
+                    <option value="">Otro</option>
+                </select>
+                <br>
+                <label class="dis-block font-16pt" for="">Input type password</label>
+                <input class="w80 pad-input font-14pt" type="password" name="" id="">
+                <br>
+                <input class="" type="radio" name="" id=""><label class="font-14pt" for="">Not selected</label>
+                <br>
+                <input class="" type="radio" name="" id="" checked><label class="font-14pt" for="">Selected</label>
+                <br>
+                <input class="pad-o5rem font-16pt" type="reset" value="Reset">
+                <input class="pad-o5rem font-16pt" type="submit" value="Submit">
+            </form>
         </div>
     </main>
     <footer class="nav">
@@ -105,22 +141,10 @@
         </div>
     </footer>
     <script>
-        window.onscroll = function() { hideOnScroll() };
-        function hideOnScroll() {
-
-            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20)
-                document.getElementById("up-btn").style.display = "block";
-            else
-                document.getElementById("up-btn").style.display = "none";
-
-            if (document.body.scrollTop > 120 || document.documentElement.scrollTop > 120)
-                document.getElementById("navbar-logo").style.visibility = "visible";
-            else
-                document.getElementById("navbar-logo").style.visibility = "hidden";
-        }
-
-        function goToTop() {
-            document.getElementById("up").scrollIntoView();
+        function changeCheckboxState(e) {
+            
+            if(e.childNodes[1].checked == true) e.childNodes[1].checked = false;
+            else e.childNodes[1].checked = true;
         }
     </script>
 </body>

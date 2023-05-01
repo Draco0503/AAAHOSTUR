@@ -39,7 +39,6 @@
     color: var(--aaahostur-primary-color-darker-blue);
     text-align: center;
     padding: 30px;
-    font-family: Calibri;
     font-size: 18pt;
 }
 
@@ -67,6 +66,118 @@ a:hover {
 header {
     display: initial;
 }
+
+hr {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.dis-block {
+    display: block;
+}
+
+.font-18pt {
+    font-size: 18pt;
+}
+
+.font-16pt {
+    font-size: 16pt;
+}
+
+.font-14pt {
+    font-size: 14pt;
+}
+
+.pad-2rem {
+    padding: 2rem;
+}
+
+.pad-o5rem {
+    padding: 0.5rem;
+}
+
+.pad-input {
+    padding: 0.6rem;
+}
+
+input[type="text"], input[type="password"], input[type="email"], input[type="date"], input[type="number"], select {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
+    border-radius: 5px;
+    border: 1.5px solid;
+    border-color: var(--aaahostur-primary-color-dark-blue);
+    outline: none;
+}
+
+input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus, input[type="date"]:focus, input[type="number"]:focus {
+    border: 2px solid;
+    border-color: var(--aaahostur-primary-color-not-that-yellow);
+}
+
+.custom-cr-input {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    overflow: initial;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.custom-cr-input input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: var(--aaahostur-color-white);
+}
+
+.custom-cr-input:hover input ~ .checkmark {
+    background-color: var(--aaahostur-color-grey);
+}
+
+.custom-cr-input input:checked ~ .checkmark {
+    background-color: var(--aaahostur-primary-color-not-that-yellow);
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.custom-cr-input input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.custom-cr-input .checkmark:after {
+    left: 9px;
+    top: 5px;
+    width: 5px;
+    height: 10px;
+    border: solid var(--aaahostur-primary-color-dark-blue);
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+/*  */
+
 
 .nav {
     width: 100%;
