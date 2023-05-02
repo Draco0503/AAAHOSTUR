@@ -70,6 +70,18 @@ header {
 hr {
     margin-top: 1rem;
     margin-bottom: 1rem;
+    height: 4px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--aaahostur-color-black);
+}
+
+.bg-color-not-that-yellow {
+    background-color: var(--aaahostur-primary-color-not-that-yellow);
+}
+
+.bg-color-darker-blue {
+    background-color: var(--aaahostur-primary-color-darker-blue);
 }
 
 .dis-block {
@@ -88,6 +100,10 @@ hr {
     font-size: 14pt;
 }
 
+.font-12pt {
+    font-size: 12pt;
+}
+
 .pad-2rem {
     padding: 2rem;
 }
@@ -100,30 +116,36 @@ hr {
     padding: 0.6rem;
 }
 
-input[type="text"], input[type="password"], input[type="email"], input[type="date"], input[type="number"], select {
+input {
+    margin: 0.2rem;
+}
+
+input[type="text"], input[type="password"],
+input[type="email"], input[type="date"],
+input[type="number"], select, textarea {
     padding-left: 1rem;
     padding-right: 1rem;
-    margin-top: 0.2rem;
-    margin-bottom: 0.2rem;
     border-radius: 5px;
     border: 1.5px solid;
     border-color: var(--aaahostur-primary-color-dark-blue);
     outline: none;
 }
 
-input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus, input[type="date"]:focus, input[type="number"]:focus {
+input[type="text"]:focus, input[type="password"]:focus,
+input[type="email"]:focus, input[type="date"]:focus,
+input[type="number"]:focus, select:focus, textarea:focus {
     border: 2px solid;
     border-color: var(--aaahostur-primary-color-not-that-yellow);
 }
 
+
+/* CUSTOM CHECKBOX STYLING */
 .custom-cr-input {
     display: block;
     position: relative;
     padding-left: 35px;
     margin-bottom: 12px;
     cursor: pointer;
-    font-size: 22px;
-    overflow: initial;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -145,43 +167,105 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     height: 25px;
     width: 25px;
     background-color: var(--aaahostur-color-white);
+    border: 1px solid var(--aaahostur-color-black);
+    border-radius: 5px;
 }
 
-.custom-cr-input:hover input ~ .checkmark {
+.custom-cr-input:hover input ~ .checkmark,
+.custom-cr-input:hover input ~ .radiomark {
     background-color: var(--aaahostur-color-grey);
 }
 
-.custom-cr-input input:checked ~ .checkmark {
-    background-color: var(--aaahostur-primary-color-not-that-yellow);
+.custom-cr-input input:checked ~ .checkmark,
+.custom-cr-input input:checked ~ .radiomark {
+    background-color: var(--aaahostur-primary-color-dark-blue);
 }
 
-.checkmark:after {
+.custom-cr-input:hover input:checked ~ .checkmark,
+.custom-cr-input:hover input:checked ~ .radiomark{
+    background-color: var(--aaahostur-primary-color-darker-blue);
+}
+
+.checkmark:after, .radiomark:after {
     content: "";
     position: absolute;
     display: none;
 }
 
-.custom-cr-input input:checked ~ .checkmark:after {
+.custom-cr-input input:checked ~ .checkmark:after,
+.custom-cr-input input:checked ~ .radiomark:after {
     display: block;
 }
 
 .custom-cr-input .checkmark:after {
-    left: 9px;
-    top: 5px;
+    left: 8px;
+    top: 3px;
     width: 5px;
     height: 10px;
-    border: solid var(--aaahostur-primary-color-dark-blue);
+    border: solid var(--aaahostur-primary-color-not-that-yellow);
     border-width: 0 3px 3px 0;
     -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
 }
-/*  */
+/* END OF CUSTOM CHECKBOX STYLE */
 
+/* CUSTOM RADIO BUTTON STYLE */
+.radiomark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: var(--aaahostur-color-white);
+    border: 1px solid var(--aaahostur-color-black);
+    border-radius: 50%;
+}
+.custom-cr-input .radiomark:after {
+    top: 5px;
+    left: 5px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: var(--aaahostur-primary-color-not-that-yellow);
+}
+  
+/* END OF CUSTOM RADIO BUTTON STYLE */
+
+input[type="submit"] {
+    background-color: var(--aaahostur-primary-color-not-that-yellow);
+    color: var(--aaahostur-primary-color-darker-blue);
+    transition: 0.1s ease;
+    border: 1px solid var(--aaahostur-primary-color-darker-blue);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: var(--aaahostur-primary-color-not-that-yellow-hover);
+}
+
+input[type="reset"], input[type="button"] {
+    cursor: pointer;
+    background-color: var(--aaahostur-primary-color-dark-blue);
+    color: var(--aaahostur-color-white);
+    transition: 0.1s ease;
+    border: none;    
+    border-radius: 5px;
+}
+
+input[type="reset"]:hover {
+    background-color: var(--aaahostur-color-red);
+}
+
+input[type="button"]:hover {
+    background-color: var(--aaahostur-primary-color-darker-blue);
+}
 
 .nav {
     width: 100%;
     display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
 }
@@ -232,6 +316,7 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     text-decoration: none;
     position: relative;
     padding-bottom: 0.5rem;
+    text-align: center;
 }
 
 .navbar > .center > a:after {
@@ -265,6 +350,7 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     color: var(--aaahostur-color-white);
 }
 
+
 .yellow-title {
     font-size: 22px;
     color: var(--aaahostur-primary-color-not-that-yellow);
@@ -282,7 +368,9 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 .navbar > div.center {
     flex: 1 1 80%;
     display: flex;
+    flex-direction: row;
     gap: 10px;
+    align-items: center;
 } 
 
 .user-box {
@@ -426,7 +514,7 @@ ul.social-links > li {
 /* SCROLLBAR SETTINGS */
 ::-webkit-scrollbar {
     width: 10px;
-    border: 1px solid black
+    border: 1px solid black;
 }
 ::-webkit-scrollbar-track {
     background: #1c2331; 
@@ -438,4 +526,57 @@ ul.social-links > li {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #b58f26; 
+}
+
+@media screen and (max-width: 800px) {
+
+    .nav, .navbar .center {
+        flex-direction: column;
+    }
+
+    #up-btn {
+        bottom: 25px;
+        right: 25px;
+    }
+
+    footer > * {
+        padding-left: 2rem;
+    }
+
+    .foo-col {
+        max-width: initial;
+        padding-top: 2rem;
+        padding-bottom: 1rem;
+    }
+
+    .not-show-on-responsive {
+        display: none !important;
+    }
+
+    footer .latest-foo > li {
+        display: block;
+    }
+
+    .container, form input, select, textarea {
+        width: 95% !important;
+    }
+    #header-decorator {
+        display: none;
+    }
+
+    ::-webkit-scrollbar {
+        all: initial;
+    }
+    ::-webkit-scrollbar-track {
+        all: initial; 
+    }
+    ::-webkit-scrollbar-thumb {
+        all: initial;
+    }   
+}
+
+@media screen and (max-width: 1300px) {
+    .navbar-item {
+        padding: 0.5rem;
+    }
 }
