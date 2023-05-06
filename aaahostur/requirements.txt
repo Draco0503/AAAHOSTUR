@@ -1,0 +1,2 @@
+# PARA QUE FUNCIONE LA API SE NECESITA HACER
+pip install Flask Flask-OAuthlib mysql-connector-python python-dotenv flask_mysqldb
