@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS Job_Demand_Languaje;
+CREATE TABLE Job_Demand_Languaje(
+    ID_JOB_DEMAND_LANGUAJE INT NOT NULL AUTO_INCREMENT,
+    Id_Language INT,
+    Id_Job_Demand INT,
+    PRIMARY KEY (ID_JOB_DEMAND_LANGUAJE),
+    FOREIGN KEY (Id_Language) REFERENCES Language(ID_LANGUAGE),
+    FOREIGN KEY (Id_Job_Demand) REFERENCES Job_Demand(ID_JOB_DEMAND)
+);

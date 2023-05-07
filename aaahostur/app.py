@@ -1,4 +1,3 @@
-from dotenv import load_dotenv
 from flask import Flask, request, session
 from flask_mysqldb import MySQL
 from config import config
@@ -12,7 +11,7 @@ mysql = MySQL(app)
 @app.route('/prueba')
 def index():
     try:
-        return '<h1>Prueba JIJIJAJeje</h1>'
+        return '<h1>Prueba</h1>'
     except Exception as ex:
         return "Error"
 

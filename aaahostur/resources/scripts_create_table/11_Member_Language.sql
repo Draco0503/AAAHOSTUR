@@ -1,0 +1,9 @@
+DROP datatable IF EXISTS Member_Language;
+CREATE TABLE Member_Language (
+    ID_MEMBER_LANGUAGE INT NOT NULL AUTO_INCREMENT,
+    Id_Member INT NOT NULL,
+    Id_Language INT NOT NULL,
+    PRIMARY KEY (ID_MEMBER_LANGUAGE),
+    FOREIGN KEY (Id_Member) REFERENCES Member(ID_MEMBER),
+    FOREIGN KEY (Id_Language) REFERENCES Language(ID_LANGUAGE)
+);

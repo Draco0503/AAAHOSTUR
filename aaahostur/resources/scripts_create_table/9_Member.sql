@@ -1,0 +1,28 @@
+DROP datatable IF EXISTS Member;
+CREATE TABLE Member (
+    ID_MEMBER INT NOT NULL,
+    Name VARCHAR(512) NOT NULL,
+    Surname VARCHAR(512) NOT NULL,
+    DNI VARCHAR(512) NOT NULL UNIQUE,
+    Address VARCHAR(512) NOT NULL,
+    CP VARCHAR(512) NOT NULL,
+    City VARCHAR(512) NOT NULL,
+    Province VARCHAR(512) NOT NULL,
+    PNA_Address VARCHAR(512),
+    PNA_CP VARCHAR(512),
+    PNA_City VARCHAR(512),
+    PNA_Province VARCHAR(512),
+    Gender VARCHAR(512) NOT NULL, 
+    Land_Line VARCHAR(512),
+    Mobile VARCHAR(512),
+    Profile_Picture BLOB,
+    Birth_Date VARCHAR(256) NOT NULL,
+    Join_Date VARCHAR(256) NOT NULL,
+    Active BOOLEAN DEFAULT TRUE,
+    Cancelation_Date VARCHAR(256),
+    Verify BOOLEAN DEFAULT FALSE,
+    Id_User_Verify INT,
+    PRIMARY KEY (ID_MEMBER),
+    FOREIGN KEY (ID_MEMBER) REFERENCES User(ID_USER),
+    FOREIGN KEY (Id_User_Verify) REFERENCES User(ID_USER)
+);
