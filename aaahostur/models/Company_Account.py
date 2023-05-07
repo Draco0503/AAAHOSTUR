@@ -1,24 +1,17 @@
-class Offer:
-    def __init__(self, id_offer = None, company_name = None, address = None, contact_name = None, contact_phone = None, contact_email = None, contact_name_2 = None, contact_phone_2 = None, contact_email_2 = None, verify = None, active = None, company = None, user_verify = None):
-        self.id_offer = id_offer
-        self.company_name = company_name
-        self.address = address
-        self.contact_name = contact_name
-        self.contact_phone = contact_phone
-        self.contact_email = contact_email
-        self.contact_name_2 = contact_name_2
-        self.contact_phone_2 = contact_phone_2
-        self.contact_email_2 = contact_email_2
-        self.verify = verify
+class Company_Account:
+    def __init__(self, id_account = None, account_holder = None, account_number = None, sepa = None, active = None, company_holder = None):
+        self.id_account = id_account
+        self.account_holder = account_holder
+        self.account_number = account_number
+        self.sepa = sepa
         self.active = active
-        self.company = company
-        self.user_verify = user_verify
+        self.company_holder = company_holder
     
     # Getters & Setters
-    def get_id_offer(self):
-        return self.id_offer
+    def get_id_account(self):
+        return self.id_account
     
-    def set_id_offer(self, new_value = None):
+    def set_id_account(self, new_value = None):
         self.id_account = new_value
     
     def get_account_holder(self):
