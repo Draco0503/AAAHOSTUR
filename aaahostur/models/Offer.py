@@ -19,25 +19,61 @@ class Offer:
         return self.id_offer
     
     def set_id_offer(self, new_value = None):
-        self.id_account = new_value
+        self.id_offer = new_value
     
-    def get_account_holder(self):
-        return self.account_holder
+    def get_company_name(self):
+        return self.company_name
     
-    def set_account_holder(self, new_value = None):
-        self.account_holder = new_value
+    def set_company_name(self, new_value = None):
+        self.company_name = new_value
 
-    def get_account_number(self):
-        return self.account_number
+    def get_address(self):
+        return self.address
     
-    def set_account_number(self, new_value = None):
-        self.account_number = new_value
+    def set_address(self, new_value = None):
+        self.address = new_value
 
-    def get_sepa(self):
-        return self.sepa
+    def get_contact_name(self):
+        return self.contact_name
     
-    def set_sepa(self, new_value = None):
-        self.sepa = new_value
+    def set_contact_name(self, new_value = None):
+        self.contact_name = new_value
+
+    def get_contact_phone(self):
+        return self.contact_phone
+    
+    def set_contact_phone(self, new_value = None):
+        self.contact_phone = new_value
+
+    def get_contact_email(self):
+        return self.contact_email
+    
+    def set_contact_email(self, new_value = None):
+        self.contact_email = new_value
+
+    def get_contact_name_2(self):
+        return self.contact_name_2
+    
+    def set_contact_name_2(self, new_value = None):
+        self.contact_name_2 = new_value
+
+    def get_contact_phone_2(self):
+        return self.contact_phone_2
+    
+    def set_contact_phone_2(self, new_value = None):
+        self.contact_phone_2 = new_value
+
+    def get_contact_email_2(self):
+        return self.contact_email_2
+    
+    def set_contact_email_2(self, new_value = None):
+        self.contact_email_2 = new_value 
+
+    def get_verify(self):
+        return self.verify
+    
+    def set_verify(self, new_value = None):
+        self.verify = new_value
 
     def get_active(self):
         return self.active
@@ -45,18 +81,66 @@ class Offer:
     def set_active(self, new_value = None):
         self.active = new_value
 
-    def get_company_holder(self):
-        return self.company_holder
+    def get_company(self):
+        return self.company
     
-    def set_company_holder(self, new_value = None):
-        self.company_holder = new_value
+    def set_company(self, new_value = None):
+        self.company = new_value
+
+    def get_user_verify(self):
+        return self.user_verify
+    
+    def set_user_verify(self, new_value = None):
+        self.user_verify = new_value     
 
     # toJson
     def to_json(self):
-        return {'id_account': self.id_account, 
-                'account_holder': self.account_holder,
-                'account_number': self.account_number,
-                'sepa': self.sepa,
+        return {'id_offer': self.id_offer, 
+                'company_name': self.company_name,
+                'address': self.address,
+                'contact_name': self.contact_name,
+                'contact_phone': self.contact_phone,
+                'contact_email': self.contact_email,
+                'contact_name_2': self.contact_name_2,
+                'contact_phone_2': self.contact_phone_2,
+                'contact_email_2': self.contact_email_2,
+                'verify': self.verify,
                 'active': self.active,
-                'company_holder': self.company_holder,
-                } 
+                'company': self.company,
+                'user_verify': self.user_verify
+                }
+
+#                                         %@@@@@@                             
+#                                      @@@@@@@@@@@@*                          
+#                              @@@@  @@@@@@@@@@@@@@#                          
+#                                 &@@@@#%@@@@@@@@@@#                          
+#                     ,@.,,,,,,,,,,,,,@@@@@@@##@@@@                           
+#                 @.,,,,,,,,,,,,,,,,,,,,,,,.@@@@@@@                           
+#             @,,,,,,,,,,,,,,,,,,@,,,,,,(*,,,,,,,@@@@@&                       
+#           @,,,,,,,,,,,,,,,,,,,%,,,,,,,,,,,,,,,,,,@ .@@@                     
+#         @,,,,,,,,,,,,,,,,,,,,,,,@@@@@@@,,,,,,,,,,,,@                        
+#       &,,,,,,@,,,,,,,,,,,,,,,,@@@@@@@@@@@@@,,,,,,,,,,@                      
+#      *,,,,,,,,,,,,,,,,,,,,,,,,@@@@@@@@  @@@@@,,,,,,,,,/                     
+#     %,@@/,,,,,,,,,,,,,,,,,,,,,@@@@@@@@@@@@@@@,,,,,,,,,,,.                   
+#    @,,,,,,,,@,,,,,,,,,,,,,,,,,#@@@@@@@@@@@@@@,,,,,,,,,,,,,                  
+#    @,,,,,,,,,,,,,,,,,,,,,,,,,,,,%@@@@@@@@@@@@,,,,,,,,,,,,,*                 
+#    ,,,,,,,,,,,,,,,,,,,,@,,,,,,,,,,,,*@@@@,,,,,,,@,,,,@,,,,,/                
+#   &,@@@(.@*,,,,,,,,,,,,,&,,,,,,,,,,,,,,,,,,,,,,,@%,,,,%,,,,,*               
+#   @,,,,,,,,,,,,,,,,,,,,,@,,,,,,,,,,,,,,,,,,,%(#######@,,,,,,,&              
+#   &,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,@################,,,,,,,&             
+#    ,,,,,,,,@,,,,,,,,,,,,,,,,,,,,/%#####################%,,,,,,,#            
+#    &,,,,,,,,,,,,,,,,,,,#,,,,,*#############*@@@,#######@,,,,,,,,            
+#    @,,,,,,,,,,,,,,,,,,,@,,,,,%@@/,,,,,%@,,,,,,,,,,,,,@#@,,,,,,,,@           
+#    .,/,,,,,,,,,,,,,,,,*@,,,,,,,@,,,,,,,,,,,@,,,,,,,,,,*,,,,,,,,,,@          
+#    ,,,##@#.,/&,,,,,,,#@,,,,,,,,,,/&,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.          
+#    ,,,,,,#,,,,,,,,,,&,,,,,,,,,,,,,,,,@@/,,,,,,,,,,#@,,,,,,,,,,,,,,@         
+#    ,,,,,,,,,%@@@@@.,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.        
+#   &,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,@@*,,,,,*@,,,/,,,,,,,,,,,,,,,#       
+#   @,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,@,,,,,,,,,,,,*%,,,,,,,,,,,,,,,@@       
+#  ,@@@@@@@%@(,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,@@@@%      
+#  @@@@@@@@@@@@@@@@&((@@%/,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,@@@@@@@@@     
+#  @@@@@@@@@@@@@@@(((((@   @#####@     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    
+# #@@@@@@@@@@@@@@(((((((@     @@    &(((((@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   
+# @@@@@@@@@@@@@@@@@@@@@@@    ##@    @@@(((@@@@@@@@@@@@@@@@@@@@@@@@@@@%%#      
+#    @%@&@@@@@@@@@@@@@@@    /####   &@@@@@@@@@@@@@@@@@@@@@@@@#/               
+#              *@@@@@@@    @######@  @@@@@@@@%@@@@@@(***, 
