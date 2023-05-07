@@ -1,42 +1,10 @@
-class User:
-    def __init__(self, id_user = None, passwd = None, email = None, role = None):
-        self.id_user = id_user
-        self.passwd = passwd
-        self.email = email
-        self.role = role
-    
-    # Getters & Setters
-    def get_id_user(self):
-        return self.id_user
-    
-    def set_id_user(self, new_value = None):
-        self.id_user = new_value
-    
-    def get_passwd(self):
-        return self.passwd
-    
-    def set_passwd(self, new_value = None):
-        self.passwd = new_value
+from enum import Enum
 
-    def get_email(self):
-        return self.email
-    
-    def set_email(self, new_value = None):
-        self.email = new_value
-
-    def get_role(self):
-        return self.role
-    
-    def set_role(self, new_value = None):
-        self.role = new_value
-
-    # toJson
-    def to_json(self):
-        return {'id_user': self.id_user, 
-                'passwd': self.passwd,
-                'email': self.email,
-                'role': self.role
-                }
+class Shift(Enum):
+    CONTINUOUS = 'Seguido'
+    SPLIT = 'Partido'
+    ROTATING = 'Rotativo'
+    MIXED = 'Mixto'
     
 #                                         %@@@@@@                             
 #                                      @@@@@@@@@@@@*                          

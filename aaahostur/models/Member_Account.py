@@ -1,43 +1,59 @@
-class User:
-    def __init__(self, id_user = None, passwd = None, email = None, role = None):
-        self.id_user = id_user
-        self.passwd = passwd
-        self.email = email
-        self.role = role
+class Member_Account:
+    def __init__(self, id_member_account = None, account_holder = None, account_number = None, sepa = None, active = None, member = None):
+        self.id_member_account = id_member_account
+        self.account_holder = account_holder
+        self.account_number = account_number
+        self.sepa = sepa
+        self.active = active
+        self.member = member
     
     # Getters & Setters
-    def get_id_user(self):
-        return self.id_user
+    def get_id_member_account(self):
+        return self.id_member_account
     
-    def set_id_user(self, new_value = None):
-        self.id_user = new_value
+    def set_id_member_account(self, new_value = None):
+        self.id_member_account = new_value
     
-    def get_passwd(self):
-        return self.passwd
+    def get_account_holder(self):
+        return self.account_holder
     
-    def set_passwd(self, new_value = None):
-        self.passwd = new_value
+    def set_account_holder(self, new_value = None):
+        self.account_holder = new_value
 
-    def get_email(self):
-        return self.email
+    def get_account_number(self):
+        return self.account_number
     
-    def set_email(self, new_value = None):
-        self.email = new_value
+    def set_account_number(self, new_value = None):
+        self.account_number = new_value
 
-    def get_role(self):
-        return self.role
+    def get_sepa(self):
+        return self.sepa
     
-    def set_role(self, new_value = None):
-        self.role = new_value
+    def set_sepa(self, new_value = None):
+        self.sepa = new_value
+
+    def get_active(self):
+        return self.active
+    
+    def set_active(self, new_value = None):
+        self.active = new_value
+
+    def get_member(self):
+        return self.member
+    
+    def set_member(self, new_value = None):
+        self.member = new_value
 
     # toJson
     def to_json(self):
-        return {'id_user': self.id_user, 
-                'passwd': self.passwd,
-                'email': self.email,
-                'role': self.role
+        return {'id_member_account': self.id_member_account, 
+                'account_holder': self.account_holder,
+                'account_number': self.account_number,
+                'sepa': self.sepa,
+                'active': self.active,
+                'member': self.member,
                 }
-    
+
 #                                         %@@@@@@                             
 #                                      @@@@@@@@@@@@*                          
 #                              @@@@  @@@@@@@@@@@@@@#                          

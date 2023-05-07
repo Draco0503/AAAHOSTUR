@@ -1,41 +1,33 @@
-class User:
-    def __init__(self, id_user = None, passwd = None, email = None, role = None):
-        self.id_user = id_user
-        self.passwd = passwd
-        self.email = email
-        self.role = role
-    
+class Job_Category:
+    def __init__(self, id_job_category = None, name = None, description = None):
+        self.id_job_category = id_job_category
+        self.name = name
+        self.description = description
+        
     # Getters & Setters
-    def get_id_user(self):
-        return self.id_user
+    def get_id_job_category(self):
+        return self.id_job_category
     
-    def set_id_user(self, new_value = None):
-        self.id_user = new_value
-    
-    def get_passwd(self):
-        return self.passwd
-    
-    def set_passwd(self, new_value = None):
-        self.passwd = new_value
+    def set_id_job_category(self, new_value = None):
+        self.id_job_category = new_value
 
-    def get_email(self):
-        return self.email
+    def get_name(self):
+        return self.name
     
-    def set_email(self, new_value = None):
-        self.email = new_value
+    def set_name(self, new_value = None):
+        self.name = new_value
 
-    def get_role(self):
-        return self.role
+    def get_description(self):
+        return self.description
     
-    def set_role(self, new_value = None):
-        self.role = new_value
+    def set_description(self, new_value = None):
+        self.description = new_value
 
     # toJson
     def to_json(self):
-        return {'id_user': self.id_user, 
-                'passwd': self.passwd,
-                'email': self.email,
-                'role': self.role
+        return {'id_job_category': self.id_job_category, 
+                'name': self.name,
+                'description': self.description,
                 }
     
 #                                         %@@@@@@                             

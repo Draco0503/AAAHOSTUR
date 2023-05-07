@@ -1,41 +1,41 @@
-class User:
-    def __init__(self, id_user = None, passwd = None, email = None, role = None):
-        self.id_user = id_user
-        self.passwd = passwd
-        self.email = email
-        self.role = role
-    
+class Language:
+    def __init__(self, id_language = None, name = None, lvl = None, certificate = None):
+        self.id_language = id_language
+        self.name = name
+        self.lvl = lvl
+        self.certificate = certificate
+        
     # Getters & Setters
-    def get_id_user(self):
-        return self.id_user
+    def get_id_language(self):
+        return self.id_language
     
-    def set_id_user(self, new_value = None):
-        self.id_user = new_value
-    
-    def get_passwd(self):
-        return self.passwd
-    
-    def set_passwd(self, new_value = None):
-        self.passwd = new_value
+    def set_id_language(self, new_value = None):
+        self.id_language = new_value
 
-    def get_email(self):
-        return self.email
+    def get_name(self):
+        return self.name
     
-    def set_email(self, new_value = None):
-        self.email = new_value
+    def set_name(self, new_value = None):
+        self.name = new_value
 
-    def get_role(self):
-        return self.role
+    def get_lvl(self):
+        return self.lvl
     
-    def set_role(self, new_value = None):
-        self.role = new_value
+    def set_lvl(self, new_value = None):
+        self.lvl = new_value
+
+    def get_certificate(self):
+        return self.certificate
+    
+    def set_certificate(self, new_value = None):
+        self.certificate = new_value
 
     # toJson
     def to_json(self):
-        return {'id_user': self.id_user, 
-                'passwd': self.passwd,
-                'email': self.email,
-                'role': self.role
+        return {'id_language': self.id_language, 
+                'name': self.name,
+                'lvl': self.lvl,
+                'certificate': self.certificate
                 }
     
 #                                         %@@@@@@                             

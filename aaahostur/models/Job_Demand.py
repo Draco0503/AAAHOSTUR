@@ -125,6 +125,7 @@ class Job_Demand:
                 'others': self.others,
                 'offer': self.offer
                 }
+    
 #                                         %@@@@@@                             
 #                                      @@@@@@@@@@@@*                          
 #                              @@@@  @@@@@@@@@@@@@@#                          

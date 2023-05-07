@@ -1,41 +1,49 @@
-class User:
-    def __init__(self, id_user = None, passwd = None, email = None, role = None):
-        self.id_user = id_user
-        self.passwd = passwd
-        self.email = email
-        self.role = role
-    
+class Qualification:
+    def __init__(self, id_qualification = None, name = None, description = None, qualification_parent = None, job_category = None):
+        self.id_qualification = id_qualification
+        self.name = name
+        self.description = description
+        self.qualification_parent = qualification_parent
+        self.job_category = job_category
+        
     # Getters & Setters
-    def get_id_user(self):
-        return self.id_user
+    def get_id_qualification(self):
+        return self.id_qualification
     
-    def set_id_user(self, new_value = None):
-        self.id_user = new_value
-    
-    def get_passwd(self):
-        return self.passwd
-    
-    def set_passwd(self, new_value = None):
-        self.passwd = new_value
+    def set_id_qualification(self, new_value = None):
+        self.id_qualification = new_value
 
-    def get_email(self):
-        return self.email
+    def get_name(self):
+        return self.name
     
-    def set_email(self, new_value = None):
-        self.email = new_value
+    def set_name(self, new_value = None):
+        self.name = new_value
 
-    def get_role(self):
-        return self.role
+    def get_description(self):
+        return self.description
     
-    def set_role(self, new_value = None):
-        self.role = new_value
+    def set_description(self, new_value = None):
+        self.description = new_value
+
+    def get_qualification_parent(self):
+        return self.qualification_parent
+    
+    def set_qualification_parent(self, new_value = None):
+        self.qualification_parent = new_value
+
+    def get_job_category(self):
+        return self.job_category
+    
+    def set_job_category(self, new_value = None):
+        self.job_category = new_value
 
     # toJson
     def to_json(self):
-        return {'id_user': self.id_user, 
-                'passwd': self.passwd,
-                'email': self.email,
-                'role': self.role
+        return {'id_qualification': self.id_qualification, 
+                'name': self.name,
+                'description': self.description,
+                'qualification_parent': self.qualification_parent,
+                'job_category': self.job_category
                 }
     
 #                                         %@@@@@@                             
