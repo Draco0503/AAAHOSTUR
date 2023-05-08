@@ -61,4 +61,4 @@ if __name__ == '__main__':
 #para manegar los errores 
  app.register_error_handler(404, pagina_No_Encontrada)
  #run
- app.run()
+ app.run(host='0.0.0.0', port=5000)

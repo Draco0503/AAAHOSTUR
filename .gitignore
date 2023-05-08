@@ -1,3 +1,4 @@
 .env
 aaahostur-oauth
 backup
+__pycache__
