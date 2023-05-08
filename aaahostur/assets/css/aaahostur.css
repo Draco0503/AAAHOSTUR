@@ -147,6 +147,13 @@ input[type="number"]:focus, select:focus, textarea:focus {
     border-color: var(--aaahostur-primary-color-not-that-yellow);
 }
 
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}
 
 /* CUSTOM CHECKBOX STYLING */
 .custom-cr-input {
@@ -389,7 +396,10 @@ input[type="button"]:hover {
 main {
     padding: 3rem 0 3rem 0;
 }
-
+span {
+    color: var(--aaahostur-color-red);
+    font-weight: bolder;
+}
 .container {
     position: relative;
     margin: auto;
@@ -419,7 +429,7 @@ main {
 }
 
 .mar-bot-1rem {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .mar-bot-2rem {
@@ -433,6 +443,23 @@ main {
 .dis-grid {
     display: grid;
     align-items: center;
+}
+
+.dis-none {
+    display: none;
+}
+
+.dis-flex {
+    display: flex;
+    flex-direction: row;
+}
+
+.flex-right {
+    justify-content: flex-end;
+}
+
+.row {
+    flex: 50%;
 }
 
 #up-btn {
@@ -574,6 +601,18 @@ ul.social-links > li {
     .w20 {
         width: 60% !important;
     }
+    ::-webkit-scrollbar {
+        all: auto;
+    }
+    ::-webkit-scrollbar-track {
+        all: auto; 
+    }
+    ::-webkit-scrollbar-thumb {
+        all: auto;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        all: auto; 
+    }
 }
 
 @media screen and (max-width: 1300px) {
@@ -587,7 +626,9 @@ ul.social-links > li {
     .nav, .navbar .center {
         flex-direction: column;
     }
-
+    .dis-flex {
+        width: 95% !important;
+    }
     #up-btn {
         bottom: 25px;
         right: 25px;
@@ -617,16 +658,6 @@ ul.social-links > li {
 
     #header-decorator {
         display: none;
-    }
-
-    ::-webkit-scrollbar {
-        all: initial;
-    }
-    ::-webkit-scrollbar-track {
-        all: initial; 
-    }
-    ::-webkit-scrollbar-thumb {
-        all: initial;
     }
 
 }
