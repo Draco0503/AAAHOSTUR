@@ -125,7 +125,7 @@ hr {
     padding: 0.6rem;
 }
 
-input {
+input, select {
     margin: 0.2rem;
 }
 
