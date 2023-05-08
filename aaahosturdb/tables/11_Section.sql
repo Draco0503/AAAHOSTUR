@@ -1,4 +1,4 @@
-DROP datatable IF EXISTS Section;
+DROP TABLE IF EXISTS Section;
 CREATE TABLE Section (
     ID_SECTION INT NOT NULL AUTO_INCREMENT,
     Category ENUM("Actividad", "Curso", "Noticia"),

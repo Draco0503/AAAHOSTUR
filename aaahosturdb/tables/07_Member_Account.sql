@@ -1,5 +1,4 @@
-
-DROP datatable IF EXISTS Member_Account;
+DROP TABLE IF EXISTS Member_Account;
 CREATE TABLE Member_Account (
     ID_MEMBER_ACCOUNT INT NOT NULL AUTO_INCREMENT,
     Account_Holder VARCHAR(512),

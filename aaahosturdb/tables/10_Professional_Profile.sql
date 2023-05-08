@@ -1,4 +1,4 @@
-DROP datatable IF EXISTS Professional_Profile;
+DROP TABLE IF EXISTS Professional_Profile;
 CREATE TABLE Professional_Profile (
     ID_PROFESSIONAL_PROFILE INT NOT NULL AUTO_INCREMENT,
     Workplace VARCHAR(512) NOT NULL,

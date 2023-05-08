@@ -1,4 +1,4 @@
-DROP datatable IF EXISTS Member_Language;
+DROP TABLE IF EXISTS Member_Language;
 CREATE TABLE Member_Language (
     ID_MEMBER_LANGUAGE INT NOT NULL AUTO_INCREMENT,
     Id_Member INT NOT NULL,

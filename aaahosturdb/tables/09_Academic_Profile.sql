@@ -1,4 +1,4 @@
-DROP datatable IF EXISTS Academic_Profile;
+DROP TABLE IF EXISTS Academic_Profile;
 CREATE TABLE Academic_Profile (
     ID_ACADEMIC_PROFILE INT NOT NULL AUTO_INCREMENT,
     School VARCHAR(512) NOT NULL,
