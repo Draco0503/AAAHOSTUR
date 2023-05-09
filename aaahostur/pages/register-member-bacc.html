@@ -49,23 +49,18 @@
         <div class="w80 container shadow pad-2rem">
             <h1 class="">Registrar Socio</h1>
             <hr class="bg-color-darker-blue mar-bot-3rem">
-            <h2 class="mar-bot-1rem">Estudios</h2>
+            <h2 class="mar-bot-1rem">Información bancaria</h2>
             <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
             <form class="dis-grid" action="" method="post">
-                <!-- TODO: Crear select dinamico con las Qualifications -->
-                <label class="dis-block font-16pt" for="member-qualification">Titulo <span>*</span></label>
-                <select class="w60 pad-input font-14pt mar-bot-2rem" name="member-qualification" id="member-qualification" required>
-                    <option value="">Estudio 1</option>
-                    <option value="">Estudio 2</option>
-                    <option value="">Estudio 3</option>
-                    <option value="">Estudio 4</option>
-                </select>
-                <label class="dis-block font-16pt" for="member-school">Escuela <span>*</span></label>
-                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-name"required>
-                <label class="dis-block font-16pt" for="member-finishdate">Fecha de finalización <span>*</span></label>
-                <input class="w20 pad-input font-14pt mar-bot-2rem" type="date" name="member-finishdate" id="member-finishdate" required>
-                <label class="dis-block font-16pt" for="member-promotion">Promoción</label>
-                <input class="w20 pad-input font-14pt mar-bot-2rem" type="number" id="member-promotion">
+                <label class="dis-block font-16pt" for="member-holder">Titular de la cuenta <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-address" required>
+                <label class="dis-block font-16pt" for="member-accnumber">Nº Cuenta <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-address" required maxlength="24">
+                <label class="w80 font-14pt custom-cr-input mar-bot-2rem" for="" onclick="changeCheckboxState(this)">
+                    Mediante la firma de esta orden de domiciliación, el deudor autoriza (A) al acreedor a enviar instrucciones a la ent idad del deudor para adeudar su cuenta y (B) a la entidad para efectuar los adeudos en su cuenta siguiendo las instrucciones del acreedor. Como parte de sus derechos, el deudor está legitimado al reembolso por su entidad en los términos y condiciones del contrato suscrito con la misma. La solicitud de reembolso deberá efectuarse dentro de las ocho semanas que siguen a la fecha de adeudo en cuenta. Puede obtener información adicional sobre sus derechos en su entidad financiera. <span>*</span>
+                    <input type="checkbox" name="sepa_cb" id="sepa_cb" required>
+                    <span class="checkmark"></span>
+                </label>
                 <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
                 <p class="">Los campos con <span class="font-14pt">*</span> son obligatorios</p>
                 <div class="w80 dis-flex flex-right">
@@ -129,7 +124,7 @@
             </ul>
         </div>
     </footer>
-    <script src="../assets/js/site.js"></script>
+        <script src="../assets/js/site.js"></script>
 </body>
 
 </html>

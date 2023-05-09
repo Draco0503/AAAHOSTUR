@@ -158,47 +158,6 @@
             </ul>
         </div>
     </footer>
-    <script>
-        function changeCheckboxState(e) {
-            let input = e.childNodes[1];
-            if(input.getAttribute("checked") === null) input.setAttribute("checked", "");
-            else input.removeAttribute("checked");
-        }
-
-        function changeRadioGroupButtonState(rbgName, elem) {
-            let radiogroup = document.getElementsByClassName(rbgName);
-            for (var i = 0; i < radiogroup.length; i++) {
-                if (radiogroup.item(i) === elem.childNodes[1]){
-                    radiogroup.item(i).checked = true;
-                    radiogroup.item(i).setAttribute("checked", "");
-                }
-                else {
-                    radiogroup.item(i).checked = false;
-                    radiogroup.item(i).removeAttribute("checked");
-                } 
-            }
-        }
-
-        function resetForm(formName, rbgName) {
-            if (rbgName !== null && rbgName !== "") {
-                var rbtns = document.getElementsByClassName(rbgName);
-                for(var i = 0; i < rbtns.length; i++) {
-                    rbtns.item(i).checked = false;
-                    rbtns.item(i).removeAttribute("checked");
-                }
-                // Meh pero funcional
-                rbtns.item(0).checked = true;
-                rbtns.item(0).setAttribute("checked", "");
-            }
-
-            var cbxs = document.querySelectorAll("input[type='checkbox']");
-            if (cbxs !== null && cbxs.length !== 0)
-                for(var i = 0; i < cbxs.length; i++)
-                    cbxs.item(i).removeAttribute("checked");
-
-            if (formName !== null && formName !== "")
-                document.getElementById(formName).reset();
-        }
-    </script>
+    <script src="../assets/js/site.js"></script>
 </body>
 </html>

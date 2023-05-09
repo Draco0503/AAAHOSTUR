@@ -49,23 +49,16 @@
         <div class="w80 container shadow pad-2rem">
             <h1 class="">Registrar Socio</h1>
             <hr class="bg-color-darker-blue mar-bot-3rem">
-            <h2 class="mar-bot-1rem">Estudios</h2>
+            <h2 class="mar-bot-1rem">Idiomas</h2>
             <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
             <form class="dis-grid" action="" method="post">
-                <!-- TODO: Crear select dinamico con las Qualifications -->
-                <label class="dis-block font-16pt" for="member-qualification">Titulo <span>*</span></label>
-                <select class="w60 pad-input font-14pt mar-bot-2rem" name="member-qualification" id="member-qualification" required>
-                    <option value="">Estudio 1</option>
-                    <option value="">Estudio 2</option>
-                    <option value="">Estudio 3</option>
-                    <option value="">Estudio 4</option>
-                </select>
-                <label class="dis-block font-16pt" for="member-school">Escuela <span>*</span></label>
-                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-name"required>
-                <label class="dis-block font-16pt" for="member-finishdate">Fecha de finalización <span>*</span></label>
-                <input class="w20 pad-input font-14pt mar-bot-2rem" type="date" name="member-finishdate" id="member-finishdate" required>
-                <label class="dis-block font-16pt" for="member-promotion">Promoción</label>
-                <input class="w20 pad-input font-14pt mar-bot-2rem" type="number" id="member-promotion">
+                <!-- TODO: Crear select dinamicos con los idiomas y sus niveles, de momento se queda asi -->
+                <label class="dis-block font-16pt" for="member-lan">Lenguaje <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-lan" required>
+                <label class="dis-block font-16pt" for="member-lan-lvl">Nivel <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-lan-lvl" required>
+                <label class="dis-block font-16pt" for="member-lan-lvl">Certificado <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="file" id="member-lan-cert" required>
                 <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
                 <p class="">Los campos con <span class="font-14pt">*</span> son obligatorios</p>
                 <div class="w80 dis-flex flex-right">

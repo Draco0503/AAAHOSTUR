@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASOCIACIÓN ESPAÑOLA DE ANTIGUOS ALUMNOS DE LA ESCUELA DE HOSTELERÍA Y TURISMO</title>
+    <link rel="stylesheet" href="../assets/css/aaahostur.css">
+    <link rel="shortcut icon" href="../assets/resources/icon.jpg" type="image/x-icon">
+    <link rel="stylesheet" href="../assets/css/font-awesome-4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <button onclick="goToTop()" id="up-btn" title="Inicio">
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </button>
+    <header id="up">
+        <div id="header-decorator" class="nav primary-nav">
+            <a href="index.html">
+                <img id="logo" src="../assets/resources/logo.png"
+                    alt="aaahostur hosteleria turismo"/>
+            </a>
+            <h2 class="main-title">Asociación Española de Antiguos Alumnos de<br> Escuelas de Hostelería y Turismo</h2>
+        </div>
+        <nav id="navbar" class="nav navbar">
+            <div class="left">
+                <a id="navbar-logo" class="navbar-item" href="index.html">
+                    <img class="logo" src="../assets/resources/logo.png" alt="aaahostur hosteleria turismo">
+                    <div class="yellow-title">AAAHOSTUR</div>
+                </a>
+            </div>
+            <div class="center">
+                <a href="#" class="navbar-item">Bolsa de Trabajo</a>
+                <a href="#" class="navbar-item">Actividades</a>
+                <a href="#" class="navbar-item">Cursos</a>
+                <a href="#" class="navbar-item">Revista</a>
+                <a href="#" class="navbar-item">Link a Escuelas</a>
+                <a href="#" class="navbar-item">Contacto y Sugerencias</a>
+            </div>
+            <div class="right">
+                <div class="user-box">
+                    <img class="navbar-item" src="" alt="">
+                    <div class="navbar-item">Iniciar sesión</div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <div class="w80 container shadow pad-2rem">
+            <h1 class="">Registrar Empresa</h1>
+            <hr class="bg-color-darker-blue mar-bot-3rem">
+            <h2 class="mar-bot-1rem">Información de empresa</h2>
+            <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+            <form class="dis-grid" action="" method="post">
+                <label class="dis-block font-16pt" for="company-name">Nombre de empresa <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-name"required>
+                <label class="dis-block font-16pt" for="company-cif">CIF</label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-cif">
+                <label class="dis-block font-16pt mar-bot-1rem" for="company-address">Tipo de empresa <span>*</span></label>
+                <div id="rbgroup-company-type" class="mar-bot-2rem">
+                    <label class="font-14pt custom-cr-input" for="" onclick="showTypeData(this, false)">
+                        Nacional
+                        <input class="rbgroup-company-type" type="radio" name="rb-group-company-type" id="rbgroup-company-type-rb1" value="National" checked>
+                        <span class="radiomark"></span>
+                    </label>                
+                    <label class="font-14pt custom-cr-input" for="" onclick="showTypeData(this, true)">
+                        Internacional
+                        <input class="rbgroup-company-type" type="radio" name="rb-group-company-type" id="rbgroup-company-type-rb2" value="Internacional">
+                        <span class="radiomark"></span>
+                    </label>
+                </div>
+                <div id="rbgroup-international-type" class="dis-none mar-bot-2rem">
+                    <label class="dis-block font-16pt mar-bot-1rem" for="company-address">¿Con representacion en España? <span>*</span></label>
+                    <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-international-type', this)">
+                        Si
+                        <input class="rbgroup-international-type" type="radio" name="rb-group-international-type" id="rbgroup-international-type-rb1" value="In_Spain" checked>
+                        <span class="radiomark"></span>
+                    </label>                
+                    <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-international-type', this)">
+                        No
+                        <input class="rbgroup-international-type" type="radio" name="rb-group-international-type" id="rbgroup-international-type-rb2" value="Out_Of_Spain">
+                        <span class="radiomark"></span>
+                    </label>
+                </div>
+                <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+                <label class="dis-block font-16pt" for="member-address">Dirección <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-address" required>
+                <div class="w60 dis-flex mar-bot-2rem">
+                    <div class="row">
+                        <label class="dis-block font-16pt" for="member-cp">C.P. <span>*</span></label>
+                        <input class="pad-input font-14pt" type="number" id="member-cp" required>
+                    </div>
+                    <div class="row">
+                        <label class="dis-block font-16pt" for="member-city">Ciudad <span>*</span></label>
+                        <input class="pad-input font-14pt" type="text" id="member-city" required>
+                    </div>
+                </div>
+                <label class="dis-block font-16pt" for="member-province">Provincia <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-1rem" type="text" id="member-province" required>
+                <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+                <h3 class="mar-bot-1rem">Información de contacto del representante</h3>
+                <label class="dis-block font-16pt" for="company-contact-name">Nombre <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-contact1-email" required>
+                <label class="dis-block font-16pt" for="company-contact-email">Email <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="email" id="company-contact1-email" required>
+                <label class="dis-block font-16pt" for="company-contact-tlf">Teléfono <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="number" name="company-contact1-tlf" id="company-contact1-tlf" minlength="9" required>
+                <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+                <label class="dis-block font-16pt" for="company-desc">Descripción</label>
+                <p class="mar-bot-1rem">Explica brevemente a qué se dedica tu empresa</p>
+                <textarea class="w60 pad-input font-14pt mar-bot-2rem" name="company-desc" id="company-desc" maxlength="256" rows=3></textarea>
+                <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+                <p class="">Los campos con <span class="font-14pt">*</span> son obligatorios</p>
+                <div class="w80 dis-flex flex-right">
+                    <input class="w20 pad-o5rem font-16pt" type="submit" value="Enviar &rarr;">
+                </div>
+            </form>
+
+            <!--                 <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+                <h3 class="mar-bot-1rem">Información de contacto 1</h3>
+                <label class="dis-block font-16pt" for="company-contact1-name">Nombre <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-contact1-email" required>
+                <label class="dis-block font-16pt" for="company-contact1-email">Email <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="email" id="company-contact1-email" required>
+                <label class="dis-block font-16pt" for="company-contact1-tlf">Teléfono <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="number" name="company-contact1-tlf" id="company-contact1-tlf" minlength="9" required>
+                <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+                <h3 class="mar-bot-1rem">Información de contacto 2</h3>
+                <label class="dis-block font-16pt" for="company-contact2-name">Nombre </label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-contact2-email" required>
+                <label class="dis-block font-16pt" for="company-contact2-email">Email </label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="email" id="company-contact2-email" required>
+                <label class="dis-block font-16pt" for="company-contact2-tlf">Teléfono </label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="number" name="company-contact2-tlf" id="company-contact2-tlf" minlength="9" required>
+                <hr class="w80 bg-color-not-that-yellow mar-bot-2rem"> -->
+
+        </div>
+    </main>
+    <footer class="nav">
+        <div class="nav center b2-top">
+            <div class="foo-col">
+                <h2 class="yellow-title">Sobre nosotros</h2>
+                <p>Asociación Española de Antiguos Alumnos de las Escuelas de Hostelería y Tursimo</p>
+                <ul class="social-links">
+                    <li class="icon">
+                        <a href="#">
+                            <i class="fa fa-facebook-square" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    <li class="icon">
+                        <a href="#">
+                            <i class="fa fa-instagram" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    <li class="icon">
+                        <a href="#">
+                            <i class="fa fa-twitter" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="foo-col">
+                <h2 class="yellow-title">Links de Interés</h2>
+                <ul class="links">
+                    <li>
+                        <h4><a href="#">Contáctanos</a></h4>
+                    </li>
+                    <li>
+                        <h4><a href="#">Escuelas</a></h4>
+                    </li>
+                    <li>
+                        <h4><a href="#">Nuestros Servicios</a></h4>
+                    </li>
+                </ul>
+            </div>
+            <div class="foo-col">
+                <h2 class="yellow-title">Contactos</h2>
+            </div>
+        </div>
+        <div class="nav darker-blue p1-tb b2-top">
+            <ul class="latest-foo">
+                <li>© 2023</li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
+                <li><a href="#">EMPRESA</a></li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
+                <li>Todos los derechos reservados</li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
+                <li><a href="#">Aviso legal</a></li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
+                <li><a href="#">Política de Privacidad</a></li>
+            </ul>
+        </div>
+    </footer>
+    <script src="../assets/js/site.js"></script>
+</body>
+
+</html>

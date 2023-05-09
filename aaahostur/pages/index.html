@@ -104,24 +104,6 @@
             </ul>
         </div>
     </footer>
-    <script>
-        window.onscroll = function() { hideOnScroll() };
-        function hideOnScroll() {
-
-            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20)
-                document.getElementById("up-btn").style.display = "block";
-            else
-                document.getElementById("up-btn").style.display = "none";
-
-            if (document.body.scrollTop > 120 || document.documentElement.scrollTop > 120)
-                document.getElementById("navbar-logo").style.visibility = "visible";
-            else
-                document.getElementById("navbar-logo").style.visibility = "hidden";
-        }
-
-        function goToTop() {
-            document.getElementById("up").scrollIntoView();
-        }
-    </script>
+    <script src="../assets/js/site.js"></script>
 </body>
 </html>
