@@ -15,22 +15,22 @@ def index():
     except Exception as ex:
         return "Error"
     
-@app.route('/listaUsuarios', methods=['GET'])
+@app.route('/listaRoles', methods=['GET'])
 def usuarios():
    try:
         cursor = mysql.connection.cursor()
-        sql = "SELECT UserName, UserPass FROM users"
+        sql = "SELECT ID_ROLE, Name, Description FROM Role"
         cursor.execute(sql)
         #almacena el resultado de la query y lo "traduce" a python
         datos=cursor.fetchall()
         print(datos)
-        listaUsuarios=[]
+        listaRoles=[]
         #for para recorrer todos los datos sacados y almacenarlos en un objeto 
         for fila in datos:
-            usuario = {'UserName':fila[0], 'UserPass':fila[1]}
+            usuario = {'ID_ROLE':fila[0], 'Name':fila[1], 'Description':fila[2]}
             #se agrega el usuario a la lista de usuarios
-            listaUsuarios.append(usuario)
-        return jsonify({'usuarios':listaUsuarios, 'mensaje':"Esta es la lista de usuarios"})
+            listaRoles.append(usuario)
+        return jsonify({'usuarios':listaRoles, 'mensaje':"Esta es la lista de usuarios"})
    except Exception as ex:
          return jsonify({'mensaje':"No funciono el mostrar la lista de usuarios...."})
    
