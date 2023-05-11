@@ -120,9 +120,9 @@ def pagina_No_Encontrada(err):
 
 #inicio del main
 if __name__ == '__main__':
-#acceso al diccionario con las credenciales para acceder a la base de datos
- app.config.from_object(config['development'])  
-#para manegar los errores 
- app.register_error_handler(404, pagina_No_Encontrada)
- #run
- app.run(host='0.0.0.0', port=5000)
+    #acceso al diccionario con las credenciales para acceder a la base de datos
+    app.config.from_object(config['development'])  
+    #para manegar los errores 
+    app.register_error_handler(404, pagina_No_Encontrada)
+    #run
+    app.run(host='0.0.0.0', port=5000)

@@ -1,2 +1,6 @@
 # PARA QUE FUNCIONE LA API SE NECESITA HACER
+# Flask-OAuthlib for authentication server
+# mysql-connector-python to connect to db
+# python-dotenv to get data from '.env'
+# poner versiones de librerías
 pip install Flask Flask-OAuthlib mysql-connector-python python-dotenv flask_mysqldb

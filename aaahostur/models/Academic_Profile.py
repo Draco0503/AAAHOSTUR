@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+
+@dataclass
 class Academic_Profile:
     def __init__(self, id_academic_profile = None, school = None, graduation_date = None, promotion = None, member = None, qualification = None):
         self.id_academic_profile = id_academic_profile
