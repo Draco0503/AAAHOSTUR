@@ -1,11 +1,21 @@
 from flask import Flask, request, session, jsonify
 from flask_mysqldb import MySQL
 from config import config
+import dash_html_components as html
+import dash_core_components as dcc
+from callbacks import Callback
 
 app = Flask(__name__)
 
 #Conexion a la base de datos
 mysql = MySQL(app)
+
+# describes layout of the app
+app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
+    html.Div(id='page_comtent')
+])
+Callback.callback(app)
 
 #metodo de prueba de conexion
 @app.route('/prueba')
