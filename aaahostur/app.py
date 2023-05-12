@@ -11,9 +11,10 @@ app = Flask(__name__)
 mysql = MySQL(app)
 
 # describes layout of the app
+app.title = 'buenos dias'
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
-    html.Div(id='page_comtent')
+    html.Div(id='page_content')
 ])
 Callback.callback(app)
 
