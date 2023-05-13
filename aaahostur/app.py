@@ -1,22 +1,16 @@
 from flask import Flask, request, session, jsonify
 from flask_mysqldb import MySQL
 from config import config
-import dash_html_components as html
-import dash_core_components as dcc
-from callbacks import Callback
+#import dash_html_components as html
+#import dash_core_components as dcc
+#from callbacks import Callback
 
 app = Flask(__name__)
 
 #Conexion a la base de datos
 mysql = MySQL(app)
 
-# describes layout of the app
-app.title = 'buenos dias'
-app.layout = html.Div([
-    dcc.Location(id='url', refresh=False),
-    html.Div(id='page_content')
-])
-Callback.callback(app)
+
 
 #metodo de prueba de conexion
 @app.route('/prueba')
@@ -60,7 +54,7 @@ def usuarios():
             listaUser.append(user)
         return jsonify({'Usuarios':listaUser, 'mensaje':"Esta es la lista de usuarios"})
     except Exception as ex:
-         return jsonify({'mensaje':"No se pudo ver los roles"})
+         return jsonify({'mensaje':"No se pudo ver los usuarios"})
    
 @app.route('/registrarSuperAdmin', methods=['POST'])
 def registrarSuperAdmin():
@@ -124,8 +118,27 @@ def registrarUsuario():
 #FUNCIONES PARA LOS ERRORES MAS COMUNES
 
 #Error 404-not found
-def pagina_No_Encontrada(err):
+def not_Found(err):
     return "<h1>La página a la que intentas acceder no existe</h1>", 404
+
+
+#Error 403-forbidden
+def inadequate_Permits(err):
+    return "<h1>No tienes los permisos necesarios para acceder a este contenido</h1>", 403
+
+
+#Error 429-Too many request
+def too_Many_Request(err):
+    return "<h1>Has enviado demasiadas solicitudes en poco tiempo, Espere un poco</h1>", 429
+
+
+#Error 500-Internal server error 
+def internal_Server_Error(err):
+    return "<h1>En mantenimiento</h1>", 500
+
+#Error 504 Gateway Timeout
+def bad_Request(err):
+    return "<h1>ns que poner aqui jijijajaja</h1>", 504
 
 
 
@@ -134,6 +147,10 @@ if __name__ == '__main__':
     #acceso al diccionario con las credenciales para acceder a la base de datos
     app.config.from_object(config['development'])  
     #para manegar los errores 
-    app.register_error_handler(404, pagina_No_Encontrada)
+    app.register_error_handler(404, not_Found)
+    app.register_error_handler(403, inadequate_Permits)
+    app.register_error_handler(429, too_Many_Request)
+    app.register_error_handler(500, internal_Server_Error)
+    app.register_error_handler(504, bad_Request)
     #run
     app.run(host='0.0.0.0', port=5000)
