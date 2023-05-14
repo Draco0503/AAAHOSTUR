@@ -11,8 +11,15 @@
 # - hola_soy_una_variable
 # - app.route('/api/v0/path')
 
-pip install Flask Flask-OAuthlib mysql-connector-python python-dotenv flask_mysqldb
-dash==2.9.3 # pip install dash==2.9.3
+pip install python-dotenv passlib mysqlclient Flask SQLAlchemy flask-sqlalchemy SQLAlchemy-Utils dash pandas dash-extensionsdash==2.9.3 # pip install dash==2.9.3
 pandas==1.3.2
 dash-extensions==0.0.58
 dash-bootstrap-components==1.4.1
+python-dotenv==0.21.0
+passlib==1.7.4
+mysqlclient==2.1.1
+Flask==2.2.2
+SQLAlchemy==2.0.13
+flask-sqlalchemy==3.0.2
+SQLAlchemy-Utils==0.38.3
+pip==23.1.2

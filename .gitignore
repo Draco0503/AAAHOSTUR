@@ -2,3 +2,5 @@
 aaahostur-oauth
 backup
 __pycache__
+.vscode
+.idea

@@ -1,74 +1,21 @@
-class User:
-    def __init__(self, id_user = None, passwd = None, email = None, role = None):
-        self.id_user = id_user
-        self.passwd = passwd
-        self.email = email
-        self.role = role
-    
-    # Getters & Setters
-    def get_id_user(self):
-        return self.id_user
-    
-    def set_id_user(self, new_value = None):
-        self.id_user = new_value
-    
-    def get_passwd(self):
-        return self.passwd
-    
-    def set_passwd(self, new_value = None):
-        self.passwd = new_value
+from dataclasses import dataclass
 
-    def get_email(self):
-        return self.email
-    
-    def set_email(self, new_value = None):
-        self.email = new_value
+from . import db
 
-    def get_role(self):
-        return self.role
-    
-    def set_role(self, new_value = None):
-        self.role = new_value
 
-    # toJson
-    def to_json(self):
-        return {'id_user': self.id_user, 
-                'passwd': self.passwd,
-                'email': self.email,
-                'role': self.role
-                }
-    
-#                                         %@@@@@@                             
-#                                      @@@@@@@@@@@@*                          
-#                              @@@@  @@@@@@@@@@@@@@#                          
-#                                 &@@@@#%@@@@@@@@@@#                          
-#                     ,@.,,,,,,,,,,,,,@@@@@@@##@@@@                           
-#                 @.,,,,,,,,,,,,,,,,,,,,,,,.@@@@@@@                           
-#             @,,,,,,,,,,,,,,,,,,@,,,,,,(*,,,,,,,@@@@@&                       
-#           @,,,,,,,,,,,,,,,,,,,%,,,,,,,,,,,,,,,,,,@ .@@@                     
-#         @,,,,,,,,,,,,,,,,,,,,,,,@@@@@@@,,,,,,,,,,,,@                        
-#       &,,,,,,@,,,,,,,,,,,,,,,,@@@@@@@@@@@@@,,,,,,,,,,@                      
-#      *,,,,,,,,,,,,,,,,,,,,,,,,@@@@@@@@  @@@@@,,,,,,,,,/                     
-#     %,@@/,,,,,,,,,,,,,,,,,,,,,@@@@@@@@@@@@@@@,,,,,,,,,,,.                   
-#    @,,,,,,,,@,,,,,,,,,,,,,,,,,#@@@@@@@@@@@@@@,,,,,,,,,,,,,                  
-#    @,,,,,,,,,,,,,,,,,,,,,,,,,,,,%@@@@@@@@@@@@,,,,,,,,,,,,,*                 
-#    ,,,,,,,,,,,,,,,,,,,,@,,,,,,,,,,,,*@@@@,,,,,,,@,,,,@,,,,,/                
-#   &,@@@(.@*,,,,,,,,,,,,,&,,,,,,,,,,,,,,,,,,,,,,,@%,,,,%,,,,,*               
-#   @,,,,,,,,,,,,,,,,,,,,,@,,,,,,,,,,,,,,,,,,,%(#######@,,,,,,,&              
-#   &,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,@################,,,,,,,&             
-#    ,,,,,,,,@,,,,,,,,,,,,,,,,,,,,/%#####################%,,,,,,,#            
-#    &,,,,,,,,,,,,,,,,,,,#,,,,,*#############*@@@,#######@,,,,,,,,            
-#    @,,,,,,,,,,,,,,,,,,,@,,,,,%@@/,,,,,%@,,,,,,,,,,,,,@#@,,,,,,,,@           
-#    .,/,,,,,,,,,,,,,,,,*@,,,,,,,@,,,,,,,,,,,@,,,,,,,,,,*,,,,,,,,,,@          
-#    ,,,##@#.,/&,,,,,,,#@,,,,,,,,,,/&,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.          
-#    ,,,,,,#,,,,,,,,,,&,,,,,,,,,,,,,,,,@@/,,,,,,,,,,#@,,,,,,,,,,,,,,@         
-#    ,,,,,,,,,%@@@@@.,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.        
-#   &,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,@@*,,,,,*@,,,/,,,,,,,,,,,,,,,#       
-#   @,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,@,,,,,,,,,,,,*%,,,,,,,,,,,,,,,@@       
-#  ,@@@@@@@%@(,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,@@@@%      
-#  @@@@@@@@@@@@@@@@&((@@%/,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,@@@@@@@@@     
-#  @@@@@@@@@@@@@@@(((((@   @#####@     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    
-# #@@@@@@@@@@@@@@(((((((@     @@    &(((((@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   
-# @@@@@@@@@@@@@@@@@@@@@@@    ##@    @@@(((@@@@@@@@@@@@@@@@@@@@@@@@@@@%%#      
-#    @%@&@@@@@@@@@@@@@@@    /####   &@@@@@@@@@@@@@@@@@@@@@@@@#/               
-#              *@@@@@@@    @######@  @@@@@@@@%@@@@@@(***, 
+@dataclass()
+class User(db.Model):
+    __tablename__ = "User"
+    ID_USER = db.Column(db.Integer, primary_key=True)
+    Passwd = db.Column(db.String(512), nullable=False)
+    Email = db.Column(db.String(512), unique=True, nullable=False)
+    Id_Role = db.Column(db.Integer, db.ForeignKey("Role.ID_ROLE"), nullable=False)
+
+    member = db.relationship("Member", backref="User", lazy=True)
+    # member_verify = db.relationship("Member", backref="User", lazy=True)
+    # member_acc_verify = db.relationship("Member", backref="User", lazy=True)
+
+    company = db.relationship("Company", backref="User", lazy=True)
+    # company_verify = db.relationship("Company", backref="User", lazy=True)
+
+    section = db.relationship("Section", backref="User", lazy="True")
