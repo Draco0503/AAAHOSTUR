@@ -15,7 +15,7 @@ class Datepicker:
             # date= date(1999, 1, 1), # value
             placeholder= 'Escoge una fecha',
             id= self.name,
-            className= 'dtpck')
+            className= 'datepicker')
         
         return datepicker
         

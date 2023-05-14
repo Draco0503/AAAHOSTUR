@@ -3,9 +3,9 @@ import dash_core_components as dcc
 
 class Dropdown:
     def __init__(self, name, list_option, default_option):
-        self.name = name
-        self.list_option = list_option
-        self.default_option = default_option
+        self.name= name
+        self.list_option= list_option
+        self.default_option= default_option
 
     def create_dropdown(self):
         dropdown = dcc.Dropdown(
@@ -14,6 +14,6 @@ class Dropdown:
             placeholder= 'Selecciona una opcion',
             # inline = True,
             id= self.name, 
-            className= 'drpdwn')
+            className= 'dropdown')
         
         return dropdown

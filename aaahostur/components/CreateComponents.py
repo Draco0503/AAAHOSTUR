@@ -16,7 +16,7 @@ class CreateComponents:
             elif op == 1:
                 name= 'chklst_disable'
                 list_options= ['Discapacidad']
-                default_option = []               
+                default_option = []              
         elif url == 'datosBancarios':
             name= 'chklst_conditions'
             list_options= ['Acepta las condiciones']
@@ -104,9 +104,170 @@ class CreateComponents:
 
         return container
     
-    def get_header(self, app, url):
-        if True:
-            # make the header for each tab
-            header = None
+    def get_navbar(self, app, url):
+        pass
 
+    def get_header(self, app, url):
+        if url == 'FormLogin':
+            header = html.Div([
+                html.Div([
+                    html.A([
+                        html.Img(id= 'logo',
+                                 src= 'enlaceatuimagen',
+                                 alt= 'aaahostur hosteleria y turismo')
+                    ],
+                    href= '#'),
+                    html.H2('Asociacion española de antiguos alumnos de', 
+                            html.Br(), 
+                            'Escuelas de Hosteleria y Turismo')
+                ], 
+                className= 'header_up')
+            ], 
+            id= 'header')
+        
         return header
+    
+    def get_footer(self, app, url):
+        if url == 'FormLogin':
+            footer = html.Div([
+                html.Div([
+                    html.Div([
+                        html.H2('Sobre nosotros'),
+                        html.P('sssssssssssssssssssiiiiiiiiiiiiiiiiiiiiii'),
+                        html.Ul([
+                            html.Li([
+                                html.A(
+                                    html.I(),
+                                    href= '#'
+                                )
+                            ], 
+                            className= 'footer_up_col_list_icon'),
+                            html.Li([
+                                html.A(
+                                    html.I(),
+                                    href= '#'
+                                )
+                            ], 
+                            className= 'footer_up_col_list_icon'),
+                            html.Li([
+                                html.A(
+                                    html.I(),
+                                    href= '#'
+                                )
+                            ], 
+                            className= 'footer_up_col_list_icon')
+                        ], 
+                        className= 'footer_up_col_list')
+                    ], 
+                    className= 'footer_up_col'),
+                    html.Div([
+                        html.H2('Links de interes'),
+                        html.Ul([
+                            html.Li([
+                                html.H4(
+                                    html.A('Link 1', 
+                                           href= '#')  
+                                )
+                            ], 
+                            className= 'footer_up_col_list_link'),
+                            html.Li([
+                                html.H4(
+                                    html.A('Link 2', 
+                                           href= '#')  
+                                )
+                            ], 
+                            className= 'footer_up_col_list_link'),
+                            html.Li([
+                                html.H4(
+                                    html.A('Link 3', 
+                                           href= '#')  
+                                )
+                            ], 
+                            className= 'footer_up_col_list_link'),
+                            html.Li([
+                                html.H4(
+                                    html.A('Link 4', 
+                                           href= '#')  
+                                )
+                            ], 
+                            className= 'footer_up_col_list_link')
+                        ], 
+                        className= 'footer_up_col_list')
+                    ], 
+                    className= 'footer_up_col'),
+                    html.Div([
+                        html.H2('Contactos'),
+                        html.Ul([
+                            html.Li([
+                                html.H4(
+                                    html.A('Contacto 1', 
+                                           href= '#')  
+                                )
+                            ], 
+                            className= 'footer_up_col_list_link'),
+                            html.Li([
+                                html.H4(
+                                    html.A('Contacto 2', 
+                                           href= '#')  
+                                )
+                            ], 
+                            className= 'footer_up_col_list_link'),
+                            html.Li([
+                                html.H4(
+                                    html.A('Contacto 3', 
+                                           href= '#')  
+                                )
+                            ], 
+                            className= 'footer_up_col_list_link'),
+                            html.Li([
+                                html.H4(
+                                    html.A('Contacto 4', 
+                                           href= '#')  
+                                )
+                            ], 
+                            className= 'footer_up_col_list_link')
+                        ], 
+                        className= 'footer_up_col_list')
+                    ], 
+                    className= 'footer_up_col')
+                ], 
+                id= 'footer_up'),
+                html.Div([
+                    html.Ul([
+                        html.Li('© 2023', 
+                                className= 'footer_down_list_content'),
+                        html.Li('-', 
+                                className= 'footer_down_list_separator'),
+                        html.Li([
+                            html.A('AAAHOSTUR', 
+                                   href= '#', 
+                                   className= 'footer_down_list_content_link')
+                        ], 
+                        className= 'footer_down_list_content'),
+                        html.Li('-', 
+                                className= 'footer_down_list_separator'),
+                        html.Li('Todos los derechos reservados', 
+                                className= 'footer_down_list_content'),
+                        html.Li('-', 
+                                className= 'footer_down_list_separator'),
+                        html.Li([
+                            html.A('Aviso legal', 
+                                   href= '#', 
+                                   className= 'footer_down_list_content_link')
+                        ], 
+                        className= 'footer_down_list_content'),
+                        html.Li('-', 
+                                className= 'footer_down_list_separator'),
+                        html.Li([
+                            html.A('Politica de privacidad', 
+                                   href= '#', 
+                                   className= 'footer_down_list_content_link')
+                        ], 
+                        className= 'footer_down_list_content'),
+                    ], 
+                    id= 'footer_down_list')
+                ], 
+                id= 'footer_down')
+            ])
+
+        return footer
