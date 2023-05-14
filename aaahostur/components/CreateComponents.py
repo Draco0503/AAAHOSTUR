@@ -78,13 +78,13 @@ class CreateComponents:
 
         return container
     
-    def get_input(self, app, url, type):
+    def get_input(self, app, url, type, id):
         if type == 'number':
-            name = 'tbx_number'
-            input = Input(name, type).create_input_text()
-        else:
-            name = 'tbx_text'
+            name = 'tbx_number_{}'.format(id)
             input = Input(name, type).create_input_number()
+        else:
+            name = 'tbx_text_{}'.format(id)
+            input = Input(name, type).create_input_text()
 
         container = html.Div([
             input
@@ -93,8 +93,8 @@ class CreateComponents:
 
         return container
     
-    def get_textarea(self, app, url):
-        name = 'txta'
+    def get_textarea(self, app, url, id):
+        name = 'txta_{}'.format(id)
         textarea = Textarea(name).create_textarea()
 
         container = html.Div([
