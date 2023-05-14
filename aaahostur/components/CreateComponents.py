@@ -1,107 +1,112 @@
 import dash_html_components as html
-from components import Button, Datepicker, Dropdown, Input, Modal, Navbar, Table, Title
+from components import Button, Datepicker, Dropdown, Input, Modal, Navbar, Table, Title, Textarea, Checklist
 
 # due to the url the getters data change
 class CreateComponents:
     def __init__(self, url):
         self.url = url
 
-    def get_header(self, app, url):
-        if (url == self.url) or (url == self.url + 'form0'):
-            # pasar info de header de form0
-            name = 'headerForm0'
-            header = Title.Title(name).create_title()
-        else:
-            # pasar info de header de formN
-            name = 'headerFormN'
-            header = Title.Title(name).create_title()
+    def get_checklist(self, app, url, op):
+        list_options = []
+        if url == 'datosPersonales':
+            if op == 0:
+                name= 'chklst_residence'
+                list_options= ['Domicilio de notificaciones si es distinto del domicilio fiscal']
+                default_option = []
+            elif op == 1:
+                name= 'chklst_disable'
+                list_options= ['Discapacidad']
+                default_option = []               
+        elif url == 'datosBancarios':
+            name= 'chklst_conditions'
+            list_options= ['Acepta las condiciones']
+            default_option = []  
 
-        return header
-    
-    def get_select(self, app, url):
-        list_dropdown = []
-        if (url == self.url) or (url == self.url + 'form0'):
-            # pasar info de header de form0
-            name = 'headerForm0'
-            selects = Title.Title(name).create_title()
-        else:
-            # pasar info de header de formN
-            name = 'headerFormN'
-            selects = Title.Title(name).create_title()
+        chklist= Checklist(name, list_options, default_option).create_checklist()
+        container = html.Div([
+            chklist
+        ], 
+        className= 'chklst_container')
 
-        return selects
-    
-    def get_table(self, app, url):
-        list_table = []
-        if (url == self.url) or (url == self.url + 'form0'):
-            # pasar info de header de form0
-            name = 'headerForm0'
-            tables = Title.Title(name).create_title()
-        else:
-            # pasar info de header de formN
-            name = 'headerFormN'
-            tables = Title.Title(name).create_title()
+        return container
 
-        return tables
-    
-    def get_button(self, app, url):
-        list_button = []
-        if (url == self.url) or (url == self.url + 'form0'):
-            # pasar info de header de form0
-            name = 'headerForm0'
-            buttons = Title.Title(name).create_title()
-        else:
-            # pasar info de header de formN
-            name = 'headerFormN'
-            buttons = Title.Title(name).create_title()
+    def get_button(self, app, url, type):
+        if type == 'save':
+            name= 'btn_save'
+            text= 'Enviar'
+        elif type == 'export':
+            name= 'btn_export'
+            text= 'Exportar'
+        elif type == 'reload':
+            name= 'btn_reload'
+            text= 'Recargar'
+        elif type == 'clean':
+            name= 'btn_clean'
+            text= 'Borrar'
 
-        return buttons
-    
-    def get_modal(self, app, url):
-        if (url == self.url) or (url == self.url + 'form0'):
-            # pasar info de header de form0
-            name = 'headerForm0'
-            modal = Title.Title(name).create_title()
-        else:
-            # pasar info de header de formN
-            name = 'headerFormN'
-            modal = Title.Title(name).create_title()
+        btn = Button(name, text).create_button()
+        container = html.Div([
+            btn
+        ], 
+        className= 'btn_container')
 
-        return modal
-    
-    def get_menu(self, app, url):
-        if (url == self.url) or (url == self.url + 'form0'):
-            # pasar info de header de form0
-            name = 'headerForm0'
-            menu = Title.Title(name).create_title()
-        else:
-            # pasar info de header de formN
-            name = 'headerFormN'
-            menu = Title.Title(name).create_title()
-
-        return menu
-    
-    def ge_input(self, app, url):
-        list_input = []
-        if (url == self.url) or (url == self.url + 'form0'):
-            # pasar info de header de form0
-            name = 'headerForm0'
-            input = Title.Title(name).create_title()
-        else:
-            # pasar info de header de formN
-            name = 'headerFormN'
-            input = Title.Title(name).create_title()
-
-        return input
+        return container
     
     def get_datepicker(self, app, url):
-        if (url == self.url) or (url == self.url + 'form0'):
-            # pasar info de header de form0
-            name = 'headerForm0'
-            datepicker = Title.Title(name).create_title()
-        else:
-            # pasar info de header de formN
-            name = 'headerFormN'
-            datepicker = Title.Title(name).create_title()
+        name = 'dtpck'
 
-        return datepicker
+        dtpck = Datepicker(name).create_datepicker()
+        container = html.Div([
+            dtpck
+        ], 
+        className= 'dtpck_container')
+
+        return container
+    
+    def get_select(self, app, url, op):
+        list_options = []
+        if url == 'datosEstudios':
+            name= 'drpdwn_qualification'
+            # list_options = (sacar datos de qalification y pasarlo a una lista)
+            default_option= []
+
+        drpdwn = Dropdown(name, list_options, default_option).create_dropdown()
+        container = html.Div([
+            drpdwn
+        ], 
+        className= 'drpdwn_container')
+
+        return container
+    
+    def get_input(self, app, url, type):
+        if type == 'number':
+            name = 'tbx_number'
+            input = Input(name, type).create_input_text()
+        else:
+            name = 'tbx_text'
+            input = Input(name, type).create_input_number()
+
+        container = html.Div([
+            input
+        ], 
+        className= 'tbx_container')
+
+        return container
+    
+    def get_textarea(self, app, url):
+        name = 'txta'
+        textarea = Textarea(name).create_textarea()
+
+        container = html.Div([
+            textarea
+        ], 
+        className= 'txta_container')
+
+        return container
+    
+    def get_header(self, app, url):
+        if True:
+            # make the header for each tab
+            header = None
+
+        return header
