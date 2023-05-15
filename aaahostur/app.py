@@ -1,4 +1,4 @@
-from flask import Flask, request, session, jsonify
+from flask import Flask, request, session, jsonify, render_template
 from models import db
 from models import Language, Job_Category, Qualification, Role, User, Member, Member_Account, Member_Language,\
     Academic_Profile, Professional_Profile, Section, Company, Company_Account, Offer, Member_Offer, Job_Demand, \
@@ -6,16 +6,14 @@ from models import Language, Job_Category, Qualification, Role, User, Member, Me
 from config import config
 
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 
 
 # metodo de prueba de conexion
 @app.route('/prueba')
 def index():
-    try:
-        return '<h1>Prueba</h1>'
-    except Exception as ex:
-        return "Error"
+  return render_template('t-login.html', keyValue = 'holka')
+
 
 
 @app.route('/newSection', methods=['Post'])

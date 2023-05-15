@@ -1,7 +1,7 @@
 import enum
 from dataclasses import dataclass
 
-from aaahostur.models.Publication_Category import Publication_Category
+from .Publication_Category import Publication_Category
 from . import db
 
 
