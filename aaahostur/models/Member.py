@@ -36,4 +36,4 @@ class Member(db.Model):
 
     member_account = db.relationship("Member_Account", backref="Member", lazy=True)
     member_language = db.relationship("Member_Language", backref="Member", lazy=True)
-    member_academic_profile = db.relationship("Academic_Profile", backref="Member", lazy=True)
+    academic_profile = db.relationship("Academic_Profile", backref="Member", lazy=True)

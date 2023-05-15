@@ -29,3 +29,28 @@ class Role(db.Model):
     CanMakeReview = db.Column(db.Boolean, default=False)
 
     User = db.relationship("User", backref="Role", lazy=True)
+
+    def to_json(self):
+        return {'id_role': self.ID_ROLE,
+                'name': self.Name,
+                'description': self.Description,
+                'canVerifyMember': self.CanVerifyMember,
+                'canVerifyCompany': self.CanVerifyCompany,
+                'canVerifyAdmin': self.CanVerifyAdmin,
+                'canVerifyOffer': self.CanVerifyOffer,
+                'canVerifyReview': self.CanVerifyReview,
+                'canSeeOffer': self.CanSeeOffer,
+                'canApplyOffer': self.CanApplyOffer,
+                'canMakeOffer': self.CanMakeOffer,
+                'canSeeSection': self.CanSeeSection,
+                'canMakeSection': self.CanMakeSection,
+                'canActiveMember': self.CanActiveMember,
+                'canActiveCompany': self.CanActiveCompany,
+                'canActiveSection': self.CanActiveSection,
+                'canActiveOffer': self.CanActiveOffer,
+                'canActiveReview': self.CanActiveReview,
+                'canActiveCompanyBankAcc': self.CanActiveCompanyBankAcc,
+                'canActiveMemberBankAcc': self.CanActiveMemberBankAcc,
+                'canSeeReview': self.CanSeeReview,
+                'canMakeReview': self.CanMakeReview
+                }

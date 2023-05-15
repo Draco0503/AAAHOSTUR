@@ -3,7 +3,7 @@ from . import db
 
 
 @dataclass()
-class AcademicProfile(db.Model):
+class Academic_Profile(db.Model):
     __tablename__ = 'Academic_Profile'
     ID_ACADEMIC_PROFILE = db.Column(db.Integer, primary_key=True, autoincrement=True)
     School = db.Column(db.String(512), nullable=False)
@@ -12,5 +12,5 @@ class AcademicProfile(db.Model):
     Id_Member = db.Column(db.Integer, db.ForeignKey('Member.ID_MEMBER'), nullable=False)
     Id_Qualification = db.Column(db.Integer, db.ForeignKey('Qualification.ID_QUALIFICATION'), nullable=False)
 
-    member = db.relationship('Member', backref='academic_profiles')
-    qualification = db.relationship('Qualification', backref='academic_profiles')
+    # member = db.relationship('Member', backref='Academic_Profile')
+    qualification = db.relationship('Qualification', backref='Academic_Profile')

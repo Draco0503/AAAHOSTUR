@@ -1,10 +1,10 @@
-from flask import Flask, request, session, jsonify, render_template
+
+from flask import Flask, request, session, json, render_template, Response
 from models import db
 from models import Language, Job_Category, Qualification, Role, User, Member, Member_Account, Member_Language,\
     Academic_Profile, Professional_Profile, Section, Company, Company_Account, Offer, Member_Offer, Job_Demand, \
     Job_Demand_Language, Job_Demand_Qualification, Job_Demand_Category, Review
 from config import config
-
 
 app = Flask(__name__, template_folder='templates')
 
@@ -16,38 +16,13 @@ def index():
 
 
 
-@app.route('/newSection', methods=['Post'])
-def create_section():
-  try:
-    Category = request.json['category']
-    Description = request.json['description']
-    Publication_Date = request.json['publication_date']
-    Schedule = request.json['schedule']
-    Img_Resource = request.json['Img_Resource']
-    Price = request.json['Price']
+@app.route('/api_v0/role-list', methods=['GET'])
+def role_list():
+    msg = {"roles": [role.to_json() for role in Role.Role.query.all()]}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
 
-    new_Section = Section(Category, Description, Publication_Date, Schedule, Img_Resource, Price)
-    db.session.add(new_Section)
-    db.session.commit()
-    return jsonify({'mensaje':"Usuario Registrado"})
-  except Exception as ex:
-    return jsonify({'mensaje':"Error al registrar...."})
-  
-
-@app.route('/viewSection', methods=['GET'])
-def get_all_section():
-  all_section = Section.query.all()
-  return jsonify(all_section)
-
-@app.route('/section/<id>', methods=['GET'])
-def get_section(id):
-  section = Section.query.get(id)
-  return jsonify(section)
-
-@app.route('/viewRoles', methods=['GET'])
-def get_all_roles():
-  all_roles = Role.query.all()
-  return jsonify(all_roles) 
 
 # FUNCIONES PARA LOS ERRORES MAS COMUNES
 
@@ -73,7 +48,7 @@ def internal_Server_Error(err):
 
 # Error 504 Gateway Timeout
 def bad_Request(err):
-    return "<h1>ns que poner aqui jijijajaja</h1>", 504
+    return "<h1>Timeout</h1>", 504
 
 
 # inicio del main
