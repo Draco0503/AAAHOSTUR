@@ -1,32 +1,34 @@
 import dash_core_components as dcc
 import dash_html_components as html
-from components import CreateComponents
+from aaahostur.components.CreateComponents import CreateComponents
+
 
 # returns a html container
-def create_layout_login(app= None, url= None):
+def create_layout_login(app=None, url=None):
+    cc = CreateComponents(url)
     # page
     page = html.Div([
         html.Header([
-            CreateComponents(url).get_header(app, url),
+            cc.get_header(app, url),
             html.Nav([
-                CreateComponents(url).get_navbar(app, url)
+                cc.get_navbar(app, url)
             ])
-        ], 
-        id= 'header', 
-        className= 'header'),
+        ],
+            id='header',
+            className='header'),
         html.Main([
-            
-        ], 
-        id= 'main', 
-        className= 'main'),
+
+        ],
+            id='main',
+            className='main'),
         html.Footer([
-            CreateComponents(url).get_footer(app, url)
-        ], 
-        id= 'footer', 
-        className= 'footer')
+            cc.get_footer(app, url)
+        ],
+            id='footer',
+            className='footer')
     ],
-    id='page',
-    className='page')
+        id='page',
+        className='page')
 
     return page
 # TEXBOX: Email

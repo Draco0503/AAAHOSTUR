@@ -11,11 +11,11 @@ class User(db.Model):
     Email = db.Column(db.String(512), unique=True, nullable=False)
     Id_Role = db.Column(db.Integer, db.ForeignKey("Role.ID_ROLE"), nullable=False)
 
-    member = db.relationship("Member", backref="User", lazy=True)
+    member = db.relationship("Member", backref="User", lazy=True, foreign_keys="[Member.ID_MEMBER]")
     # member_verify = db.relationship("Member", backref="User", lazy=True)
     # member_acc_verify = db.relationship("Member", backref="User", lazy=True)
 
-    company = db.relationship("Company", backref="User", lazy=True)
+    company = db.relationship("Company", backref="User", lazy=True, foreign_keys="[Company.ID_COMPANY]")
     # company_verify = db.relationship("Company", backref="User", lazy=True)
 
-    section = db.relationship("Section", backref="User", lazy="True")
+    section = db.relationship("Section", backref="User", lazy=True, foreign_keys="[Section.Id_User_Creator]")

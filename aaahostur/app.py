@@ -1,4 +1,4 @@
-from flask import Flask, request, session, jsonify
+from flask import Flask, request, session, json, render_template, Response
 from models import db
 from models import Language, Job_Category, Qualification, Role, User, Member, Member_Account, Member_Language,\
     Academic_Profile, Professional_Profile, Section, Company, Company_Account, Offer, Member_Offer, Job_Demand, \
@@ -7,6 +7,7 @@ from config import config
 
 
 app = Flask(__name__)
+# describes layout of the app
 
 
 # metodo de prueba de conexion
@@ -16,6 +17,15 @@ def index():
         return '<h1>Prueba</h1>'
     except Exception as ex:
         return "Error"
+
+
+@app.route('/api_v0/role-list', methods=['GET'])
+def role_list():
+    msg = {"roles": [role.to_json() for role in Role.Role.query.all()]}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
 
 # FUNCIONES PARA LOS ERRORES MAS COMUNES
 
@@ -41,7 +51,7 @@ def internal_Server_Error(err):
 
 # Error 504 Gateway Timeout
 def bad_Request(err):
-    return "<h1>ns que poner aqui jijijajaja</h1>", 504
+    return "<h1>Timeout</h1>", 504
 
 
 # inicio del main
