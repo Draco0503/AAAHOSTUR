@@ -17,6 +17,40 @@ def index():
     except Exception as ex:
         return "Error"
 
+
+@app.route('/newSection', methods=['Post'])
+def create_section():
+  try:
+    Category = request.json['category']
+    Description = request.json['description']
+    Publication_Date = request.json['publication_date']
+    Schedule = request.json['schedule']
+    Img_Resource = request.json['Img_Resource']
+    Price = request.json['Price']
+
+    new_Section = Section(Category, Description, Publication_Date, Schedule, Img_Resource, Price)
+    db.session.add(new_Section)
+    db.session.commit()
+    return jsonify({'mensaje':"Usuario Registrado"})
+  except Exception as ex:
+    return jsonify({'mensaje':"Error al registrar...."})
+  
+
+@app.route('/viewSection', methods=['GET'])
+def get_all_section():
+  all_section = Section.query.all()
+  return jsonify(all_section)
+
+@app.route('/section/<id>', methods=['GET'])
+def get_section(id):
+  section = Section.query.get(id)
+  return jsonify(section)
+
+@app.route('/viewRoles', methods=['GET'])
+def get_all_roles():
+  all_roles = Role.query.all()
+  return jsonify(all_roles) 
+
 # FUNCIONES PARA LOS ERRORES MAS COMUNES
 
 # Error 404-not found
