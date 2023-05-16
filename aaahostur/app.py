@@ -14,8 +14,7 @@ app = Flask(__name__, template_folder='templates')
 def index():
   return render_template('t-login.html', keyValue = 'holka')
 
-
-
+#--------------------ROLE----------------------#
 @app.route('/api_v0/role-list', methods=['GET'])
 def role_list():
     msg = {"roles": [role.to_json() for role in Role.Role.query.all()]}
@@ -23,6 +22,71 @@ def role_list():
         msg,
     ), status=200)
 
+#--------------------MEMBER--------------------#
+
+
+#--------------------OFFER---------------------#
+@app.route('/api_v0/offer-list', methods=['GET'])
+def offer_list():
+    msg = {"ofertas": [offer.to_json() for offer in Offer.Offer.query.all()]}
+    return Response(json.dumps(msg), status=200)
+
+#--------------------JOB DEMAND----------------#
+@app.route('/api_v0/job_demand-list', methods=['GET'])
+def job_demand_list(id_off):
+    if (id_off != None) and (id_off != ''):
+        msg = {'demanda_de_empleo':[
+            job_demand.to_json() for job_demand in Job_Demand.Job_Demand.query.filter_by(Id_Offer= id_off).all()]}
+    else:
+        msg = {'demanda_de_empleo':[
+            job_demand.to_json() for job_demand in Job_Demand.Job_Demand.query.all()]}
+
+    return Response(json.dumps(msg), status=200)
+
+#-------------INTERMEDIATE TABLES--------------#
+@app.route('/api_v0/member_offer-list', methods=['GET'])
+def member_offer_list(id_mem):
+    if (id_mem != None) and (id_mem != ''):
+        msg = {'miembro_oferta':[
+            member_offer.to_json() for member_offer in Member_Offer.Member_Offer.query.filter_by(Id_Member= id_mem).all()]}
+    else:
+        msg = {'miembro_oferta':[
+            member_offer.to_json() for member_offer in Member_Offer.Member_Offer.query.all()]}
+
+    return Response(json.dumps(msg), status=200)
+
+@app.route('/api_v0/job_demand_language-list', methods=['GET'])
+def job_demand_language_list(id_jd):
+    if (id_jd != None) and (id_jd != ''):
+        msg = {'demanda_de_empleo_idioma':[
+            job_demand_language.to_json() for job_demand_language in Job_Demand_Language.Job_Demand_Language.query.filter_by(Id_Job_Demand= id_jd).all()]}
+    else:
+        msg = {'demanda_de_empleo_idioma':[
+            job_demand_language.to_json() for job_demand_language in Job_Demand_Language.Job_Demand_Language.query.all()]}
+
+    return Response(json.dumps(msg), status=200)
+
+@app.route('/api_v0/job_demand_qualification-list', methods=['GET'])
+def job_demand_qualification_list(id_jd):
+    if (id_jd != None) and (id_jd != ''):
+        msg = {'demanda_de_empleo_cualificacion':[
+            job_demand_qualification.to_json() for job_demand_qualification in Job_Demand_Qualification.Job_Demand_Qualification.query.filter_by(Id_Job_Demand= id_jd).all()]}
+    else:
+        msg = {'demanda_de_empleo_cualificacion':[
+            job_demand_qualification.to_json() for job_demand_qualification in Job_Demand_Qualification.Job_Demand_Qualification.query.all()]}
+
+    return Response(json.dumps(msg), status=200)
+
+@app.route('/api_v0/job_demand_category-list', methods=['GET'])
+def job_demand_category_list(id_jd):
+    if (id_jd != None) and (id_jd != ''):
+        msg = {'demanda_de_empleo_categoria':[
+            job_demand_category.to_json() for job_demand_category in Job_Demand_Category.Job_Demand_Category.query.filter_by(Id_Job_Demand= id_jd).all()]}
+    else:
+        msg = {'demanda_de_empleo_categoria':[
+            job_demand_category.to_json() for job_demand_category in Job_Demand_Category.Job_Demand_Category.query.all()]}
+
+    return Response(json.dumps(msg), status=200)
 
 # FUNCIONES PARA LOS ERRORES MAS COMUNES
 
