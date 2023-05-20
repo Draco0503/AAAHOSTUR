@@ -19,3 +19,10 @@ class User(db.Model):
     # company_verify = db.relationship("Company", backref="User", lazy=True)
 
     section = db.relationship("Section", backref="User", lazy=True, foreign_keys="[Section.Id_User_Creator]")
+
+    def to_json(self):
+        return {
+            "id_user": self.ID_USER,
+            "email": self.Email,
+            "id_role": self.Id_Role
+        }

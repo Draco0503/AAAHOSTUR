@@ -27,6 +27,17 @@ class Role(db.Model):
     CanActiveMemberBankAcc = db.Column(db.Boolean, default=False)
     CanSeeReview = db.Column(db.Boolean, default=False)
     CanMakeReview = db.Column(db.Boolean, default=False)
+    # API PRIVILEGES
+    CanSeeApiRole = db.Column(db.Boolean, default=False)
+    CanSeeApiLanguage = db.Column(db.Boolean, default=False)
+    CanSeeApiJobCategory = db.Column(db.Boolean, default=False)
+    CanSeeApiQualification = db.Column(db.Boolean, default=False)
+    CanSeeApiUser = db.Column(db.Boolean, default=False)
+    CanSeeApiSection = db.Column(db.Boolean, default=False)
+    CanSeeApiCompany = db.Column(db.Boolean, default=False)
+    CanSeeApiMember = db.Column(db.Boolean, default=False)
+    CanSeeApiOffer = db.Column(db.Boolean, default=False)
+    CanSeeApiReview = db.Column(db.Boolean, default=False)
 
     User = db.relationship("User", backref="Role", lazy=True)
 
@@ -52,5 +63,16 @@ class Role(db.Model):
                 'canActiveCompanyBankAcc': self.CanActiveCompanyBankAcc,
                 'canActiveMemberBankAcc': self.CanActiveMemberBankAcc,
                 'canSeeReview': self.CanSeeReview,
-                'canMakeReview': self.CanMakeReview
+                'canMakeReview': self.CanMakeReview,
+                # API PRIVILEGES
+                'canSeeApiRole': self.CanSeeApiRole,
+                'canSeeApiLanguage': self.CanSeeApiLanguage,
+                'canSeeApiJobCategory': self.CanSeeApiJobCategory,
+                'canSeeApiQualification': self.CanSeeApiQualification,
+                'canSeeApiUser': self.CanSeeApiUser,
+                'canSeeApiSection': self.CanSeeApiSection,
+                'canSeeApiCompany': self.CanSeeApiCompany,
+                'canSeeApiMember': self.CanSeeApiMember,
+                'canSeeApiOffer': self.CanSeeApiOffer,
+                'canSeeApiReview': self.CanSeeApiReview
                 }

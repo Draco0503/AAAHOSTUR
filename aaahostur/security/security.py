@@ -1,5 +1,7 @@
 import bcrypt
 import jwt
+from ..models.Role import Role
+
 
 def generate_salt():
     return bcrypt.gensalt()
@@ -22,5 +24,5 @@ class Security:
     def generate_jwt(self, payload: dict):
         return jwt.encode(payload, self._secret, algorithm=self._algorithm)
 
-    def decode_jwt(self, token) -> dict:
-        return jwt.decode(token, self._secret, algorithms=['self._algorithm'])
+    def decode_jwt(self, token: str) -> dict:
+        return jwt.decode(token, self._secret, algorithms=[self._algorithm])

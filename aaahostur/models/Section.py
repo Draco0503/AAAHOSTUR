@@ -17,3 +17,15 @@ class Section(db.Model):
     Active = db.Column(db.Boolean, default=True)
 
     Id_User_Creator = db.Column(db.Integer, db.ForeignKey("User.ID_USER"))
+
+    def to_json(self):
+        return {
+            "id_section": self.ID_SECTION,
+            "category": self.Category,
+            "description": self.Description,
+            "publication_date": self.Publication_Date,
+            "schedule": self.Schedule,
+            "img_resource": self.Img_Resource,
+            "price": self.Price,
+            "active": self.Active
+        }

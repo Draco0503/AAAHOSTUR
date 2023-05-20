@@ -1,16 +1,28 @@
 from datetime import datetime as dt, timedelta
 
-from flask import Flask, request, session, json, render_template, Response, redirect
+from flask import Flask, request, session, json, render_template, Response, redirect, url_for
 from models import db
 from models import Language, Job_Category, Qualification, Role, User, Member, Member_Account, Member_Language, \
     Academic_Profile, Professional_Profile, Section, Company, Company_Account, Offer, Member_Offer, Job_Demand, \
     Job_Demand_Language, Job_Demand_Qualification, Job_Demand_Category, Review
 from config import config
-from security import security
+from aaahostur.security import security
 
 app = Flask(__name__, template_folder='templates')
 conf = config['development']
 sec = security.Security(conf.SECRET_KEY, conf.ALGORITHM)
+
+
+def check_auth() -> bool:
+    return 'auth' not in request.headers or request.headers['auth'] is None
+
+
+def get_privileges_from_token(token: str) -> Role.Role or None:
+    payload = sec.decode_jwt(token)
+    if payload is None or len(payload) != 4:
+        return None
+    else:
+        return Role.Role.query.filter_by(ID_ROLE=int(payload.get('user-role')))
 
 
 # metodo de prueba de conexion
@@ -18,203 +30,157 @@ sec = security.Security(conf.SECRET_KEY, conf.ALGORITHM)
 def index():
     return render_template('t-login.html', prueba='holka')
 
-# TODO: Falta cifrar la cabezera de la peticion
-# def authorize_admin(req: request) -> bool:
-#     return req.headers['auth'] is not None and req.headers['auth'] == 'ADMIN'
-#
-#
-# def authorize_member(req: request) -> bool:
-#     return req.headers['auth'] is not None and req.headers['auth'] == 'MEMBER'
 
-
-# -------------------------------ROLE-------------------------------#
-
-@app.route('/api_v0/role-list', methods=['GET'])
-def role_list():
-    # 1º conseguir header de la peticion
-    # 2º si tiene permisos hacer la logica tal cual esta definida
-    #    si no tiene permisos return inadequate_Permits()
-    list = [role.to_json() for role in Role.Role.query.all()]
-    if len(list) == 0:
-        return not_Found()
-    msg = {"roles": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-
-
-@app.route('/api_v0/role/<id>', methods=['GET'])
-def role_by_id(id: int):
-    # 1º conseguir header de la peticion
-    # 2º si tiene permisos hacer la logica tal cual esta definida
-    #    si no tiene permisos return inadequate_Permits()
-    list = [role.to_json() for role in Role.Role.query.filter_by(ID_ROLE=id)]
-    if len(list) == 0:
-        return not_Found()
-    msg = {"roles": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-
-@app.route('/api_v0/role/<name>', methods=['GET'])
-def role_by_name(name):
-    #comprobacion de roles
-    #no roles inadequate_Permits
-    list = [role.to_json() for role in Role.Role.query.filter_by(Name=name)]
-    if len(list) == 0:
-        return not_Found()
-    msg = {"roles": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-#-------------------------------Language-------------------------------#
+# -------------------------------Language-------------------------------#
 
 @app.route('/api_v0/language-list', methods=['GET'])
 def language_list():
-    #comprobacion de roles
+    # comprobacion de roles
 
-    #no roles inadequate_Permits
+    # no roles inadequate_Permits
 
-    #si tiene permisos
+    # si tiene permisos
     list = [language.to_json() for language in Language.Language.query.all()]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"languages": list}
     return Response(json.dumps(
         msg,
     ), status=200)
+
 
 @app.route('/api_v0/language/<id>', methods=['GET'])
 def language_by_id(id: int):
-     #comprobacion de roles
+    # comprobacion de roles
 
-    #no roles inadequate_Permits
+    # no roles inadequate_Permits
 
-    #si tiene permisos
+    # si tiene permisos
     list = [language.to_json() for language in Language.Language.query.filter_by(ID_LANGUAGE=id)]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"languages": list}
     return Response(json.dumps(
         msg,
     ), status=200)
+
 
 @app.route('/api_v0/language/<name>', methods=['GET'])
 def language_by_name(name):
-    #comprobacion de roles
-    #no roles inadequate_Permits
+    # comprobacion de roles
+    # no roles inadequate_Permits
     list = [language.to_json() for language in Language.Language.query.filter_by(Name=name)]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"languages": list}
     return Response(json.dumps(
         msg,
     ), status=200)
 
-#-------------------------------Job_Category-------------------------------#
+
+# -------------------------------Job_Category-------------------------------#
 @app.route('/api_v0/job_category-list', methods=['GET'])
 def job_category_list():
-    #comprobacion de roles
+    # comprobacion de roles
 
-    #no roles inadequate_Permits
+    # no roles inadequate_Permits
 
-    #si tiene permisos
+    # si tiene permisos
     list = [job_Category.to_json() for job_Category in Job_Category.Job_Category.query.all()]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"job_Category": list}
     return Response(json.dumps(
         msg,
     ), status=200)
+
 
 @app.route('/api_v0/job_category/<id>', methods=['GET'])
 def job_category_by_id(id: int):
-     #comprobacion de roles
+    # comprobacion de roles
 
-    #no roles inadequate_Permits
+    # no roles inadequate_Permits
 
-    #si tiene permisos
+    # si tiene permisos
     list = [job_Category.to_json() for job_Category in Job_Category.Job_Category.query.filter_by(ID_JOB_CATEGORY=id)]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"job_Category": list}
     return Response(json.dumps(
         msg,
     ), status=200)
 
-#-------------------------------Qualification-------------------------------#
+
+# -------------------------------Qualification-------------------------------#
 
 @app.route('/api_v0/qualification-list', methods=['GET'])
 def qualification_list():
-    #comprobacion de roles
+    # comprobacion de roles
 
-    #no roles inadequate_Permits
+    # no roles inadequate_Permits
 
-    #si tiene permisos
+    # si tiene permisos
     list = [qualification.to_json() for qualification in Qualification.Qualification.query.all()]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"qualification": list}
     return Response(json.dumps(
         msg,
     ), status=200)
+
 
 @app.route('/api_v0/qualification/<id>', methods=['GET'])
 def job_qualification_by_id(id: int):
-     #comprobacion de roles
+    # comprobacion de roles
 
-    #no roles inadequate_Permits
+    # no roles inadequate_Permits
 
-    #si tiene permisos
-    list = [qualification.to_json() for qualification in Qualification.Qualification.query.filter_by(ID_QUALIFICATION=id)]
+    # si tiene permisos
+    list = [qualification.to_json() for qualification in
+            Qualification.Qualification.query.filter_by(ID_QUALIFICATION=id)]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"qualification": list}
     return Response(json.dumps(
         msg,
     ), status=200)
 
 
-#-------------------------------User-------------------------------#
+# -------------------------------User-------------------------------#
 
 @app.route('/api_v0/user-list', methods=['GET'])
 def user_list():
-    #comprobacion de roles
+    # comprobacion de roles
 
-    #no roles inadequate_Permits
+    # no roles inadequate_Permits
 
-    #si tiene permisos
+    # si tiene permisos
     list = [user.to_json() for user in User.User.query.all()]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"user": list}
     return Response(json.dumps(
         msg,
     ), status=200)
+
 
 @app.route('/api_v0/user/<id>', methods=['GET'])
 def user_by_id(id: int):
-     #comprobacion de roles
+    # comprobacion de roles
 
-    #no roles inadequate_Permits
+    # no roles inadequate_Permits
 
-    #si tiene permisos
+    # si tiene permisos
     list = [user.to_json() for user in User.User.query.filter_by(ID_USER=id)]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"user": list}
     return Response(json.dumps(
         msg,
     ), status=200)
 
 
-
-#-------------------------------Section-------------------------------#
+# -------------------------------Section-------------------------------#
 
 
 # section-list
@@ -223,29 +189,30 @@ def user_by_id(id: int):
 # section (ADD) (SE NECESITAN PERMISOS)
 @app.route('/api_v0/section-list', methods=['GET'])
 def section_list():
-    #comprobacion de roles
+    # comprobacion de roles
 
-    #no roles inadequate_Permits
+    # no roles inadequate_Permits
 
-    #si tiene permisos
+    # si tiene permisos
     list = [section.to_json() for section in Section.Section.query.all()]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"section": list}
     return Response(json.dumps(
         msg,
     ), status=200)
 
+
 @app.route('/api_v0/section/<category>', methods=['GET'])
 def section_by_category(category):
-     #comprobacion de roles
+    # comprobacion de roles
 
-    #no roles inadequate_Permits
+    # no roles inadequate_Permits
 
-    #si tiene permisos
+    # si tiene permisos
     list = [section.to_json() for section in Section.Section.query.filter_by(Category=category)]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"company": list}
     return Response(json.dumps(
         msg,
@@ -253,7 +220,7 @@ def section_by_category(category):
 
 
 @app.route('/api_v0/section', methods=['POST'])
-def offer_add(section):
+def section_add(section):
     try:
         # comprobar permisos
         Section.Section.query.add(section)
@@ -262,41 +229,42 @@ def offer_add(section):
     except:
         Offer.Offer.query.rollback()
         msg = {"fuck new offer": section.to_json()}
-    
+
     return Response(json.dumps(msg), status=200)
 
-#-------------------------------Company-------------------------------#
+
+# -------------------------------Company-------------------------------#
 
 @app.route('/api_v0/company-list', methods=['GET'])
 def company_list():
-    #comprobacion de roles
+    # comprobacion de roles
 
-    #no roles inadequate_Permits
+    # no roles inadequate_Permits
 
-    #si tiene permisos
+    # si tiene permisos
     list = [company.to_json() for company in Company.Company.query.all()]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"company": list}
     return Response(json.dumps(
         msg,
     ), status=200)
+
 
 @app.route('/api_v0/company/<id>', methods=['GET'])
 def company_by_id(id: int):
-     #comprobacion de roles
+    # comprobacion de roles
 
-    #no roles inadequate_Permits
+    # no roles inadequate_Permits
 
-    #si tiene permisos
+    # si tiene permisos
     list = [company.to_json() for company in Company.Company.query.filter_by(ID_COMPANY=id)]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"company": list}
     return Response(json.dumps(
         msg,
     ), status=200)
-
 
 
 # TODO
@@ -316,7 +284,7 @@ def academic_profile_add():
         return "[ERROR] - offer_add() - insert: contact_phone"
     if data['contact_email'] is None:
         return "[ERROR] - offer_add() - insert: contact_email"
-    
+
     contact_name2 = "" if data['contact_name_2'] is None else data["contact_name_2"]
     contact_phone2 = "" if data['contact_phone_2'] is None else data["contact_phone_2"]
     contact_email2 = "" if data['contact_email_2'] is None else data["contact_email_2"]
@@ -356,7 +324,7 @@ def job_category_add():
         return "[ERROR] - job_category_add() - insert: name"
     if data['description'] is None:
         return "[ERROR] - job_category_add() - insert: description"
-    
+
     job_category = Job_Category.Job_Category(Name=data['name'], Description=data['description'])
     try:
         # comprobar permisos
@@ -466,8 +434,8 @@ def job_demand_by_id(id: int):
 
 
 # -------------------------------LANGUAGE-------------------------------#
-@app.route('/api_v0/offer', methods=['POST'])
-def offer_add():
+@app.route('/api_v0/language', methods=['POST'])
+def language_add():
     data = request.form
     if data is None or (5 > len(data) > 8):
         return "[ERROR] - offer_add() - data len()"
@@ -481,7 +449,7 @@ def offer_add():
         return "[ERROR] - offer_add() - insert: contact_phone"
     if data['contact_email'] is None:
         return "[ERROR] - offer_add() - insert: contact_email"
-    
+
     contact_name2 = "" if data['contact_name_2'] is None else data["contact_name_2"]
     contact_phone2 = "" if data['contact_phone_2'] is None else data["contact_phone_2"]
     contact_email2 = "" if data['contact_email_2'] is None else data["contact_email_2"]
@@ -503,6 +471,7 @@ def offer_add():
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
+
 
 # -------------------------------MEMBER_ACCOUNT-------------------------------#
 
@@ -572,7 +541,7 @@ def offer_add():
         return "[ERROR] - offer_add() - insert: contact_phone"
     if data['contact_email'] is None:
         return "[ERROR] - offer_add() - insert: contact_email"
-    
+
     contact_name2 = "" if data['contact_name_2'] is None else data["contact_name_2"]
     contact_phone2 = "" if data['contact_phone_2'] is None else data["contact_phone_2"]
     contact_email2 = "" if data['contact_email_2'] is None else data["contact_email_2"]
@@ -600,8 +569,8 @@ def offer_add():
 
 
 # -------------------------------QUALIFICATION-------------------------------#
-@app.route('/api_v0/offer', methods=['POST'])
-def offer_add():
+@app.route('/api_v0/qualification', methods=['POST'])
+def qualification_add():
     data = request.form
     if data is None or (5 > len(data) > 8):
         return "[ERROR] - offer_add() - data len()"
@@ -615,7 +584,7 @@ def offer_add():
         return "[ERROR] - offer_add() - insert: contact_phone"
     if data['contact_email'] is None:
         return "[ERROR] - offer_add() - insert: contact_email"
-    
+
     contact_name2 = "" if data['contact_name_2'] is None else data["contact_name_2"]
     contact_phone2 = "" if data['contact_phone_2'] is None else data["contact_phone_2"]
     contact_email2 = "" if data['contact_email_2'] is None else data["contact_email_2"]
@@ -637,6 +606,7 @@ def offer_add():
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
+
 
 # -------------------------------REVIEW-------------------------------#
 
@@ -660,8 +630,8 @@ def role_list():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        if request.headers['auth'] is not None:     # and security.validate(request.headers['auth']):
-            return redirect('/', code=200)          # todo
+        if not check_auth():  # and security.validate(request.headers['auth']):
+            return redirect('/', code=200)  # todo
         return render_template('t-login.html')
     elif request.method == 'POST':
         if len(request.form) != 2:
@@ -670,7 +640,7 @@ def login():
             if request.form['user-login'] is not None:
                 username = request.form['user-login']
                 if username == "":
-                    return bad_request()    # Usuario vacio
+                    return bad_request()  # Usuario vacio
                 else:
                     if request.form['user-passwd'] is not None:
                         passwd = request.form['user-passwd']
@@ -684,7 +654,7 @@ def login():
                                         "user": user.Email,
                                         "user-role": user.Id_Role,
                                         "curr": dt.now(),
-                                        "exp": dt.now()+timedelta(minutes=30)
+                                        "exp": dt.now() + timedelta(minutes=30)
                                     })
                                     # TODO pasar el token generado a todas las cabeceras de petición y redirect a index
                                     auth_header = {'auth': sec.generate_jwt(token_info)}
@@ -698,14 +668,16 @@ def login():
                 return bad_request()
 
     else:
-        return {}   # empty response
+        return {}  # empty response
 
 
 @app.route('/api_v0/role/<id>', methods=['GET'])
 def role_by_id(id: int):
-    # 1º conseguir header de la peticion
-    # 2º si tiene permisos hacer la logica tal cual esta definida
-    #    si no tiene permisos return inadequate_Permits()
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None or not role.CanSeeApiRole:
+        return forbidden()
     list = [role.to_json() for role in Role.Role.query.filter_by(ID_ROLE=id)]
     if len(list) == 0:
         return not_found()
@@ -778,7 +750,7 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     # para manegar los errores
-    app.register_error_handler(404, not_found)
+    # app.register_error_handler(404, not_found)
     app.register_error_handler(403, forbidden)
     app.register_error_handler(429, too_many_request)
     app.register_error_handler(500, internal_server_error)
