@@ -37,3 +37,31 @@ class Member(db.Model):
     member_account = db.relationship("Member_Account", backref="Member", lazy=True)
     member_language = db.relationship("Member_Language", backref="Member", lazy=True)
     academic_profile = db.relationship("Academic_Profile", backref="Member", lazy=True)
+
+    def to_json(self):
+        return {'id_member': self.ID_MEMBER,
+                'name': self.Name,
+                'surname': self.Surname,
+                'dni': self.DNI,
+                'adderss': self.Address,
+                'cp': self.CP,
+                'city': self.City,
+                'province': self.Province,
+                'pna_address': self.PNA_Address,
+                'pna_cp': self.PNA_CP,
+                'pna_city': self.PNA_City,
+                'pna_province': self.PNA_Province,
+                'gender': self.Gender,
+                'land_line': self.Land_Line,
+                'mobile': self.Mobile,
+                'profile_picture': self.Profile_Picture,
+                'birth_date': self.Birth_Date,
+                'vehicle': self.Vehicle,
+                'geographical_mobility': self.Geographical_Mobility,
+                'disability_grade': self.Disability_Grade,
+                'join_date': self.Join_Date,
+                'active': self.Active,
+                'cancelation_date': self.Cancelation_Date,
+                'verify': self.Verify,
+                'id_user_verify': self.Id_User_Verify
+                }

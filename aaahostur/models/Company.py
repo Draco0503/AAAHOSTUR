@@ -23,3 +23,20 @@ class Company(db.Model):
     Id_User_Creator = db.Column(db.Integer, db.ForeignKey("User.ID_USER"))
 
     company_account = db.relationship("Company_Account", backref="Company", lazy=True)
+
+    def to_json(self):
+        return {'id_company': self.ID_COMPANY,
+                'type': self.Type,
+                'cif': self.CIF,
+                'address': self.Address,
+                'cp': self.CP,
+                'city': self.City,
+                'province': self.Province,
+                'contact_name': self.Contact_Name,
+                'contact_phone': self.Contact_Phone,
+                'description': self.Description,
+                'verify': self.Verify,
+                'active': self.Active,
+                'id_company_parent': self.Id_Company_Parent,
+                'Id_User_Creator': self.Id_User_Creator
+                }

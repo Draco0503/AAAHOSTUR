@@ -9,3 +9,11 @@ class Language(db.Model):
     Name = db.Column(db.String(512), nullable=False)
     Lvl = db.Column(db.String(512), nullable=False)
     Certificate = db.Column(db.String(512), nullable=False)
+
+
+    def to_json(self):
+        return {'id_language': self.ID_LANGUAGE,
+                'name': self.Name,
+                'Lv1': self.Lvl,
+                'certificate': self.Certificate
+                }

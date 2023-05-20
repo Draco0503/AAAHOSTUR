@@ -19,3 +19,15 @@ class Review(db.Model):
     user_verify = db.relationship('User', backref='reviews')
     company = db.relationship('Company', backref='reviews')
     member = db.relationship('Member', backref='reviews')
+
+    def to_json(self):
+        return {'id_review': self.ID_REVIEW,
+                'score': self.Score,
+                'description': self.Description,
+                'business_sender': self.Business_Sender,
+                'verify': self.Verify,
+                'active': self.Active,
+                'id_user_verify': self.Id_User_Verify,
+                'id_company': self.Id_Company,
+                'id_member': self.Id_Member
+                }

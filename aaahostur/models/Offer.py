@@ -19,3 +19,19 @@ class Offer(db.Model):
 
     Id_Company = db.Column(db.Integer, db.ForeignKey('Company.ID_COMPANY'))
     Id_User_Verify = db.Column(db.Integer, db.ForeignKey('User.ID_USER'))
+
+    def to_json(self):
+        return {'id_offer': self.ID_OFFER,
+                'company_name': self.Company_Name,
+                'address': self.Address,
+                'contact_name': self.Contact_Name,
+                'contact_phone': self.Contact_Phone,
+                'contact_email': self.Contact_Email,
+                'contact_name_2': self.Contact_Name_2,
+                'contact_phone_2': self.Contact_Phone_2,
+                'contact_email_2': self.Contact_Email_2,
+                'verify': self.Verify,
+                'active': self.Active,
+                'id_company': self.Id_Company,
+                'id_user_verify': self.Id_User_Verify
+                }

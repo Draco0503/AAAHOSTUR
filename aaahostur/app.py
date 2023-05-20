@@ -18,6 +18,286 @@ sec = security.Security(conf.SECRET_KEY, conf.ALGORITHM)
 def index():
     return render_template('t-login.html', prueba='holka')
 
+# TODO: Falta cifrar la cabezera de la peticion
+# def authorize_admin(req: request) -> bool:
+#     return req.headers['auth'] is not None and req.headers['auth'] == 'ADMIN'
+#
+#
+# def authorize_member(req: request) -> bool:
+#     return req.headers['auth'] is not None and req.headers['auth'] == 'MEMBER'
+
+
+# -------------------------------ROLE-------------------------------#
+
+@app.route('/api_v0/role-list', methods=['GET'])
+def role_list():
+    # 1º conseguir header de la peticion
+    # 2º si tiene permisos hacer la logica tal cual esta definida
+    #    si no tiene permisos return inadequate_Permits()
+    list = [role.to_json() for role in Role.Role.query.all()]
+    if len(list) == 0:
+        return not_Found()
+    msg = {"roles": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+
+
+@app.route('/api_v0/role/<id>', methods=['GET'])
+def role_by_id(id: int):
+    # 1º conseguir header de la peticion
+    # 2º si tiene permisos hacer la logica tal cual esta definida
+    #    si no tiene permisos return inadequate_Permits()
+    list = [role.to_json() for role in Role.Role.query.filter_by(ID_ROLE=id)]
+    if len(list) == 0:
+        return not_Found()
+    msg = {"roles": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+
+@app.route('/api_v0/role/<name>', methods=['GET'])
+def role_by_name(name):
+    #comprobacion de roles
+    #no roles inadequate_Permits
+    list = [role.to_json() for role in Role.Role.query.filter_by(Name=name)]
+    if len(list) == 0:
+        return not_Found()
+    msg = {"roles": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+#-------------------------------Language-------------------------------#
+
+@app.route('/api_v0/language-list', methods=['GET'])
+def language_list():
+    #comprobacion de roles
+
+    #no roles inadequate_Permits
+
+    #si tiene permisos
+    list = [language.to_json() for language in Language.Language.query.all()]
+    if len(list) == 0:
+        return not_Found()
+    msg = {"languages": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+@app.route('/api_v0/language/<id>', methods=['GET'])
+def language_by_id(id: int):
+     #comprobacion de roles
+
+    #no roles inadequate_Permits
+
+    #si tiene permisos
+    list = [language.to_json() for language in Language.Language.query.filter_by(ID_LANGUAGE=id)]
+    if len(list) == 0:
+        return not_Found()
+    msg = {"languages": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+@app.route('/api_v0/language/<name>', methods=['GET'])
+def language_by_name(name):
+    #comprobacion de roles
+    #no roles inadequate_Permits
+    list = [language.to_json() for language in Language.Language.query.filter_by(Name=name)]
+    if len(list) == 0:
+        return not_Found()
+    msg = {"languages": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+#-------------------------------Job_Category-------------------------------#
+@app.route('/api_v0/job_category-list', methods=['GET'])
+def job_category_list():
+    #comprobacion de roles
+
+    #no roles inadequate_Permits
+
+    #si tiene permisos
+    list = [job_Category.to_json() for job_Category in Job_Category.Job_Category.query.all()]
+    if len(list) == 0:
+        return not_Found()
+    msg = {"job_Category": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+@app.route('/api_v0/job_category/<id>', methods=['GET'])
+def job_category_by_id(id: int):
+     #comprobacion de roles
+
+    #no roles inadequate_Permits
+
+    #si tiene permisos
+    list = [job_Category.to_json() for job_Category in Job_Category.Job_Category.query.filter_by(ID_JOB_CATEGORY=id)]
+    if len(list) == 0:
+        return not_Found()
+    msg = {"job_Category": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+#-------------------------------Qualification-------------------------------#
+
+@app.route('/api_v0/qualification-list', methods=['GET'])
+def qualification_list():
+    #comprobacion de roles
+
+    #no roles inadequate_Permits
+
+    #si tiene permisos
+    list = [qualification.to_json() for qualification in Qualification.Qualification.query.all()]
+    if len(list) == 0:
+        return not_Found()
+    msg = {"qualification": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+@app.route('/api_v0/qualification/<id>', methods=['GET'])
+def job_qualification_by_id(id: int):
+     #comprobacion de roles
+
+    #no roles inadequate_Permits
+
+    #si tiene permisos
+    list = [qualification.to_json() for qualification in Qualification.Qualification.query.filter_by(ID_QUALIFICATION=id)]
+    if len(list) == 0:
+        return not_Found()
+    msg = {"qualification": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+#-------------------------------User-------------------------------#
+
+@app.route('/api_v0/user-list', methods=['GET'])
+def user_list():
+    #comprobacion de roles
+
+    #no roles inadequate_Permits
+
+    #si tiene permisos
+    list = [user.to_json() for user in User.User.query.all()]
+    if len(list) == 0:
+        return not_Found()
+    msg = {"user": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+@app.route('/api_v0/user/<id>', methods=['GET'])
+def user_by_id(id: int):
+     #comprobacion de roles
+
+    #no roles inadequate_Permits
+
+    #si tiene permisos
+    list = [user.to_json() for user in User.User.query.filter_by(ID_USER=id)]
+    if len(list) == 0:
+        return not_Found()
+    msg = {"user": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+
+#-------------------------------Section-------------------------------#
+
+
+# section-list
+# section/<category>
+# section/<category>/<name>
+# section (ADD) (SE NECESITAN PERMISOS)
+@app.route('/api_v0/section-list', methods=['GET'])
+def section_list():
+    #comprobacion de roles
+
+    #no roles inadequate_Permits
+
+    #si tiene permisos
+    list = [section.to_json() for section in Section.Section.query.all()]
+    if len(list) == 0:
+        return not_Found()
+    msg = {"section": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+@app.route('/api_v0/section/<category>', methods=['GET'])
+def section_by_category(category):
+     #comprobacion de roles
+
+    #no roles inadequate_Permits
+
+    #si tiene permisos
+    list = [section.to_json() for section in Section.Section.query.filter_by(Category=category)]
+    if len(list) == 0:
+        return not_Found()
+    msg = {"company": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/section', methods=['POST'])
+def offer_add(section):
+    try:
+        # comprobar permisos
+        Section.Section.query.add(section)
+        Section.Section.query.commit()
+        msg = {"new offer": section.to_json()}
+    except:
+        Offer.Offer.query.rollback()
+        msg = {"fuck new offer": section.to_json()}
+    
+    return Response(json.dumps(msg), status=200)
+
+#-------------------------------Company-------------------------------#
+
+@app.route('/api_v0/company-list', methods=['GET'])
+def company_list():
+    #comprobacion de roles
+
+    #no roles inadequate_Permits
+
+    #si tiene permisos
+    list = [company.to_json() for company in Company.Company.query.all()]
+    if len(list) == 0:
+        return not_Found()
+    msg = {"company": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+@app.route('/api_v0/company/<id>', methods=['GET'])
+def company_by_id(id: int):
+     #comprobacion de roles
+
+    #no roles inadequate_Permits
+
+    #si tiene permisos
+    list = [company.to_json() for company in Company.Company.query.filter_by(ID_COMPANY=id)]
+    if len(list) == 0:
+        return not_Found()
+    msg = {"company": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
 
 # TODO
 # -------------------------------ACADEMIC PROFILE-------------------------------#
