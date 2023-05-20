@@ -5,12 +5,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-class Config():
+class Config:
     # CONFIG FOR CUSTOM OAUTH SERVER
-    SECRECT_KEY = os.getenv('FLASK_SECRET_KEY')
-
+    SECRET_KEY = os.getenv('FLASK_SECRET_KEY')
+    ALGORITHM = os.getenv('ALGORITHM')
     SESSION_TYPE = os.getenv('SESSION_TYPE')
-     
+
+    SEC_SALT = os.getenv('SEC_SALT')
+
     # CONFIG FOR MYSQL
     DEBUG = os.getenv('DEBUG')
     MYSQL_HOST = os.getenv('MYSQL_HOST')

@@ -1,11 +1,16 @@
-from flask import Flask, request, session, json, render_template, Response
+from datetime import datetime as dt, timedelta
+
+from flask import Flask, request, session, json, render_template, Response, redirect
 from models import db
 from models import Language, Job_Category, Qualification, Role, User, Member, Member_Account, Member_Language, \
     Academic_Profile, Professional_Profile, Section, Company, Company_Account, Offer, Member_Offer, Job_Demand, \
     Job_Demand_Language, Job_Demand_Qualification, Job_Demand_Category, Review
 from config import config
+from security import security
 
 app = Flask(__name__, template_folder='templates')
+conf = config['development']
+sec = security.Security(conf.SEC_SALT, conf.SECRET_KEY, conf.ALGORITHM)
 
 
 # metodo de prueba de conexion
@@ -29,13 +34,49 @@ def role_list():
     ), status=200)
 
 
-# TODO: Falta cifrar la cabezera de la peticion
-# def authorize_admin(req: request) -> bool:
-#     return req.headers['auth'] is not None and req.headers['auth'] == 'ADMIN'
-#
-#
-# def authorize_member(req: request) -> bool:
-#     return req.headers['auth'] is not None and req.headers['auth'] == 'MEMBER'
+# LOGIN
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        if request.headers['auth'] is not None:     # and security.validate(request.headers['auth']):
+            return redirect('/', code=200)          # todo
+        return render_template('t-login.html')
+    elif request.method == 'POST':
+        if len(request.form) != 2:
+            return bad_request()
+        else:
+            if request.form['user-login'] is not None:
+                username = request.form['user-login']
+                if username == "":
+                    return bad_request()
+                else:
+                    if request.form['user-passwd']:
+                        passwd = request.form['user-passwd']
+                        if passwd == "":
+                            return bad_request()
+                        else:
+                            user = User.User.query.filter_by(Email=username)
+                            if user is not None:
+                                if sec.verify_password(passwd, user.Passwd):
+                                    token_info = sec.generate_jwt({
+                                        "user": user.Email,
+                                        "user-role": user.Id_Role,
+                                        "curr": dt.now(),
+                                        "exp": dt.now()+timedelta(minutes=30)
+                                    })
+                                    # TODO pasar el token generado a todas las cabeceras de petición y redirect a index
+                                    auth_header = {'auth': sec.generate_jwt(token_info)}
+                                    redirect()
+                                else:
+                                    return "Contraseña incorrecta"
+                            else:
+                                return "Email incorrecto"
+
+            else:
+                return bad_request()
+
+    else:
+        return {}   # empty response
 
 
 @app.route('/api_v0/role/<id>', methods=['GET'])
@@ -255,10 +296,14 @@ def gateway_TimeOut():
     return "<h1>Timeout</h1>", 504
 
 
+def bad_request():
+    return "<h1>Bad request</h1>", 400
+
+
 # inicio del main
 if __name__ == '__main__':
     # acceso al diccionario con las credenciales para acceder a la base de datos
-    app.config.from_object(config['development'])
+    app.config.from_object(conf)
     # Conexion con la base de datos
     db.init_app(app)
     with app.app_context():
