@@ -1,11 +1,16 @@
-from flask import Flask, request, session, json, render_template, Response
+from datetime import datetime as dt, timedelta
+
+from flask import Flask, request, session, json, render_template, Response, redirect
 from models import db
 from models import Language, Job_Category, Qualification, Role, User, Member, Member_Account, Member_Language, \
     Academic_Profile, Professional_Profile, Section, Company, Company_Account, Offer, Member_Offer, Job_Demand, \
     Job_Demand_Language, Job_Demand_Qualification, Job_Demand_Category, Review
 from config import config
+from security import security
 
 app = Flask(__name__, template_folder='templates')
+conf = config['development']
+sec = security.Security(conf.SECRET_KEY, conf.ALGORITHM)
 
 
 # metodo de prueba de conexion
@@ -16,12 +21,13 @@ def index():
 
 
 
+# TODO
 # -------------------------------ACADEMIC PROFILE-------------------------------#
 @app.route('/api_v0/academic_profile', methods=['POST'])
 def academic_profile_add():
     data = request.form
     if data is None or (5 > len(data) > 8):
-        return "[ERROR] - offer_add() - data len()"
+        return bad_request("offer_add() - data len()")
     if data['company_name'] is None:
         return "[ERROR] - offer_add() - insert: company_name"
     if data['address'] is None:
@@ -90,6 +96,7 @@ def job_category_add():
 
     return Response(json.dumps(msg), status=status_code)
 
+
 # -------------------------------JOB_DEMAND_CATEGORY-------------------------------#
 @app.route('/api_v0/job_demand_category-list', methods=['GET'])
 def job_demand_category_list():
@@ -97,7 +104,7 @@ def job_demand_category_list():
     list = [job_demand_category.to_json() for job_demand_category in
             Job_Demand_Category.Job_Demand_Category.query.all()]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"job_demand_categories": list}
     return Response(json.dumps(msg), status=200)
 
@@ -108,7 +115,7 @@ def job_demand_category_by_id(id: int):
     list = [job_demand_category.to_json() for job_demand_category in
             Job_Demand_Category.Job_Demand_Category.query.filter_by(Id_Job_Demand=id)]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"job_demand_categories": list}  # there can be job_demand_categories with the same id_job_demand
     return Response(json.dumps(msg), status=200)
 
@@ -120,7 +127,7 @@ def job_demand_language_list():
     list = [job_demand_language.to_json() for job_demand_language in
             Job_Demand_Language.Job_Demand_Language.query.all()]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"job_demand_languages": list}
     return Response(json.dumps(msg), status=200)
 
@@ -131,7 +138,7 @@ def job_demand_language_by_id(id: int):
     list = [job_demand_language.to_json() for job_demand_language in
             Job_Demand_Language.Job_Demand_Language.query.filter_by(Id_Job_Demand=id)]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"job_demand_languages": list}  # there can be job_demand_languages with the same id_job_demand
     return Response(json.dumps(msg), status=200)
 
@@ -143,7 +150,7 @@ def job_demand_qualification_list():
     list = [job_demand_qualification.to_json() for job_demand_qualification in
             Job_Demand_Qualification.Job_Demand_Qualification.query.all()]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"job_demand_qualifications": list}
     return Response(json.dumps(msg), status=200)
 
@@ -154,7 +161,7 @@ def job_demand_qualification_by_id(id: int):
     list = [job_demand_qualification.to_json() for job_demand_qualification in
             Job_Demand_Qualification.Job_Demand_Qualification.query.filter_by(Id_Job_Demand=id)]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"job_demand_qualifications": list}  # there can be job_demand_qualifications with the same id_job_demand
     return Response(json.dumps(msg), status=200)
 
@@ -165,7 +172,7 @@ def job_demand_list():
     # comprobar permisos
     list = [job_demand.to_json() for job_demand in Job_Demand.Job_Demand.query.all()]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"job_demands": list}
     return Response(json.dumps(msg), status=200)
 
@@ -175,7 +182,7 @@ def job_demand_by_id(id: int):
     # comprobar permisos
     list = [job_demand.to_json() for job_demand in Job_Demand.Job_Demand.query.filter_by(Id_Offer=id)]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"job_demands": list}  # there can be job_demands with the same id_offer
     return Response(json.dumps(msg), status=200)
 
@@ -231,7 +238,7 @@ def member_offer_list():
     # comprobar permisos
     list = [member_offer.to_json() for member_offer in Member_Offer.Member_Offer.query.all()]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"member_offers": list}
     return Response(json.dumps(msg), status=200)
 
@@ -241,7 +248,7 @@ def member_offer_by_id(id: int):
     # comprobar permisos
     list = [member_offer.to_json() for member_offer in Member_Offer.Member_Offer.query.filter_by(Id_Member=id)]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"member_offers": list}  # there can be member_offers with the same id_member
     return Response(json.dumps(msg), status=200)
 
@@ -255,7 +262,7 @@ def offer_list():
     # comprobar permisos
     list = [offer.to_json() for offer in Offer.Offer.query.all()]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     msg = {"offers": list}
     return Response(json.dumps(msg), status=200)
 
@@ -265,9 +272,9 @@ def offer_by_id(id: int):
     # comprobar permisos
     list = [offer.to_json() for offer in Offer.Offer.query.filter_by(ID_OFFER=id)]
     if len(list) == 0:
-        return not_Found()
+        return not_found()
     elif len(list) > 1:
-        return internal_Server_Error()  # there can't be offers with the same id
+        return internal_server_error()  # there can't be offers with the same id
     msg = {"offers": list}
     return Response(json.dumps(msg), status=200)
 
@@ -364,13 +371,18 @@ def role_list():
     #    si no tiene permisos return inadequate_Permits()
     list = [role.to_json() for role in Role.Role.query.all()]
     if len(list) == 0:
+<<<<<<< HEAD
         return not_Found()
+=======
+        return not_found()
+>>>>>>> 5c5cbfb746373897e9a689bfffefcb535ee4282a
     msg = {"roles": list}
     return Response(json.dumps(
         msg,
     ), status=200)
 
 
+<<<<<<< HEAD
 # TODO: Falta cifrar la cabezera de la peticion
 # def authorize_admin(req: request) -> bool:
 #     return req.headers['auth'] is not None and req.headers['auth'] == 'ADMIN'
@@ -378,6 +390,51 @@ def role_list():
 #
 # def authorize_member(req: request) -> bool:
 #     return req.headers['auth'] is not None and req.headers['auth'] == 'MEMBER'
+=======
+# LOGIN
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        if request.headers['auth'] is not None:     # and security.validate(request.headers['auth']):
+            return redirect('/', code=200)          # todo
+        return render_template('t-login.html')
+    elif request.method == 'POST':
+        if len(request.form) != 2:
+            return bad_request()
+        else:
+            if request.form['user-login'] is not None:
+                username = request.form['user-login']
+                if username == "":
+                    return bad_request()    # Usuario vacio
+                else:
+                    if request.form['user-passwd'] is not None:
+                        passwd = request.form['user-passwd']
+                        if passwd == "":
+                            return bad_request()
+                        else:
+                            user = User.User.query.filter_by(Email=username)
+                            if user is not None:
+                                if sec.verify_password(passwd, user.Passwd):
+                                    token_info = sec.generate_jwt({
+                                        "user": user.Email,
+                                        "user-role": user.Id_Role,
+                                        "curr": dt.now(),
+                                        "exp": dt.now()+timedelta(minutes=30)
+                                    })
+                                    # TODO pasar el token generado a todas las cabeceras de petición y redirect a index
+                                    auth_header = {'auth': sec.generate_jwt(token_info)}
+                                    redirect()
+                                else:
+                                    return "Contraseña incorrecta"
+                            else:
+                                return "Email incorrecto"
+
+            else:
+                return bad_request()
+
+    else:
+        return {}   # empty response
+>>>>>>> 5c5cbfb746373897e9a689bfffefcb535ee4282a
 
 
 @app.route('/api_v0/role/<id>', methods=['GET'])
@@ -387,12 +444,17 @@ def role_by_id(id: int):
     #    si no tiene permisos return inadequate_Permits()
     list = [role.to_json() for role in Role.Role.query.filter_by(ID_ROLE=id)]
     if len(list) == 0:
+<<<<<<< HEAD
         return not_Found()
+=======
+        return not_found()
+>>>>>>> 5c5cbfb746373897e9a689bfffefcb535ee4282a
     msg = {"roles": list}
     return Response(json.dumps(
         msg,
     ), status=200)
 
+<<<<<<< HEAD
 @app.route('/api_v0/role/<name>', methods=['GET'])
 def role_by_name(name):
     #comprobacion de roles
@@ -688,6 +750,8 @@ def company_by_id(id: int):
 
 
 #-------------------------------MEMBER-------------------------------#
+=======
+>>>>>>> 5c5cbfb746373897e9a689bfffefcb535ee4282a
 
 
 # -------------------------------SECTION-------------------------------#
@@ -700,43 +764,63 @@ def company_by_id(id: int):
 
 
 # Error 404-not found
-def not_Found():
-    return "<h1>La página a la que intentas acceder no existe</h1>", 404
+def not_found():
+    return Response(json.dumps({
+        "title": "Not found",
+        "message": "Item not found, check the parameters given"
+    }), status=404)
 
 
 # Error 403-forbidden
-def inadequate_Permits():
-    return "<h1>No tienes los permisos necesarios para acceder a este contenido</h1>", 403
+def forbidden():
+    return Response(json.dumps({
+        "title": "Forbidden",
+        "message": "You are not allowed to access"
+    }), status=403)
 
 
 # Error 429-Too many request
-def too_Many_Request():
-    return "<h1>Has enviado demasiadas solicitudes en poco tiempo, Espere un poco</h1>", 429
+def too_many_request():
+    return Response(json.dumps({
+        "title": "Too many request",
+        "message": "You have "
+    }), status=429)
 
 
 # Error 500-Internal server error
-def internal_Server_Error():
-    return "<h1>En mantenimiento</h1>", 500
+def internal_server_error():
+    return Response(json.dumps({
+        "message": "An error has occurred, please try again"
+    }), status=500)
 
 
 # Error 504 Gateway Timeout
-def gateway_TimeOut():
-    return "<h1>Timeout</h1>", 504
+def gateway_timeout():
+    return Response(json.dumps({
+        "title": "Gateway Timeout",
+        "message": "Request time out"
+    }), status=504)
+
+
+def bad_request(msg: str):
+    return Response(json.dumps({
+        "message": msg
+    }), status=400)
 
 
 # inicio del main
 if __name__ == '__main__':
     # acceso al diccionario con las credenciales para acceder a la base de datos
-    app.config.from_object(config['development'])
+    app.config.from_object(conf)
     # Conexion con la base de datos
     db.init_app(app)
     with app.app_context():
         db.create_all()
     # para manegar los errores
-    app.register_error_handler(404, not_Found)
-    app.register_error_handler(403, inadequate_Permits)
-    app.register_error_handler(429, too_Many_Request)
-    app.register_error_handler(500, internal_Server_Error)
-    app.register_error_handler(504, gateway_TimeOut)
+    app.register_error_handler(404, not_found)
+    app.register_error_handler(403, forbidden)
+    app.register_error_handler(429, too_many_request)
+    app.register_error_handler(500, internal_server_error)
+    app.register_error_handler(504, gateway_timeout)
     # run
     app.run(host='0.0.0.0', port=5000)
