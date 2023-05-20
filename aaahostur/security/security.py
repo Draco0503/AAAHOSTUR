@@ -6,14 +6,14 @@ def generate_salt():
 
 
 class Security:
-    def __init__(self, salt, secret, algorithm):
-        self._salt = salt
+    def __init__(self, secret, algorithm):
         self._secret = secret
         self._algorithm = algorithm
 
     def hashed_password(self, password) -> bytes:
         pwd_bytes = password.encode('utf-8')
-        return bcrypt.hashpw(pwd_bytes, self._salt)
+        salt = bcrypt.gensalt()
+        return bcrypt.hashpw(pwd_bytes, salt)
 
     def verify_password(self, password, hashed_password) -> bool:
         pwd_bytes = password.encode('utf-8')
