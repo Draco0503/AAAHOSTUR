@@ -10,3 +10,9 @@ class Job_Category(db.Model):
     Description = db.Column(db.String(512), nullable=False)
 
     qualification = db.relationship("Qualification", backref="Job_Category", lazy=True)
+    
+    def to_json(self):
+        return {'id_job_category': self.ID_JOB_CATEGORY,
+                'name': self.Name,
+                'description': self.Description
+                }

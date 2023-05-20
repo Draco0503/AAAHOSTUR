@@ -15,3 +15,13 @@ class ProfessionalProfile(db.Model):
     Id_Member = db.Column(db.Integer, db.ForeignKey('Member.ID_MEMBER'), nullable=False)
 
     member = db.relationship('Member', backref='professional_profiles')
+
+    def to_json(self):
+        return {'id_professional_profile': self.ID_PROFESSIONAL_PROFILE,
+                'workplace': self.Workplace,
+                'address': self.Address,
+                'position': self.Position,
+                'join_date': self.Join_Date,
+                'finish_date': self.Finish_Date,
+                'id_member': self.Id_Member
+                }

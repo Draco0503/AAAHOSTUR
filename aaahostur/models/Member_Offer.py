@@ -9,3 +9,9 @@ class Member_Offer(db.Model):
 
     Id_Offer = db.Column(db.Integer, db.ForeignKey("Offer.ID_OFFER"), nullable=False)
     Id_Member = db.Column(db.Integer, db.ForeignKey("Member.ID_MEMBER"), nullable=False)
+
+    def to_json(self):
+        return {'id_member_offer': self.ID_MEMBER_Offer,
+                'id_offer': self.Id_Offer,
+                'id_member': self.Id_Member
+                }
