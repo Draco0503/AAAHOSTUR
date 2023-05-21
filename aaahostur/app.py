@@ -1,5 +1,4 @@
 from datetime import datetime as dt, timedelta
-
 from flask import Flask, request, session, json, render_template, Response, redirect, url_for
 from models import db
 from models import Language, Job_Category, Qualification, Role, User, Member, Member_Account, Member_Language, \
@@ -17,6 +16,8 @@ ERROR_429_DEFAULT_MSG = "You have sent too many requests in a given amount of ti
 ERROR_500_DEFAULT_MSG = "Something was wrong, please try it again later. " \
                         "If the problem persists please contact with the service provider."
 ERROR_504_DEFAULT_MSG = "The server did not get a response in time."
+
+
 # endregion
 
 # region app declaration and its first settings
@@ -53,6 +54,10 @@ def index():
     return render_template('t-login.html', prueba='holka')
 
 
+# endregion
+
+# =========================================================  API  ==================================================== #
+# region API
 # -------------------------------ACADEMIC PROFILE-------------------------------#
 @app.route('/api_v0/academic_profile', methods=['POST'])
 def academic_profile_add():
@@ -229,6 +234,8 @@ def job_category_add():
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
+
+
 # -------------------------------JOB_DEMAND_CATEGORY-------------------------------#
 @app.route('/api_v0/job_demand_category-list', methods=['GET'])
 def job_demand_category_list():
@@ -366,19 +373,6 @@ def job_demand_add():
     return Response(json.dumps(msg), status=status_code)
 
 
-# -------------------------------LANGUAGE-------------------------------#
-@app.route('/api_v0/language-list', methods=['GET'])
-def language_list():
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
-# endregion
-
-
-# =========================================================  API  ==================================================== #
-# region API
 # -------------------------------LANGUAGE-------------------------------#
 @app.route('/api_v0/language-list', methods=['GET'])
 def language_list():
@@ -839,10 +833,11 @@ def member_add():
 
 
 # -------------------------------MEMBER ACCOUNT-------------------------------#
+
+
 # -------------------------------MEMBER LANGUAGE-------------------------------#
 
 
-# TODO
 # -------------------------------ACADEMIC PROFILE-------------------------------#
 @app.route('/api_v0/academic_profile', methods=['POST'])
 def academic_profile_add():
