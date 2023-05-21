@@ -8,6 +8,7 @@ from models import Language, Job_Category, Qualification, Role, User, Member, Me
 from config import config
 from aaahostur.security import security
 
+# region constants
 ERROR_400_DEFAULT_MSG = "The server cannot or will not process the request."
 ERROR_403_DEFAULT_MSG = "You are not allowed to access to this endpoint."
 ERROR_404_DEFAULT_MSG = "The requested URL was not found on the server. " \
@@ -16,17 +17,25 @@ ERROR_429_DEFAULT_MSG = "You have sent too many requests in a given amount of ti
 ERROR_500_DEFAULT_MSG = "Something was wrong, please try it again later. " \
                         "If the problem persists please contact with the service provider."
 ERROR_504_DEFAULT_MSG = "The server did not get a response in time."
+# endregion
 
+# region app declaration and its first settings
 app = Flask(__name__, template_folder='templates')
 conf = config['development']
 sec = security.Security(conf.SECRET_KEY, conf.ALGORITHM)
 
 
+# endregion
+
+
+# region should be in utils
 def check_auth() -> bool:
+    """True if 'auth' header not found or empty"""
     return 'auth' not in request.headers or request.headers['auth'] is None
 
 
 def get_privileges_from_token(token: str) -> Role.Role or None:
+    """Gets the role from the validated token"""
     payload = sec.decode_jwt(token)
     if payload is None or len(payload) != 4:
         return None
@@ -34,13 +43,21 @@ def get_privileges_from_token(token: str) -> Role.Role or None:
         return Role.Role.query.filter_by(ID_ROLE=int(payload.get('user-role')))
 
 
+# endregion
+
+
+# region testing
 # metodo de prueba de conexion
 @app.route('/prueba')
 def index():
     return render_template('t-login.html', prueba='holka')
 
 
+# endregion
+
+
 # =========================================================  API  ==================================================== #
+# region API
 # -------------------------------LANGUAGE-------------------------------#
 @app.route('/api_v0/language-list', methods=['GET'])
 def language_list():
@@ -150,7 +167,7 @@ def job_category_by_id(id: int):
     # no roles inadequate_Permits
 
     # si tiene permisos
-    data_list = [job_Category.to_json() for job_Category in 
+    data_list = [job_Category.to_json() for job_Category in
                  Job_Category.Job_Category.query.filter_by(ID_JOB_CATEGORY=id)]
     if len(data_list) == 0:
         return not_found()
@@ -879,8 +896,10 @@ def job_demand_category_by_id(id: int):
 
 
 # -------------------------------REVIEW-------------------------------#
+# endregion
 # ==================================================================================================================== #
 # =======================================================   PAGES   ================================================== #
+# region PAGES
 # LOGIN
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -926,8 +945,10 @@ def login():
         return {}  # empty response
 
 
+# endregion
 # ==================================================================================================================== #
 # ==================================== FUNCIONES PARA LOS ERRORES MAS COMUNES ======================================== #
+# region RESPONSES DE ERROR
 # Error 400-Bad Request
 def bad_request(msg: str = ERROR_400_DEFAULT_MSG) -> Response:
     return Response(json.dumps({
@@ -974,8 +995,10 @@ def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
     }), status=504)
 
 
+# endregion
 # ==================================================================================================================== #
 # ========================================================= MAIN ===================================================== #
+# region MAIN
 if __name__ == '__main__':
     # acceso al diccionario con las credenciales para acceder a la base de datos
     app.config.from_object(conf)
@@ -991,3 +1014,6 @@ if __name__ == '__main__':
     app.register_error_handler(504, gateway_timeout)
     # run
     app.run(host='0.0.0.0', port=80)
+
+# endregion
+# ==================================================================================================================== #
