@@ -8,6 +8,15 @@ from models import Language, Job_Category, Qualification, Role, User, Member, Me
 from config import config
 from aaahostur.security import security
 
+ERROR_400_DEFAULT_MSG = "The server cannot or will not process the request."
+ERROR_403_DEFAULT_MSG = "You are not allowed to access to this endpoint."
+ERROR_404_DEFAULT_MSG = "The requested URL was not found on the server. " \
+                        "If you entered the URL manually please check your spelling and try again."
+ERROR_429_DEFAULT_MSG = "You have sent too many requests in a given amount of time."
+ERROR_500_DEFAULT_MSG = "Something was wrong, please try it again later. " \
+                        "If the problem persists please contact with the service provider."
+ERROR_504_DEFAULT_MSG = "The server did not get a response in time."
+
 app = Flask(__name__, template_folder='templates')
 conf = config['development']
 sec = security.Security(conf.SECRET_KEY, conf.ALGORITHM)
@@ -160,6 +169,7 @@ def role_list():
         msg,
     ), status=200)
 
+
 @app.route('/api_v0/role/<id>', methods=['GET'])
 def role_by_id(id: int):
     if check_auth():
@@ -175,10 +185,11 @@ def role_by_id(id: int):
         msg,
     ), status=200)
 
+
 @app.route('/api_v0/role/<name>', methods=['GET'])
 def role_by_name(name):
-    #comprobacion de roles
-    #no roles inadequate_Permits
+    # comprobacion de roles
+    # no roles inadequate_Permits
     list = [role.to_json() for role in Role.Role.query.filter_by(Name=name)]
     if len(list) == 0:
         return not_found()
@@ -186,7 +197,6 @@ def role_by_name(name):
     return Response(json.dumps(
         msg,
     ), status=200)
-
 
 
 # -------------------------------User-------------------------------#
@@ -256,8 +266,9 @@ def section_by_category(category):
         msg,
     ), status=200)
 
+
 @app.route('/api_v0/section', methods=['POST'])
-def offer_add():
+def section_add():
     data = request.form
     if data is None or (6 > len(data) > 6):
         return "[ERROR] - section_add() - data len()"
@@ -274,8 +285,9 @@ def offer_add():
     if data['price'] is None:
         return "[ERROR] - section_add() - insert: price"
 
-    section = Section.Section(Category=data['category'], Description=data['description'], Publication_Date=data['publication_date'],
-                               Schedule=data['schedule'], Img_Resource=data['img_resource'], Price=data['price'])
+    section = Section.Section(Category=data['category'], Description=data['description'],
+                              Publication_Date=data['publication_date'],
+                              Schedule=data['schedule'], Img_Resource=data['img_resource'], Price=data['price'])
 
     try:
         # comprobar permisos
@@ -291,7 +303,6 @@ def offer_add():
         msg = {"no se pudo insetar section": section.to_json()}
         status_code = 500
     return Response(json.dumps(msg), status=status_code)
-
 
 
 # -------------------------------Company-------------------------------#
@@ -327,8 +338,9 @@ def company_by_id(id: int):
         msg,
     ), status=200)
 
+
 @app.route('/api_v0/company', methods=['POST'])
-def offer_add():
+def company_add():
     data = request.form
     if data is None or (9 > len(data) > 9):
         return "[ERROR] - company_add() - data len()"
@@ -350,12 +362,13 @@ def offer_add():
         return "[ERROR] - company_add() - insert: contact_phone"
     if data['contact_email'] is None:
         return "[ERROR] - company_add() - insert: contact_email"
-    
-     
+
     description = "" if data['description'] is None else data["description"]
 
-    company = Company.Company(Type=data['tyype'], CIF=data['cif'], Address=data['address'], CP=data['cp'], 
-                              City=data['city'], Province=data['province'], Contact_Name=data['contact_name'], Contact_Phone=data['contact_phone'], Contact_Email=data['contact_email'], Description=description)
+    company = Company.Company(Type=data['tyype'], CIF=data['cif'], Address=data['address'], CP=data['cp'],
+                              City=data['city'], Province=data['province'], Contact_Name=data['contact_name'],
+                              Contact_Phone=data['contact_phone'], Contact_Email=data['contact_email'],
+                              Description=description)
 
     try:
         # comprobar permisos
@@ -371,7 +384,6 @@ def offer_add():
         msg = {"no se pudo insertar company": company.to_json()}
         status_code = 500
     return Response(json.dumps(msg), status=status_code)
-
 
 
 # TODO
@@ -419,35 +431,6 @@ def academic_profile_add():
 
 
 # -------------------------------COMPANY-------------------------------#
-
-
-# -------------------------------JOB CATEGORY-------------------------------#
-@app.route('/api_v0/job_category', methods=['POST'])
-def job_category_add():
-    data = request.form
-    if data is None or (2 > len(data) > 2):
-        return "[ERROR] - job_category_add() - data len()"
-    if data['name'] is None:
-        return "[ERROR] - job_category_add() - insert: name"
-    if data['description'] is None:
-        return "[ERROR] - job_category_add() - insert: description"
-
-    job_category = Job_Category.Job_Category(Name=data['name'], Description=data['description'])
-    try:
-        # comprobar permisos
-        Job_Category.Job_Category.query.add(job_category)
-        Job_Category.Job_Category.query.commit()
-        msg = {"new job_category": job_category.to_json()}
-        status_code = 200
-    except:
-        try:
-            Job_Category.Job_Category.query.rollback()
-        except:
-            pass
-        msg = {"fuck new job_category": job_category.to_json()}
-        status_code = 500
-
-    return Response(json.dumps(msg), status=status_code)
 
 
 # -------------------------------JOB_DEMAND_CATEGORY-------------------------------#
@@ -539,6 +522,7 @@ def job_demand_by_id(id: int):
     msg = {"job_demands": list}  # there can be job_demands with the same id_offer
     return Response(json.dumps(msg), status=200)
 
+
 @app.route('/api_v0/job_demand', methods=['POST'])
 def job_demand_add():
     data = request.form
@@ -554,8 +538,7 @@ def job_demand_add():
         return "[ERROR] - job_demand_add() - insert: shift"
     if data['disability_grade'] is None:
         return "[ERROR] - job_demand_add() - insert: disability_grade"
-    
-    
+
     monthly_salary = "" if data['monthly_salary'] is None else data["monthly_salary"]
     contract_type = "" if data['contract_type'] is None else data["contract_type"]
     holidays = "" if data['holidays'] is None else data["holidays"]
@@ -564,8 +547,12 @@ def job_demand_add():
     vehicle = "" if data['vehicle'] is None else data["vehicle"]
     geographical_mobility = "" if data['geographical_mobility'] is None else data["geographical_mobility"]
 
-    job_demand = Job_Demand.Job_Demand(Vacancies=data['vacancies'], Monthly_Salary=monthly_salary,  Contract_Type=contract_type,  Schedule=data['schedule'],  
-                                       Working_Day=data['working_day'],  Shift=data['shift'],  Holidays=holidays,  Experience=experience,  Vehicle=vehicle,  Geographical_Mobility=geographical_mobility,  Disability_Grade=data['disability_grade'], Others=others)
+    job_demand = Job_Demand.Job_Demand(Vacancies=data['vacancies'], Monthly_Salary=monthly_salary,
+                                       Contract_Type=contract_type, Schedule=data['schedule'],
+                                       Working_Day=data['working_day'], Shift=data['shift'], Holidays=holidays,
+                                       Experience=experience, Vehicle=vehicle,
+                                       Geographical_Mobility=geographical_mobility,
+                                       Disability_Grade=data['disability_grade'], Others=others)
     try:
         # comprobar permisos
         Job_Demand.Job_Demand.query.add(job_demand)
@@ -581,7 +568,6 @@ def job_demand_add():
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
-
 
 
 # -------------------------------LANGUAGE-------------------------------#
@@ -652,40 +638,36 @@ def member_offer_by_id(id: int):
 
 
 # -------------------------------MEMBER-------------------------------#
+@app.route('/api_v0/member-list', methods=['GET'])
+def member_list():
+    list = [member.to_json() for member in Member.Member.query.all()]
+    if len(list) == 0:
+        return not_found()
+    msg = {"member_list": list}
+    return Response(json.dumps(msg), status=200)
+
+
+@app.route('/api_v0/member/<id>', methods=['GET'])
+def member_list(id: int):
+    list = [member.to_json() for member in Member.Member.query.filter_by(ID_MEMBER=id)]
+    if len(list) == 0:
+        return not_found()
+    msg = {"member_list": list}
+    return Response(json.dumps(msg), status=200)
 
 
 @app.route('/api_v0/member', methods=['POST'])
 def member_add():
     data = request.form
-    if data['pna_data']:
-        active = 1
-        if data is None or (17 > len(data) > 17):
-            return "[ERROR] - member_add() - data len()"
-        if data['pna_address'] is None:
-            return "[ERROR] - member_add() - insert: pna_address"
-        if data['pna_cp'] is None:
-            return "[ERROR] - member_add() - insert: pna_cp"
-        if data['pna_city'] is None:
-            return "[ERROR] - member_add() - insert: pna_city"
-        if data['pna_province'] is None:
-            return "[ERROR] - member_add() - insert: pna_province"
-    else:
-        active = 0
-        if data is None or (13 > len(data) > 13):
-            return "[ERROR] - member_add() - data len()"
-        pna_address = "" if data['pna_address'] is None else data["pna_address"]
-        pna_cp = "" if data['pna_cp'] is None else data["pna_cp"]
-        pna_city = "" if data['pna_city'] is None else data["pna_city"]
-        pna_province = "" if data['pna_province'] is None else data["pna_province"]
- 
+
     if data['name'] is None:
         return "[ERROR] - member_add() - insert: name"
     if data['surname'] is None:
         return "[ERROR] - member_add() - insert: surname"
     if data['dni'] is None:
         return "[ERROR] - member_add() - insert: dni"
-    if data['adderss'] is None:
-        return "[ERROR] - member_add() - insert: adderss"
+    if data['address'] is None:
+        return "[ERROR] - member_add() - insert: address"
     if data['cp'] is None:
         return "[ERROR] - member_add() - insert: cp"
     if data['city'] is None:
@@ -704,30 +686,50 @@ def member_add():
         return "[ERROR] - member_add() - insert: join_date"
     if data['cancelation_date'] is None:
         return "[ERROR] - member_add() - insert: cancelation_date"
-    
-    
+
+    pna_address = ""
+    pna_cp = ""
+    pna_city = ""
+    pna_province = ""
+
+    if data['pna_data'] is not None:
+        if data['pna_address'] is None:
+            return "[ERROR] - member_add() - insert: pna_address"
+        if data['pna_cp'] is None:
+            return "[ERROR] - member_add() - insert: pna_cp"
+        if data['pna_city'] is None:
+            return "[ERROR] - member_add() - insert: pna_city"
+        if data['pna_province'] is None:
+            return "[ERROR] - member_add() - insert: pna_province"
+        pna_address = data['pna_address']
+        pna_cp = data['pna_cp']
+        pna_city = data['pna_city']
+        pna_province = data['pna_province']
 
     land_line = "" if data['land_line'] is None else data["land_line"]
     vehicle = "" if data['vehicle'] is None else data["vehicle"]
     geographical_mobility = "" if data['geographical_mobility'] is None else data["geographical_mobility"]
     disability_grade = "" if data['disability_grade'] is None else data["disability_grade"]
 
-    if active == 1:
-        memeber = Member.Member(Name=data['name'], Surname=data['surname'], DNI=data['dni'], Address=data['adderss'], CP=data['cp'], City=data['city'], Province=data['province'], PNA_Address=data['pna_address'], PNA_CP=data['pna_cp'], PNA_City=data['pna_city'], PNA_Province=data['pna_province'], Gender=data['gender'], Land_Line=land_line, Mobile=data['mobile'], Profile_Picture=data['profile_picture'], Birth_Date=data['birth_date'], Vehicle=vehicle, Geographical_Mobility=geographical_mobility, Disability_Grade=disability_grade, Join_Date=data['join_date'], Cancelation_Date=data['cancelation_date'])    
-    else:
-        memeber = Member.Member(Name=data['name'], Surname=data['surname'], DNI=data['dni'], Address=data['adderss'], CP=data['cp'], City=data['city'], Province=data['province'], PNA_Address=pna_address, PNA_CP=pna_cp, PNA_City=pna_city, PNA_Province=pna_province, Gender=data['gender'], Land_Line=land_line, Mobile=data['mobile'], Profile_Picture=data['profile_picture'], Birth_Date=data['birth_date'], Vehicle=vehicle, Geographical_Mobility=geographical_mobility, Disability_Grade=disability_grade, Join_Date=data['join_date'], Cancelation_Date=data['cancelation_date'])    
+    member = Member.Member(Name=data['name'], Surname=data['surname'], DNI=data['dni'], Address=data['adderss'],
+                                CP=data['cp'], City=data['city'], Province=data['province'], PNA_Address=pna_address,
+                                PNA_CP=pna_cp, PNA_City=pna_city, PNA_Province=pna_province, Gender=data['gender'],
+                                Land_Line=land_line, Mobile=data['mobile'], Profile_Picture=data['profile_picture'],
+                                Birth_Date=data['birth_date'], Vehicle=vehicle,
+                                Geographical_Mobility=geographical_mobility, Disability_Grade=disability_grade,
+                                Join_Date=data['join_date'], Cancelation_Date=data['cancelation_date'])
     try:
         # comprobar permisos
-        Member.Member.query.add(memeber)
+        Member.Member.query.add(member)
         Member.Member.query.commit()
-        msg = {"new memeber": memeber.to_json()}
+        msg = {"new member": member.to_json()}
         status_code = 200
     except:
         try:
             Member.Member.query.rollback()
         except:
             pass
-        msg = {"no se pudo insertar memeber": memeber.to_json()}
+        msg = {"no se pudo insertar member": member.to_json()}
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
@@ -841,9 +843,6 @@ def qualification_add():
 # -------------------------------REVIEW-------------------------------#
 
 
-
-
-
 # LOGIN
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -886,46 +885,11 @@ def login():
                 return bad_request()
 
     else:
-        return {}   # empty response
+        return {}  # empty response
 
 
-
-
-#-------------------------------Qualification-------------------------------#
-
-@app.route('/api_v0/qualification-list', methods=['GET'])
-def qualification_list():
-    #comprobacion de roles
-
-    #no roles inadequate_Permits
-
-    #si tiene permisos
-    list = [qualification.to_json() for qualification in Qualification.Qualification.query.all()]
-    if len(list) == 0:
-        return not_found()
-    msg = {"qualification": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-@app.route('/api_v0/qualification/<id>', methods=['GET'])
-def job_qualification_by_id(id: int):
-     #comprobacion de roles
-
-    #no roles inadequate_Permits
-
-    #si tiene permisos
-    list = [qualification.to_json() for qualification in Qualification.Qualification.query.filter_by(ID_QUALIFICATION=id)]
-    if len(list) == 0:
-        return not_found()
-    msg = {"qualification": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-
-
+# -------------------------- JOB CATEGORY --------------------------- #
+@app.route('/api_v0/job_category', methods=['POST'])
 def job_category_add():
     data = request.form
     if data is None or (2 > len(data) > 2):
@@ -934,7 +898,7 @@ def job_category_add():
         return "[ERROR] - job_category_add() - insert: name"
     if data['description'] is None:
         return "[ERROR] - job_category_add() - insert: description"
-    
+
     job_category = Job_Category.Job_Category(Name=data['name'], Description=data['description'])
     try:
         # comprobar permisos
@@ -953,10 +917,7 @@ def job_category_add():
     return Response(json.dumps(msg), status=status_code)
 
 
-
-
-
-#-------------------------------MEMBER-------------------------------#
+# -------------------------------MEMBER-------------------------------#
 
 
 # -------------------------------SECTION-------------------------------#
@@ -968,49 +929,50 @@ def job_category_add():
 # FUNCIONES PARA LOS ERRORES MAS COMUNES
 
 
-# Error 404-not found
-def not_found():
+# Error 400-Bad Request
+def bad_request(msg: str = ERROR_400_DEFAULT_MSG) -> Response:
     return Response(json.dumps({
-        "title": "Not found",
-        "message": "Item not found, check the parameters given"
-    }), status=404)
+        "message": "{}".format(msg)
+    }), status=400)
 
 
 # Error 403-forbidden
-def forbidden():
+def forbidden(msg: str = ERROR_403_DEFAULT_MSG) -> Response:
     return Response(json.dumps({
         "title": "Forbidden",
-        "message": "You are not allowed to access"
+        "message": "{}".format(msg)
     }), status=403)
 
 
+# Error 404-not found
+def not_found(msg: str = ERROR_404_DEFAULT_MSG) -> Response:
+    return Response(json.dumps({
+        "title": "Not found",
+        "message": "{}".format(msg)
+    }), status=404)
+
+
 # Error 429-Too many request
-def too_many_request():
+def too_many_request(msg: str = ERROR_429_DEFAULT_MSG) -> Response:
     return Response(json.dumps({
         "title": "Too many request",
-        "message": "You have "
+        "message": "{}".format(msg)
     }), status=429)
 
 
 # Error 500-Internal server error
-def internal_server_error():
+def internal_server_error(msg: str = ERROR_500_DEFAULT_MSG) -> Response:
     return Response(json.dumps({
-        "message": "An error has occurred, please try again"
+        "message": "{}".format(msg)
     }), status=500)
 
 
 # Error 504 Gateway Timeout
-def gateway_timeout():
+def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
     return Response(json.dumps({
         "title": "Gateway Timeout",
-        "message": "Request time out"
+        "message": "{}".format(msg)
     }), status=504)
-
-
-def bad_request(msg: str):
-    return Response(json.dumps({
-        "message": msg
-    }), status=400)
 
 
 # inicio del main
@@ -1022,7 +984,7 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     # para manegar los errores
-    # app.register_error_handler(404, not_found)
+    app.register_error_handler(404, not_found)
     app.register_error_handler(403, forbidden)
     app.register_error_handler(429, too_many_request)
     app.register_error_handler(500, internal_server_error)
