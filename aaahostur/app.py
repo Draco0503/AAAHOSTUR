@@ -400,6 +400,11 @@ def language_list():
 
 @app.route('/api_v0/language/<id>', methods=['GET'])
 def language_by_id(id: int):
+    # comprobacion de roles
+
+    # no roles inadequate_Permits
+
+    # si tiene permisos
     if check_auth():
         return redirect(url_for(".login", _method='GET'))
     role = get_privileges_from_token(request.headers['auth'])
@@ -418,6 +423,8 @@ def language_by_id(id: int):
 
 @app.route('/api_v0/language/<name>', methods=['GET'])
 def language_by_name(name):
+    # comprobacion de roles
+    # no roles inadequate_Permits
     if check_auth():
         return redirect(url_for(".login", _method='GET'))
     role = get_privileges_from_token(request.headers['auth'])
@@ -1521,7 +1528,6 @@ def login():
     else:
         return {}  # empty response
 
-
 # -------------------------- JOB CATEGORY --------------------------- #
 @app.route('/api_v0/job_category', methods=['POST'])
 def job_category_add():
@@ -1676,9 +1682,6 @@ def user_by_id(id: int):
     return Response(json.dumps(
         msg,
     ), status=200)
-
-
-# FUNCIONES PARA LOS ERRORES MAS COMUNES
 
 
 # endregion
