@@ -34,6 +34,7 @@ class Company(db.Model):
                 'province': self.Province,
                 'contact_name': self.Contact_Name,
                 'contact_phone': self.Contact_Phone,
+                'contact_email': self.Contact_Email,
                 'description': self.Description,
                 'verify': self.Verify,
                 'active': self.Active,

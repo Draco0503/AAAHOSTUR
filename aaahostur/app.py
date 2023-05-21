@@ -251,7 +251,7 @@ def section_by_category(category):
     list = [section.to_json() for section in Section.Section.query.filter_by(Category=category)]
     if len(list) == 0:
         return not_found()
-    msg = {"company": list}
+    msg = {"section": list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -262,17 +262,17 @@ def offer_add():
     if data is None or (6 > len(data) > 6):
         return "[ERROR] - section_add() - data len()"
     if data['category'] is None:
-        return "[ERROR] - job_category_add() - insert: category"
+        return "[ERROR] - section_add() - insert: category"
     if data['description'] is None:
-        return "[ERROR] - job_category_add() - insert: description"
+        return "[ERROR] - section_add() - insert: description"
     if data['publication_date'] is None:
-        return "[ERROR] - job_category_add() - insert: publication_date"
+        return "[ERROR] - section_add() - insert: publication_date"
     if data['schedule'] is None:
-        return "[ERROR] - job_category_add() - insert: schedule"
+        return "[ERROR] - section_add() - insert: schedule"
     if data['img_resource'] is None:
-        return "[ERROR] - job_category_add() - insert: img_resource"
+        return "[ERROR] - section_add() - insert: img_resource"
     if data['price'] is None:
-        return "[ERROR] - job_category_add() - insert: price"
+        return "[ERROR] - section_add() - insert: price"
 
     section = Section.Section(Category=data['category'], Description=data['description'], Publication_Date=data['publication_date'],
                                Schedule=data['schedule'], Img_Resource=data['img_resource'], Price=data['price'])
@@ -285,10 +285,10 @@ def offer_add():
         status_code = 200
     except:
         try:
-            Offer.Offer.query.rollback()
+            Section.Section.query.rollback()
         except:
             pass
-        msg = {"fuck new offer": section.to_json()}
+        msg = {"no se pudo insetar section": section.to_json()}
         status_code = 500
     return Response(json.dumps(msg), status=status_code)
 
@@ -327,6 +327,52 @@ def company_by_id(id: int):
         msg,
     ), status=200)
 
+@app.route('/api_v0/company', methods=['POST'])
+def offer_add():
+    data = request.form
+    if data is None or (9 > len(data) > 9):
+        return "[ERROR] - company_add() - data len()"
+    if data['type'] is None:
+        return "[ERROR] - company_add() - insert: type"
+    if data['cif'] is None:
+        return "[ERROR] - company_add() - insert: CIF"
+    if data['address'] is None:
+        return "[ERROR] - company_add() - insert: address"
+    if data['cp'] is None:
+        return "[ERROR] - company_add() - insert: CP"
+    if data['city'] is None:
+        return "[ERROR] - company_add() - insert: city"
+    if data['province'] is None:
+        return "[ERROR] - company_add() - insert: province"
+    if data['contact_name'] is None:
+        return "[ERROR] - company_add() - insert: contact_name"
+    if data['contact_phone'] is None:
+        return "[ERROR] - company_add() - insert: contact_phone"
+    if data['contact_email'] is None:
+        return "[ERROR] - company_add() - insert: contact_email"
+    
+     
+    description = "" if data['description'] is None else data["description"]
+
+    company = Company.Company(Type=data['tyype'], CIF=data['cif'], Address=data['address'], CP=data['cp'], 
+                              City=data['city'], Province=data['province'], Contact_Name=data['contact_name'], Contact_Phone=data['contact_phone'], Contact_Email=data['contact_email'], Description=description)
+
+    try:
+        # comprobar permisos
+        Company.Company.query.add(company)
+        Company.Company.query.commit()
+        msg = {"new offer": company.to_json()}
+        status_code = 200
+    except:
+        try:
+            Company.Company.query.rollback()
+        except:
+            pass
+        msg = {"no se pudo insertar company": company.to_json()}
+        status_code = 500
+    return Response(json.dumps(msg), status=status_code)
+
+
 
 # TODO
 # -------------------------------ACADEMIC PROFILE-------------------------------#
@@ -363,7 +409,7 @@ def academic_profile_add():
             Offer.Offer.query.rollback()
         except:
             pass
-        msg = {"fuck new offer": offer.to_json()}
+        msg = {"no se pudo insertar academic_profile": offer.to_json()}
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
@@ -493,6 +539,50 @@ def job_demand_by_id(id: int):
     msg = {"job_demands": list}  # there can be job_demands with the same id_offer
     return Response(json.dumps(msg), status=200)
 
+@app.route('/api_v0/job_demand', methods=['POST'])
+def job_demand_add():
+    data = request.form
+    if data is None or (5 > len(data) > 5):
+        return "[ERROR] - job_demand_add() - data len()"
+    if data['vacancies'] is None:
+        return "[ERROR] - job_demand_add() - insert: vacancies"
+    if data['schedule'] is None:
+        return "[ERROR] - job_demand_add() - insert: schedule"
+    if data['working_day'] is None:
+        return "[ERROR] - job_demand_add() - insert: working_day"
+    if data['shift'] is None:
+        return "[ERROR] - job_demand_add() - insert: shift"
+    if data['disability_grade'] is None:
+        return "[ERROR] - job_demand_add() - insert: disability_grade"
+    
+    
+    monthly_salary = "" if data['monthly_salary'] is None else data["monthly_salary"]
+    contract_type = "" if data['contract_type'] is None else data["contract_type"]
+    holidays = "" if data['holidays'] is None else data["holidays"]
+    others = "" if data['monthly_salary'] is None else data["monthly_salary"]
+    experience = "" if data['contract_type'] is None else data["experience"]
+    vehicle = "" if data['vehicle'] is None else data["vehicle"]
+    geographical_mobility = "" if data['geographical_mobility'] is None else data["geographical_mobility"]
+
+    job_demand = Job_Demand.Job_Demand(Vacancies=data['vacancies'], Monthly_Salary=monthly_salary,  Contract_Type=contract_type,  Schedule=data['schedule'],  
+                                       Working_Day=data['working_day'],  Shift=data['shift'],  Holidays=holidays,  Experience=experience,  Vehicle=vehicle,  Geographical_Mobility=geographical_mobility,  Disability_Grade=data['disability_grade'], Others=others)
+    try:
+        # comprobar permisos
+        Job_Demand.Job_Demand.query.add(job_demand)
+        Job_Demand.Job_Demand.query.commit()
+        msg = {"new job_demand": job_demand.to_json()}
+        status_code = 200
+    except:
+        try:
+            Job_Demand.Job_Demand.query.rollback()
+        except:
+            pass
+        msg = {"no se pudo insertar job_demand": job_demand.to_json()}
+        status_code = 500
+
+    return Response(json.dumps(msg), status=status_code)
+
+
 
 # -------------------------------LANGUAGE-------------------------------#
 @app.route('/api_v0/language', methods=['POST'])
@@ -562,6 +652,85 @@ def member_offer_by_id(id: int):
 
 
 # -------------------------------MEMBER-------------------------------#
+
+
+@app.route('/api_v0/member', methods=['POST'])
+def member_add():
+    data = request.form
+    if data['pna_data']:
+        active = 1
+        if data is None or (17 > len(data) > 17):
+            return "[ERROR] - member_add() - data len()"
+        if data['pna_address'] is None:
+            return "[ERROR] - member_add() - insert: pna_address"
+        if data['pna_cp'] is None:
+            return "[ERROR] - member_add() - insert: pna_cp"
+        if data['pna_city'] is None:
+            return "[ERROR] - member_add() - insert: pna_city"
+        if data['pna_province'] is None:
+            return "[ERROR] - member_add() - insert: pna_province"
+    else:
+        active = 0
+        if data is None or (13 > len(data) > 13):
+            return "[ERROR] - member_add() - data len()"
+        pna_address = "" if data['pna_address'] is None else data["pna_address"]
+        pna_cp = "" if data['pna_cp'] is None else data["pna_cp"]
+        pna_city = "" if data['pna_city'] is None else data["pna_city"]
+        pna_province = "" if data['pna_province'] is None else data["pna_province"]
+ 
+    if data['name'] is None:
+        return "[ERROR] - member_add() - insert: name"
+    if data['surname'] is None:
+        return "[ERROR] - member_add() - insert: surname"
+    if data['dni'] is None:
+        return "[ERROR] - member_add() - insert: dni"
+    if data['adderss'] is None:
+        return "[ERROR] - member_add() - insert: adderss"
+    if data['cp'] is None:
+        return "[ERROR] - member_add() - insert: cp"
+    if data['city'] is None:
+        return "[ERROR] - member_add() - insert: city"
+    if data['province'] is None:
+        return "[ERROR] - member_add() - insert: province"
+    if data['gender'] is None:
+        return "[ERROR] - member_add() - insert: gender"
+    if data['mobile'] is None:
+        return "[ERROR] - member_add() - insert: mobile"
+    if data['profile_picture'] is None:
+        return "[ERROR] - member_add() - insert: profile_picture"
+    if data['birth_date'] is None:
+        return "[ERROR] - member_add() - insert: birth_date"
+    if data['join_date'] is None:
+        return "[ERROR] - member_add() - insert: join_date"
+    if data['cancelation_date'] is None:
+        return "[ERROR] - member_add() - insert: cancelation_date"
+    
+    
+
+    land_line = "" if data['land_line'] is None else data["land_line"]
+    vehicle = "" if data['vehicle'] is None else data["vehicle"]
+    geographical_mobility = "" if data['geographical_mobility'] is None else data["geographical_mobility"]
+    disability_grade = "" if data['disability_grade'] is None else data["disability_grade"]
+
+    if active == 1:
+        memeber = Member.Member(Name=data['name'], Surname=data['surname'], DNI=data['dni'], Address=data['adderss'], CP=data['cp'], City=data['city'], Province=data['province'], PNA_Address=data['pna_address'], PNA_CP=data['pna_cp'], PNA_City=data['pna_city'], PNA_Province=data['pna_province'], Gender=data['gender'], Land_Line=land_line, Mobile=data['mobile'], Profile_Picture=data['profile_picture'], Birth_Date=data['birth_date'], Vehicle=vehicle, Geographical_Mobility=geographical_mobility, Disability_Grade=disability_grade, Join_Date=data['join_date'], Cancelation_Date=data['cancelation_date'])    
+    else:
+        memeber = Member.Member(Name=data['name'], Surname=data['surname'], DNI=data['dni'], Address=data['adderss'], CP=data['cp'], City=data['city'], Province=data['province'], PNA_Address=pna_address, PNA_CP=pna_cp, PNA_City=pna_city, PNA_Province=pna_province, Gender=data['gender'], Land_Line=land_line, Mobile=data['mobile'], Profile_Picture=data['profile_picture'], Birth_Date=data['birth_date'], Vehicle=vehicle, Geographical_Mobility=geographical_mobility, Disability_Grade=disability_grade, Join_Date=data['join_date'], Cancelation_Date=data['cancelation_date'])    
+    try:
+        # comprobar permisos
+        Member.Member.query.add(memeber)
+        Member.Member.query.commit()
+        msg = {"new memeber": memeber.to_json()}
+        status_code = 200
+    except:
+        try:
+            Member.Member.query.rollback()
+        except:
+            pass
+        msg = {"no se pudo insertar memeber": memeber.to_json()}
+        status_code = 500
+
+    return Response(json.dumps(msg), status=status_code)
 
 
 # -------------------------------OFFER-------------------------------#

@@ -14,5 +14,6 @@ class Job_Category(db.Model):
     def to_json(self):
         return {'id_job_category': self.ID_JOB_CATEGORY,
                 'name': self.Name,
-                'description': self.Description
+                'description': self.Description,
+                'qualification': self.qualification
                 }
