@@ -305,6 +305,26 @@ def section_add():
     return Response(json.dumps(msg), status=status_code)
 
 
+
+@app.route('/api_v0/section_update/<id>', methods=['POST', 'GET'])
+def section_update(id):
+    section = Section.Section.get(id)
+    section2 =  Section.Section.query.filter_by(ID_SECTION=id)
+    if len(list) == 0:
+        return not_found()
+    try:
+        section2.Active = True
+        Section.Section.query.add(section2)
+        msg = {"validate section": section.to_json()}
+        status_code = 200
+    except:
+        try:
+            Section.Section.query.rollback()
+        except:
+            pass
+        msg = {"no se pudo validar section": section.to_json()}
+        status_code = 500
+    return Response(json.dumps(msg), status=status_code)
 # -------------------------------Company-------------------------------#
 
 @app.route('/api_v0/company-list', methods=['GET'])
