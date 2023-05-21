@@ -8,7 +8,7 @@ from models import Language, Job_Category, Qualification, Role, User, Member, Me
 from config import config
 from aaahostur.security import security
 
-# error message repository
+# region CONSTANTS
 ERROR_400_DEFAULT_MSG = "The server cannot or will not process the request."
 ERROR_403_DEFAULT_MSG = "You are not allowed to access to this endpoint."
 ERROR_404_DEFAULT_MSG = "The requested URL was not found on the server. " \
@@ -17,17 +17,25 @@ ERROR_429_DEFAULT_MSG = "You have sent too many requests in a given amount of ti
 ERROR_500_DEFAULT_MSG = "Something was wrong, please try it again later. " \
                         "If the problem persists please contact with the service provider."
 ERROR_504_DEFAULT_MSG = "The server did not get a response in time."
+# endregion
 
+# region app declaration and its first settings
 app = Flask(__name__, template_folder='templates')
 conf = config['development']
 sec = security.Security(conf.SECRET_KEY, conf.ALGORITHM)
 
 
+# endregion
+
+
+# region should be in utils
 def check_auth() -> bool:
+    """True if 'auth' header not found or empty"""
     return 'auth' not in request.headers or request.headers['auth'] is None
 
 
 def get_privileges_from_token(token: str) -> Role.Role or None:
+    """Gets the role from the validated token"""
     payload = sec.decode_jwt(token)
     if payload is None or len(payload) != 4:
         return None
@@ -35,6 +43,10 @@ def get_privileges_from_token(token: str) -> Role.Role or None:
         return Role.Role.query.filter_by(ID_ROLE=int(payload.get('user-role')))
 
 
+# endregion
+
+
+# region testing
 # metodo de prueba de conexion
 @app.route('/prueba')
 def index():
@@ -362,6 +374,21 @@ def language_list():
     # no roles inadequate_Permits
 
     # si tiene permisos
+# endregion
+
+
+# =========================================================  API  ==================================================== #
+# region API
+# -------------------------------LANGUAGE-------------------------------#
+@app.route('/api_v0/language-list', methods=['GET'])
+def language_list():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiLanguage:
+        return forbidden()
     data_list = [language.to_json() for language in Language.Language.query.all()]
     if len(data_list) == 0:
         return not_found()
@@ -373,11 +400,13 @@ def language_list():
 
 @app.route('/api_v0/language/<id>', methods=['GET'])
 def language_by_id(id: int):
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiLanguage:
+        return forbidden()
     data_list = [language.to_json() for language in Language.Language.query.filter_by(ID_LANGUAGE=id)]
     if len(data_list) == 0:
         return not_found()
@@ -389,8 +418,13 @@ def language_by_id(id: int):
 
 @app.route('/api_v0/language/<name>', methods=['GET'])
 def language_by_name(name):
-    # comprobacion de roles
-    # no roles inadequate_Permits
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiLanguage:
+        return forbidden()
     data_list = [language.to_json() for language in Language.Language.query.filter_by(Name=name)]
     if len(data_list) == 0:
         return not_found()
@@ -422,6 +456,23 @@ def section_add():
                               Publication_Date=data['publication_date'],
                               Schedule=data['schedule'], Img_Resource=data['img_resource'], Price=data['price'])
 
+@app.route('/api_v0/language', methods=['POST'])
+def language_add():
+    # TODO permisos xd???
+    data = request.form
+    if data is None or (5 > len(data) > 8):
+        return "[ERROR] - offer_add() - data len()"
+    if data['company_name'] is None:
+        return "[ERROR] - offer_add() - insert: company_name"
+    if data['address'] is None:
+        return "[ERROR] - offer_add() - insert: address"
+    if data['contact_name'] is None:
+        return "[ERROR] - offer_add() - insert: contact_name"
+    if data['contact_phone'] is None:
+        return "[ERROR] - offer_add() - insert: contact_phone"
+    if data['contact_email'] is None:
+        return "[ERROR] - offer_add() - insert: contact_email"
+
     try:
         # comprobar permisos
         Section.Section.query.add(section)
@@ -449,25 +500,235 @@ def section_add():
 def member_offer_list():
     # comprobar permisos
     data_list = [member_offer.to_json() for member_offer in Member_Offer.Member_Offer.query.all()]
+# -------------------------------JOB CATEGORY-------------------------------#
+@app.route('/api_v0/job_category-list', methods=['GET'])
+def job_category_list():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiJobCategory:
+        return forbidden()
+    data_list = [job_Category.to_json() for job_Category in Job_Category.Job_Category.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"member_offers": list}
-    return Response(json.dumps(msg), status=200)
+    msg = {"job_Category": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
 
 
-@app.route('/api_v0/member_offer/<id>', methods=['GET'])
-def member_offer_by_id(id: int):
-    # comprobar permisos
-    data_list = [member_offer.to_json() for member_offer in Member_Offer.Member_Offer.query.filter_by(Id_Member=id)]
+@app.route('/api_v0/job_category/<id>', methods=['GET'])
+def job_category_by_id(id: int):
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiJobCategory:
+        return forbidden()
+    data_list = [job_Category.to_json() for job_Category in
+                 Job_Category.Job_Category.query.filter_by(ID_JOB_CATEGORY=id)]
     if len(data_list) == 0:
         return not_found()
-    msg = {"member_offers": list}  # there can be member_offers with the same id_member
-    return Response(json.dumps(msg), status=200)
+    msg = {"job_Category": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/job_category', methods=['POST'])
+def job_category_add():
+    # TODO permisos xd???
+    data = request.form
+    if data is None or (2 > len(data) > 2):
+        return "[ERROR] - job_category_add() - data len()"
+    if data['name'] is None:
+        return "[ERROR] - job_category_add() - insert: name"
+    if data['description'] is None:
+        return "[ERROR] - job_category_add() - insert: description"
+
+    job_category = Job_Category.Job_Category(Name=data['name'], Description=data['description'])
+    try:
+        # comprobar permisos
+        Job_Category.Job_Category.query.add(job_category)
+        Job_Category.Job_Category.query.commit()
+        msg = {"new job_category": job_category.to_json()}
+        status_code = 200
+    except Exception as ex:
+        try:
+            Job_Category.Job_Category.query.rollback()
+        except Exception as ex:
+            pass
+        msg = {"fuck new job_category": job_category.to_json()}
+        status_code = 500
+
+    return Response(json.dumps(msg), status=status_code)
+
+
+# -------------------------------QUALIFICATION-------------------------------#
+@app.route('/api_v0/qualification-list', methods=['GET'])
+def qualification_list():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiQualification:
+        return forbidden()
+    data_list = [qualification.to_json() for qualification in Qualification.Qualification.query.all()]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"qualification": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/qualification/<id>', methods=['GET'])
+def job_qualification_by_id(id: int):
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiQualification:
+        return forbidden()
+    data_list = [qualification.to_json() for qualification in
+                 Qualification.Qualification.query.filter_by(ID_QUALIFICATION=id)]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"qualification": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/qualification', methods=['POST'])
+def qualification_add():
+    # TODO permisos xd???
+    data = request.form
+    if data is None or (5 > len(data) > 8):
+        return "[ERROR] - offer_add() - data len()"
+    if data['company_name'] is None:
+        return "[ERROR] - offer_add() - insert: company_name"
+    if data['address'] is None:
+        return "[ERROR] - offer_add() - insert: address"
+    if data['contact_name'] is None:
+        return "[ERROR] - offer_add() - insert: contact_name"
+    if data['contact_phone'] is None:
+        return "[ERROR] - offer_add() - insert: contact_phone"
+    if data['contact_email'] is None:
+        return "[ERROR] - offer_add() - insert: contact_email"
+
+    contact_name2 = "" if data['contact_name_2'] is None else data["contact_name_2"]
+    contact_phone2 = "" if data['contact_phone_2'] is None else data["contact_phone_2"]
+    contact_email2 = "" if data['contact_email_2'] is None else data["contact_email_2"]
+    offer = Offer.Offer(Company_Name=data['company_name'], Address=data['address'], Contact_Name=data['contact_name'],
+                        Contact_Phone=data['contact_phone'], Contact_Email=data['contact_email'],
+                        Contact_Name_2=contact_name2, Contact_Phone_2=contact_phone2, Contact_Email_2=contact_email2)
+    try:
+        # comprobar permisos
+        Offer.Offer.query.add(offer)
+        Offer.Offer.query.commit()
+        msg = {"new offer": offer.to_json()}
+        status_code = 200
+    except Exception as ex:
+        try:
+            Offer.Offer.query.rollback()
+        except Exception as ex:
+            pass
+        msg = {"fuck new offer": offer.to_json()}
+        status_code = 500
+
+    return Response(json.dumps(msg), status=status_code)
+
+
+# -------------------------------ROLE-------------------------------#
+@app.route('/api_v0/role-list', methods=['GET'])
+def role_list():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiRole:
+        return forbidden()
+    data_list = [role.to_json() for role in Role.Role.query.all()]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"roles": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/role/<id>', methods=['GET'])
+def role_by_id(id: int):
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiRole:
+        return forbidden()
+    data_list = [role.to_json() for role in Role.Role.query.filter_by(ID_ROLE=id)]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"roles": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+# -------------------------------USER-------------------------------#
+@app.route('/api_v0/user-list', methods=['GET'])
+def user_list():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiUser:
+        return forbidden()
+    data_list = [user.to_json() for user in User.User.query.all()]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"user": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/user/<id>', methods=['GET'])
+def user_by_id(id: int):
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiUser:
+        return forbidden()
+    data_list = [user.to_json() for user in User.User.query.filter_by(ID_USER=id)]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"user": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
 
 
 # -------------------------------MEMBER-------------------------------#
 @app.route('/api_v0/member-list', methods=['GET'])
 def member_list():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiMember:
+        return forbidden()
     data_list = [member.to_json() for member in Member.Member.query.all()]
     if len(data_list) == 0:
         return not_found()
@@ -477,6 +738,13 @@ def member_list():
 
 @app.route('/api_v0/member/<id>', methods=['GET'])
 def member_by_id(id: int):
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiMember:
+        return forbidden()
     data_list = [member.to_json() for member in Member.Member.query.filter_by(ID_MEMBER=id)]
     if len(data_list) == 0:
         return not_found()
@@ -486,8 +754,8 @@ def member_by_id(id: int):
 
 @app.route('/api_v0/member', methods=['POST'])
 def member_add():
+    # TODO permisos xd???
     data = request.form
-
     if data['name'] is None:
         return "[ERROR] - member_add() - insert: name"
     if data['surname'] is None:
@@ -563,10 +831,262 @@ def member_add():
     return Response(json.dumps(msg), status=status_code)
 
 
+# -------------------------------MEMBER ACCOUNT-------------------------------#
+# -------------------------------MEMBER LANGUAGE-------------------------------#
+
+
+# TODO
+# -------------------------------ACADEMIC PROFILE-------------------------------#
+@app.route('/api_v0/academic_profile', methods=['POST'])
+def academic_profile_add():
+    # TODO permisos xd???
+    data = request.form
+    if data is None or (5 > len(data) > 8):
+        return bad_request("offer_add() - data len()")
+    if data['company_name'] is None:
+        return "[ERROR] - offer_add() - insert: company_name"
+    if data['address'] is None:
+        return "[ERROR] - offer_add() - insert: address"
+    if data['contact_name'] is None:
+        return "[ERROR] - offer_add() - insert: contact_name"
+    if data['contact_phone'] is None:
+        return "[ERROR] - offer_add() - insert: contact_phone"
+    if data['contact_email'] is None:
+        return "[ERROR] - offer_add() - insert: contact_email"
+
+    contact_name2 = "" if data['contact_name_2'] is None else data["contact_name_2"]
+    contact_phone2 = "" if data['contact_phone_2'] is None else data["contact_phone_2"]
+    contact_email2 = "" if data['contact_email_2'] is None else data["contact_email_2"]
+    offer = Offer.Offer(Company_Name=data['company_name'], Address=data['address'], Contact_Name=data['contact_name'],
+                        Contact_Phone=data['contact_phone'], Contact_Email=data['contact_email'],
+                        Contact_Name_2=contact_name2, Contact_Phone_2=contact_phone2, Contact_Email_2=contact_email2)
+    try:
+        # comprobar permisos
+        Offer.Offer.query.add(offer)
+        Offer.Offer.query.commit()
+        msg = {"new offer": offer.to_json()}
+        status_code = 200
+    except Exception as ex:
+        try:
+            Offer.Offer.query.rollback()
+        except Exception as ex:
+            pass
+        msg = {"no se pudo insertar academic_profile": offer.to_json()}
+        status_code = 500
+
+    return Response(json.dumps(msg), status=status_code)
+
+
+# -------------------------------PROFESSIONAL PROFILE-------------------------------#
+
+
+# -------------------------------SECTION-------------------------------#
+@app.route('/api_v0/section-list', methods=['GET'])
+def section_list():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiSection:
+        return forbidden()
+    data_list = [section.to_json() for section in Section.Section.query.all()]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"section": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/section/<category>', methods=['GET'])
+def section_by_category(category):
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiSection:
+        return forbidden()
+    data_list = [section.to_json() for section in Section.Section.query.filter_by(Category=category)]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"section": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/section', methods=['POST'])
+def section_add():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanMakeSection:
+        return forbidden()
+    data = request.form
+    if data is None or (6 > len(data) > 6):
+        return "[ERROR] - section_add() - data len()"
+    if data['category'] is None:
+        return "[ERROR] - section_add() - insert: category"
+    if data['description'] is None:
+        return "[ERROR] - section_add() - insert: description"
+    if data['publication_date'] is None:
+        return "[ERROR] - section_add() - insert: publication_date"
+    if data['schedule'] is None:
+        return "[ERROR] - section_add() - insert: schedule"
+    if data['img_resource'] is None:
+        return "[ERROR] - section_add() - insert: img_resource"
+    if data['price'] is None:
+        return "[ERROR] - section_add() - insert: price"
+
+    section = Section.Section(Category=data['category'], Description=data['description'],
+                              Publication_Date=data['publication_date'],
+                              Schedule=data['schedule'], Img_Resource=data['img_resource'], Price=data['price'])
+
+    try:
+        # comprobar permisos
+        Section.Section.query.add(section)
+        Section.Section.query.commit()
+        msg = {"new offer": section.to_json()}
+        status_code = 200
+    except Exception as ex:
+        try:
+            Section.Section.query.rollback()
+        except Exception as ex:
+            pass
+        msg = {"no se pudo insetar section": section.to_json()}
+        status_code = 500
+    return Response(json.dumps(msg), status=status_code)
+
+
+@app.route('/api_v0/section_update/<id>', methods=['PUT'])
+def section_update(id):
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanActiveSection:
+        return forbidden()
+    section = Section.Section.query.filter_by(ID_SECTION=id)
+    if len(section) == 0:
+        return not_found()
+    try:
+        section.Active = True
+        Section.Section.query.add(section)
+        msg = {"validate section": section.to_json()}
+        status_code = 200
+    except Exception as ex:
+        try:
+            Section.Section.query.rollback()
+        except Exception as ex:
+            pass
+        msg = {"no se pudo validar section": section.to_json()}
+        status_code = 500
+    return Response(json.dumps(msg), status=status_code)
+
+
+# -------------------------------COMPANY-------------------------------#
+@app.route('/api_v0/company-list', methods=['GET'])
+def company_list():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiCompany:
+        return forbidden()
+    data_list = [company.to_json() for company in Company.Company.query.all()]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"company": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/company/<id>', methods=['GET'])
+def company_by_id(id: int):
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiCompany:
+        return forbidden()
+    data_list = [company.to_json() for company in Company.Company.query.filter_by(ID_COMPANY=id)]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"company": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/company', methods=['POST'])
+def company_add():
+    # TODO permisos xd???
+    data = request.form
+    if data is None or (9 > len(data) > 9):
+        return "[ERROR] - company_add() - data len()"
+    if data['type'] is None:
+        return "[ERROR] - company_add() - insert: type"
+    if data['cif'] is None:
+        return "[ERROR] - company_add() - insert: CIF"
+    if data['address'] is None:
+        return "[ERROR] - company_add() - insert: address"
+    if data['cp'] is None:
+        return "[ERROR] - company_add() - insert: CP"
+    if data['city'] is None:
+        return "[ERROR] - company_add() - insert: city"
+    if data['province'] is None:
+        return "[ERROR] - company_add() - insert: province"
+    if data['contact_name'] is None:
+        return "[ERROR] - company_add() - insert: contact_name"
+    if data['contact_phone'] is None:
+        return "[ERROR] - company_add() - insert: contact_phone"
+    if data['contact_email'] is None:
+        return "[ERROR] - company_add() - insert: contact_email"
+
+    description = "" if data['description'] is None else data["description"]
+
+    company = Company.Company(Type=data['tyype'], CIF=data['cif'], Address=data['address'], CP=data['cp'],
+                              City=data['city'], Province=data['province'], Contact_Name=data['contact_name'],
+                              Contact_Phone=data['contact_phone'], Contact_Email=data['contact_email'],
+                              Description=description)
+
+    try:
+        # comprobar permisos
+        Company.Company.query.add(company)
+        Company.Company.query.commit()
+        msg = {"new offer": company.to_json()}
+        status_code = 200
+    except Exception as ex:
+        try:
+            Company.Company.query.rollback()
+        except Exception as ex:
+            pass
+        msg = {"no se pudo insertar company": company.to_json()}
+        status_code = 500
+    return Response(json.dumps(msg), status=status_code)
+
+
+# -------------------------------COMPANY ACCOUNT-------------------------------#
+
+
 # -------------------------------OFFER-------------------------------#
 @app.route('/api_v0/offer-list', methods=['GET'])
 def offer_list():
-    # comprobar permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
     data_list = [offer.to_json() for offer in Offer.Offer.query.all()]
     if len(data_list) == 0:
         return not_found()
@@ -576,7 +1096,13 @@ def offer_list():
 
 @app.route('/api_v0/offer/<id>', methods=['GET'])
 def offer_by_id(id: int):
-    # comprobar permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
     data_list = [offer.to_json() for offer in Offer.Offer.query.filter_by(ID_OFFER=id)]
     if len(data_list) == 0:
         return not_found()
@@ -588,6 +1114,13 @@ def offer_by_id(id: int):
 
 @app.route('/api_v0/offer', methods=['POST'])
 def offer_add():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanMakeOffer:
+        return forbidden()
     data = request.form
     if data is None or (5 > len(data) > 8):
         return "[ERROR] - offer_add() - data len()"
@@ -627,42 +1160,121 @@ def offer_add():
 
 # -------------------------------PROFESSIONAL_PROFILE-------------------------------#
 # TODO not implemented in v.0
+# -------------------------------MEMBER OFFER-------------------------------#
+@app.route('/api_v0/member_offer-list', methods=['GET'])
+def member_offer_list():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiMember:
+        return forbidden()
+    data_list = [member_offer.to_json() for member_offer in Member_Offer.Member_Offer.query.all()]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"member_offers": list}
+    return Response(json.dumps(msg), status=200)
 
-# -------------------------------QUALIFICATION-------------------------------#
-@app.route('/api_v0/qualification', methods=['POST'])
-def qualification_add():
+
+@app.route('/api_v0/member_offer/<id>', methods=['GET'])
+def member_offer_by_id(id: int):
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiMember:
+        return forbidden()
+    data_list = [member_offer.to_json() for member_offer in Member_Offer.Member_Offer.query.filter_by(Id_Member=id)]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"member_offers": list}  # there can be member_offers with the same id_member
+    return Response(json.dumps(msg), status=200)
+
+
+# -------------------------------JOB DEMAND-------------------------------#
+@app.route('/api_v0/job_demand-list', methods=['GET'])
+def job_demand_list():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
+    data_list = [job_demand.to_json() for job_demand in Job_Demand.Job_Demand.query.all()]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"job_demands": list}
+    return Response(json.dumps(msg), status=200)
+
+
+@app.route('/api_v0/job_demand/<id>', methods=['GET'])
+def job_demand_by_id(id: int):
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
+    data_list = [job_demand.to_json() for job_demand in Job_Demand.Job_Demand.query.filter_by(Id_Offer=id)]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"job_demands": list}  # there can be job_demands with the same id_offer
+    return Response(json.dumps(msg), status=200)
+
+
+@app.route('/api_v0/job_demand', methods=['POST'])
+def job_demand_add():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanMakeOffer:
+        return forbidden()
     data = request.form
-    if data is None or (5 > len(data) > 8):
-        return "[ERROR] - offer_add() - data len()"
-    if data['company_name'] is None:
-        return "[ERROR] - offer_add() - insert: company_name"
-    if data['address'] is None:
-        return "[ERROR] - offer_add() - insert: address"
-    if data['contact_name'] is None:
-        return "[ERROR] - offer_add() - insert: contact_name"
-    if data['contact_phone'] is None:
-        return "[ERROR] - offer_add() - insert: contact_phone"
-    if data['contact_email'] is None:
-        return "[ERROR] - offer_add() - insert: contact_email"
+    if data is None or (5 > len(data) > 5):
+        return "[ERROR] - job_demand_add() - data len()"
+    if data['vacancies'] is None:
+        return "[ERROR] - job_demand_add() - insert: vacancies"
+    if data['schedule'] is None:
+        return "[ERROR] - job_demand_add() - insert: schedule"
+    if data['working_day'] is None:
+        return "[ERROR] - job_demand_add() - insert: working_day"
+    if data['shift'] is None:
+        return "[ERROR] - job_demand_add() - insert: shift"
+    if data['disability_grade'] is None:
+        return "[ERROR] - job_demand_add() - insert: disability_grade"
 
-    contact_name2 = "" if data['contact_name_2'] is None else data["contact_name_2"]
-    contact_phone2 = "" if data['contact_phone_2'] is None else data["contact_phone_2"]
-    contact_email2 = "" if data['contact_email_2'] is None else data["contact_email_2"]
-    offer = Offer.Offer(Company_Name=data['company_name'], Address=data['address'], Contact_Name=data['contact_name'],
-                        Contact_Phone=data['contact_phone'], Contact_Email=data['contact_email'],
-                        Contact_Name_2=contact_name2, Contact_Phone_2=contact_phone2, Contact_Email_2=contact_email2)
+    monthly_salary = "" if data['monthly_salary'] is None else data["monthly_salary"]
+    contract_type = "" if data['contract_type'] is None else data["contract_type"]
+    holidays = "" if data['holidays'] is None else data["holidays"]
+    others = "" if data['monthly_salary'] is None else data["monthly_salary"]
+    experience = "" if data['contract_type'] is None else data["experience"]
+    vehicle = "" if data['vehicle'] is None else data["vehicle"]
+    geographical_mobility = "" if data['geographical_mobility'] is None else data["geographical_mobility"]
+
+    job_demand = Job_Demand.Job_Demand(Vacancies=data['vacancies'], Monthly_Salary=monthly_salary,
+                                       Contract_Type=contract_type, Schedule=data['schedule'],
+                                       Working_Day=data['working_day'], Shift=data['shift'], Holidays=holidays,
+                                       Experience=experience, Vehicle=vehicle,
+                                       Geographical_Mobility=geographical_mobility,
+                                       Disability_Grade=data['disability_grade'], Others=others)
     try:
         # comprobar permisos
-        Offer.Offer.query.add(offer)
-        Offer.Offer.query.commit()
-        msg = {"new offer": offer.to_json()}
+        Job_Demand.Job_Demand.query.add(job_demand)
+        Job_Demand.Job_Demand.query.commit()
+        msg = {"new job_demand": job_demand.to_json()}
         status_code = 200
     except Exception as ex:
         try:
-            Offer.Offer.query.rollback()
+            Job_Demand.Job_Demand.query.rollback()
         except Exception as ex:
             pass
-        msg = {"fuck new offer": offer.to_json()}
+        msg = {"no se pudo insertar job_demand": job_demand.to_json()}
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
@@ -755,6 +1367,116 @@ def role_by_name(name):
 
 
 
+# -------------------------------JOB DEMAND LANGUAGE-------------------------------#
+@app.route('/api_v0/job_demand_language-list', methods=['GET'])
+def job_demand_language_list():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
+    data_list = [job_demand_language.to_json() for job_demand_language in
+                 Job_Demand_Language.Job_Demand_Language.query.all()]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"job_demand_languages": list}
+    return Response(json.dumps(msg), status=200)
+
+
+@app.route('/api_v0/job_demand_language/<id>', methods=['GET'])
+def job_demand_language_by_id(id: int):
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
+    data_list = [job_demand_language.to_json() for job_demand_language in
+                 Job_Demand_Language.Job_Demand_Language.query.filter_by(Id_Job_Demand=id)]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"job_demand_languages": list}  # there can be job_demand_languages with the same id_job_demand
+    return Response(json.dumps(msg), status=200)
+
+
+# -------------------------------JOB DEMAND QUALIFICATION-------------------------------#
+@app.route('/api_v0/job_demand_qualification-list', methods=['GET'])
+def job_demand_qualification_list():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
+    data_list = [job_demand_qualification.to_json() for job_demand_qualification in
+                 Job_Demand_Qualification.Job_Demand_Qualification.query.all()]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"job_demand_qualifications": list}
+    return Response(json.dumps(msg), status=200)
+
+
+@app.route('/api_v0/job_demand_qualification/<id>', methods=['GET'])
+def job_demand_qualification_by_id(id: int):
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
+    data_list = [job_demand_qualification.to_json() for job_demand_qualification in
+                 Job_Demand_Qualification.Job_Demand_Qualification.query.filter_by(Id_Job_Demand=id)]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"job_demand_qualifications": list}  # there can be job_demand_qualifications with the same id_job_demand
+    return Response(json.dumps(msg), status=200)
+
+
+# -------------------------------JOB DEMAND CATEGORY-------------------------------#
+@app.route('/api_v0/job_demand_category-list', methods=['GET'])
+def job_demand_category_list():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
+    data_list = [job_demand_category.to_json() for job_demand_category in
+                 Job_Demand_Category.Job_Demand_Category.query.all()]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"job_demand_categories": list}
+    return Response(json.dumps(msg), status=200)
+
+
+@app.route('/api_v0/job_demand_category/<id>', methods=['GET'])
+def job_demand_category_by_id(id: int):
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
+    data_list = [job_demand_category.to_json() for job_demand_category in
+                 Job_Demand_Category.Job_Demand_Category.query.filter_by(Id_Job_Demand=id)]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"job_demand_categories": list}  # there can be job_demand_categories with the same id_job_demand
+    return Response(json.dumps(msg), status=200)
+
+
+# -------------------------------REVIEW-------------------------------#
+# endregion
+# ==================================================================================================================== #
+# =======================================================   PAGES   ================================================== #
+# region PAGES
 # LOGIN
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -959,6 +1681,10 @@ def user_by_id(id: int):
 # FUNCIONES PARA LOS ERRORES MAS COMUNES
 
 
+# endregion
+# ==================================================================================================================== #
+# ==================================== FUNCIONES PARA LOS ERRORES MAS COMUNES ======================================== #
+# region RESPONSES DE ERROR
 # Error 400-Bad Request
 def bad_request(msg: str = ERROR_400_DEFAULT_MSG) -> Response:
     return Response(json.dumps({
@@ -1005,7 +1731,10 @@ def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
     }), status=504)
 
 
-# inicio del main
+# endregion
+# ==================================================================================================================== #
+# ========================================================= MAIN ===================================================== #
+# region MAIN
 if __name__ == '__main__':
     # acceso al diccionario con las credenciales para acceder a la base de datos
     app.config.from_object(conf)
@@ -1021,3 +1750,6 @@ if __name__ == '__main__':
     app.register_error_handler(504, gateway_timeout)
     # run
     app.run(host='0.0.0.0', port=80)
+
+# endregion
+# ==================================================================================================================== #
