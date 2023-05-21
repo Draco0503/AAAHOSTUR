@@ -8,6 +8,7 @@ from models import Language, Job_Category, Qualification, Role, User, Member, Me
 from config import config
 from aaahostur.security import security
 
+# error message repository
 ERROR_400_DEFAULT_MSG = "The server cannot or will not process the request."
 ERROR_403_DEFAULT_MSG = "You are not allowed to access to this endpoint."
 ERROR_404_DEFAULT_MSG = "The requested URL was not found on the server. " \
@@ -40,294 +41,43 @@ def index():
     return render_template('t-login.html', prueba='holka')
 
 
-# -------------------------------Language-------------------------------#
-
-@app.route('/api_v0/language-list', methods=['GET'])
-def language_list():
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
-    data_list = [language.to_json() for language in Language.Language.query.all()]
-    if len(data_list) == 0:
-        return not_found()
-    msg = {"languages": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-@app.route('/api_v0/language/<id>', methods=['GET'])
-def language_by_id(id: int):
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
-    data_list = [language.to_json() for language in Language.Language.query.filter_by(ID_LANGUAGE=id)]
-    if len(data_list) == 0:
-        return not_found()
-    msg = {"languages": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-@app.route('/api_v0/language/<name>', methods=['GET'])
-def language_by_name(name):
-    # comprobacion de roles
-    # no roles inadequate_Permits
-    data_list = [language.to_json() for language in Language.Language.query.filter_by(Name=name)]
-    if len(data_list) == 0:
-        return not_found()
-    msg = {"languages": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-# -------------------------------Job_Category-------------------------------#
-@app.route('/api_v0/job_category-list', methods=['GET'])
-def job_category_list():
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
-    data_list = [job_Category.to_json() for job_Category in Job_Category.Job_Category.query.all()]
-    if len(data_list) == 0:
-        return not_found()
-    msg = {"job_Category": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-@app.route('/api_v0/job_category/<id>', methods=['GET'])
-def job_category_by_id(id: int):
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
-    data_list = [job_Category.to_json() for job_Category in 
-                 Job_Category.Job_Category.query.filter_by(ID_JOB_CATEGORY=id)]
-    if len(data_list) == 0:
-        return not_found()
-    msg = {"job_Category": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-# -------------------------------Qualification-------------------------------#
-
-@app.route('/api_v0/qualification-list', methods=['GET'])
-def qualification_list():
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
-    data_list = [qualification.to_json() for qualification in Qualification.Qualification.query.all()]
-    if len(data_list) == 0:
-        return not_found()
-    msg = {"qualification": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-@app.route('/api_v0/qualification/<id>', methods=['GET'])
-def job_qualification_by_id(id: int):
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
-    data_list = [qualification.to_json() for qualification in
-                 Qualification.Qualification.query.filter_by(ID_QUALIFICATION=id)]
-    if len(data_list) == 0:
-        return not_found()
-    msg = {"qualification": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-# -------------------------------ROLE-------------------------------#
-@app.route('/api_v0/role-list', methods=['GET'])
-def role_list():
-    # 1º conseguir header de la peticion
-    # 2º si tiene permisos hacer la logica tal cual esta definida
-    #    si no tiene permisos return inadequate_Permits()
-    data_list = [role.to_json() for role in Role.Role.query.all()]
-    if len(data_list) == 0:
-        return not_found()
-    msg = {"roles": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-@app.route('/api_v0/role/<id>', methods=['GET'])
-def role_by_id(id: int):
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None or not role.CanSeeApiRole:
-        return forbidden()
-    data_list = [role.to_json() for role in Role.Role.query.filter_by(ID_ROLE=id)]
-    if len(data_list) == 0:
-        return not_found()
-    msg = {"roles": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-@app.route('/api_v0/role/<name>', methods=['GET'])
-def role_by_name(name):
-    # comprobacion de roles
-    # no roles inadequate_Permits
-    data_list = [role.to_json() for role in Role.Role.query.filter_by(Name=name)]
-    if len(data_list) == 0:
-        return not_found()
-    msg = {"roles": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-# -------------------------------User-------------------------------#
-
-@app.route('/api_v0/user-list', methods=['GET'])
-def user_list():
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
-    data_list = [user.to_json() for user in User.User.query.all()]
-    if len(data_list) == 0:
-        return not_found()
-    msg = {"user": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-@app.route('/api_v0/user/<id>', methods=['GET'])
-def user_by_id(id: int):
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
-    data_list = [user.to_json() for user in User.User.query.filter_by(ID_USER=id)]
-    if len(data_list) == 0:
-        return not_found()
-    msg = {"user": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-# -------------------------------Section-------------------------------#
-
-@app.route('/api_v0/section-list', methods=['GET'])
-def section_list():
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
-    data_list = [section.to_json() for section in Section.Section.query.all()]
-    if len(data_list) == 0:
-        return not_found()
-    msg = {"section": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-@app.route('/api_v0/section/<category>', methods=['GET'])
-def section_by_category(category):
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
-    data_list = [section.to_json() for section in Section.Section.query.filter_by(Category=category)]
-    if len(data_list) == 0:
-        return not_found()
-    msg = {"section": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-@app.route('/api_v0/section', methods=['POST'])
-def section_add():
+# -------------------------------ACADEMIC PROFILE-------------------------------#
+@app.route('/api_v0/academic_profile', methods=['POST'])
+def academic_profile_add():
     data = request.form
-    if data is None or (6 > len(data) > 6):
-        return "[ERROR] - section_add() - data len()"
-    if data['category'] is None:
-        return "[ERROR] - section_add() - insert: category"
-    if data['description'] is None:
-        return "[ERROR] - section_add() - insert: description"
-    if data['publication_date'] is None:
-        return "[ERROR] - section_add() - insert: publication_date"
-    if data['schedule'] is None:
-        return "[ERROR] - section_add() - insert: schedule"
-    if data['img_resource'] is None:
-        return "[ERROR] - section_add() - insert: img_resource"
-    if data['price'] is None:
-        return "[ERROR] - section_add() - insert: price"
+    # NOT NULL fields
+    if data is None or (2 > len(data) > 3):
+        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data len()]')
+    if data['school'] is None:
+        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <school>]')
+    if data['graduation_date'] is None:
+        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <graduation_date>]')
 
-    section = Section.Section(Category=data['category'], Description=data['description'],
-                              Publication_Date=data['publication_date'],
-                              Schedule=data['schedule'], Img_Resource=data['img_resource'], Price=data['price'])
+    # NULL fields
+    promotion = '' if data['promotion'] is None else data['promotion']
 
+    academic_profile = Academic_Profile.Academic_Profile(School= data['school'], 
+                                                         Graduation_Date= data['graduation_date'], 
+                                                         Promotion= promotion)
     try:
-        # comprobar permisos
-        Section.Section.query.add(section)
-        Section.Section.query.commit()
-        msg = {"new offer": section.to_json()}
+        # TODO check role
+        Academic_Profile.Academic_Profile.query.add(academic_profile)
+        Academic_Profile.Academic_Profile.query.commit()
+        msg = {'NEW academic_profile ADDED': academic_profile.to_json()}
         status_code = 200
+
     except Exception as ex:
-        try:
-            Section.Section.query.rollback()
-        except Exception as ex:
-            pass
-        msg = {"no se pudo insetar section": section.to_json()}
+        Academic_Profile.Academic_Profile.query.rollback()
+        msg = {ERROR_500_DEFAULT_MSG: academic_profile.to_json()}
         status_code = 500
-    return Response(json.dumps(msg), status=status_code)
+
+    return Response(json.dumps(msg), status= status_code)
 
 
-@app.route('/api_v0/section_update/<id>', methods=['POST', 'GET'])
-def section_update(id):
-    section = Section.Section.query.filter_by(ID_SECTION=id)
-    if len(section) == 0:
-        return not_found()
-    try:
-        section.Active = True
-        Section.Section.query.add(section)
-        msg = {"validate section": section.to_json()}
-        status_code = 200
-    except Exception as ex:
-        try:
-            Section.Section.query.rollback()
-        except Exception as ex:
-            pass
-        msg = {"no se pudo validar section": section.to_json()}
-        status_code = 500
-    return Response(json.dumps(msg), status=status_code)
+# -------------------------------COMPANY ACCOUNT-------------------------------#
+# TODO not implemented in v.0
 
-
-# -------------------------------Company-------------------------------#
-
+# -------------------------------COMPANY-------------------------------#
 @app.route('/api_v0/company-list', methods=['GET'])
 def company_list():
     # comprobacion de roles
@@ -363,97 +113,110 @@ def company_by_id(id: int):
 @app.route('/api_v0/company', methods=['POST'])
 def company_add():
     data = request.form
-    if data is None or (9 > len(data) > 9):
-        return "[ERROR] - company_add() - data len()"
+    if data is None or (5 > len(data) > 10):
+        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data len()]')
     if data['type'] is None:
-        return "[ERROR] - company_add() - insert: type"
+        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <type>')
     if data['cif'] is None:
-        return "[ERROR] - company_add() - insert: CIF"
-    if data['address'] is None:
-        return "[ERROR] - company_add() - insert: address"
-    if data['cp'] is None:
-        return "[ERROR] - company_add() - insert: CP"
-    if data['city'] is None:
-        return "[ERROR] - company_add() - insert: city"
-    if data['province'] is None:
-        return "[ERROR] - company_add() - insert: province"
+        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <cif>]')
     if data['contact_name'] is None:
-        return "[ERROR] - company_add() - insert: contact_name"
+        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <contact_name>]')
     if data['contact_phone'] is None:
-        return "[ERROR] - company_add() - insert: contact_phone"
+        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <contact_phone>]')
     if data['contact_email'] is None:
-        return "[ERROR] - company_add() - insert: contact_email"
+        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <contact_email>]')
 
-    description = "" if data['description'] is None else data["description"]
+    address = "" if data['address'] is None else data['address']
+    cp = "" if data['cp'] is None else data['cp']
+    city = "" if data['city'] is None else data['city']
+    province = "" if data['province'] is None else data['province']
+    description = "" if data['description'] is None else data['description']
 
-    company = Company.Company(Type=data['tyype'], CIF=data['cif'], Address=data['address'], CP=data['cp'],
-                              City=data['city'], Province=data['province'], Contact_Name=data['contact_name'],
-                              Contact_Phone=data['contact_phone'], Contact_Email=data['contact_email'],
-                              Description=description)
+    company = Company.Company(Type= data['type'], 
+                              CIF= data['cif'], 
+                              Address= address, 
+                              CP= cp,
+                              City= city, 
+                              Province= province, 
+                              Contact_Name= data['contact_name'],
+                              Contact_Phone= data['contact_phone'], 
+                              Contact_Email= data['contact_email'],
+                              Description= description)
 
     try:
-        # comprobar permisos
+        # TODO check role
         Company.Company.query.add(company)
         Company.Company.query.commit()
-        msg = {"new offer": company.to_json()}
+        msg = {'NEW company ADDED': company.to_json()}
         status_code = 200
+
     except Exception as ex:
-        try:
-            Company.Company.query.rollback()
-        except Exception as ex:
-            pass
-        msg = {"no se pudo insertar company": company.to_json()}
+        Company.Company.query.rollback()
+        msg = {ERROR_500_DEFAULT_MSG: company.to_json()}
         status_code = 500
+
     return Response(json.dumps(msg), status=status_code)
 
+# -------------------------------JOB_CATEGORY--------------------------------------#
+@app.route('/api_v0/job_category-list', methods=['GET'])
+def job_category_list():
+    # comprobacion de roles
 
-# TODO
-# -------------------------------ACADEMIC PROFILE-------------------------------#
-@app.route('/api_v0/academic_profile', methods=['POST'])
-def academic_profile_add():
+    # no roles inadequate_Permits
+
+    # si tiene permisos
+    data_list = [job_Category.to_json() for job_Category in Job_Category.Job_Category.query.all()]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"job_Category": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/job_category/<id>', methods=['GET'])
+def job_category_by_id(id: int):
+    # comprobacion de roles
+
+    # no roles inadequate_Permits
+
+    # si tiene permisos
+    data_list = [job_Category.to_json() for job_Category in 
+                 Job_Category.Job_Category.query.filter_by(ID_JOB_CATEGORY=id)]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"job_Category": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/job_category', methods=['POST'])
+def job_category_add():
     data = request.form
-    if data is None or (5 > len(data) > 8):
-        return bad_request("offer_add() - data len()")
-    if data['company_name'] is None:
-        return "[ERROR] - offer_add() - insert: company_name"
-    if data['address'] is None:
-        return "[ERROR] - offer_add() - insert: address"
-    if data['contact_name'] is None:
-        return "[ERROR] - offer_add() - insert: contact_name"
-    if data['contact_phone'] is None:
-        return "[ERROR] - offer_add() - insert: contact_phone"
-    if data['contact_email'] is None:
-        return "[ERROR] - offer_add() - insert: contact_email"
+    if data is None or (2 > len(data) > 2):
+        return bad_request(ERROR_400_DEFAULT_MSG + ' [job_category_add() - data len()]')
+    if data['name'] is None:
+        return bad_request(ERROR_400_DEFAULT_MSG + ' [job_category_add() - data <name>')
+    if data['description'] is None:
+        return bad_request(ERROR_400_DEFAULT_MSG + ' [job_category_add() - data <description>]')
 
-    contact_name2 = "" if data['contact_name_2'] is None else data["contact_name_2"]
-    contact_phone2 = "" if data['contact_phone_2'] is None else data["contact_phone_2"]
-    contact_email2 = "" if data['contact_email_2'] is None else data["contact_email_2"]
-    offer = Offer.Offer(Company_Name=data['company_name'], Address=data['address'], Contact_Name=data['contact_name'],
-                        Contact_Phone=data['contact_phone'], Contact_Email=data['contact_email'],
-                        Contact_Name_2=contact_name2, Contact_Phone_2=contact_phone2, Contact_Email_2=contact_email2)
+    job_category = Job_Category.Job_Category(Name= data['name'], 
+                                             Description= data['description'])
+
     try:
-        # comprobar permisos
-        Offer.Offer.query.add(offer)
-        Offer.Offer.query.commit()
-        msg = {"new offer": offer.to_json()}
+        # TODO check role
+        Job_Category.Job_Category.query.add(job_category)
+        Job_Category.Job_Category.query.commit()
+        msg = {'NEW job_category ADDED': job_category.to_json()}
         status_code = 200
+
     except Exception as ex:
-        try:
-            Offer.Offer.query.rollback()
-        except Exception as ex:
-            pass
-        msg = {"no se pudo insertar academic_profile": offer.to_json()}
+        Job_Category.Job_Category.query.rollback()
+        msg = {ERROR_500_DEFAULT_MSG: job_category.to_json()}
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
-
-
-# -------------------------------COMPANY ACCOUNT-------------------------------#
-
-
-# -------------------------------COMPANY-------------------------------#
-
-
 # -------------------------------JOB_DEMAND_CATEGORY-------------------------------#
 @app.route('/api_v0/job_demand_category-list', methods=['GET'])
 def job_demand_category_list():
@@ -592,47 +355,91 @@ def job_demand_add():
 
 
 # -------------------------------LANGUAGE-------------------------------#
-@app.route('/api_v0/language', methods=['POST'])
-def language_add():
-    data = request.form
-    if data is None or (5 > len(data) > 8):
-        return "[ERROR] - offer_add() - data len()"
-    if data['company_name'] is None:
-        return "[ERROR] - offer_add() - insert: company_name"
-    if data['address'] is None:
-        return "[ERROR] - offer_add() - insert: address"
-    if data['contact_name'] is None:
-        return "[ERROR] - offer_add() - insert: contact_name"
-    if data['contact_phone'] is None:
-        return "[ERROR] - offer_add() - insert: contact_phone"
-    if data['contact_email'] is None:
-        return "[ERROR] - offer_add() - insert: contact_email"
+@app.route('/api_v0/language-list', methods=['GET'])
+def language_list():
+    # comprobacion de roles
 
-    contact_name2 = "" if data['contact_name_2'] is None else data["contact_name_2"]
-    contact_phone2 = "" if data['contact_phone_2'] is None else data["contact_phone_2"]
-    contact_email2 = "" if data['contact_email_2'] is None else data["contact_email_2"]
-    offer = Offer.Offer(Company_Name=data['company_name'], Address=data['address'], Contact_Name=data['contact_name'],
-                        Contact_Phone=data['contact_phone'], Contact_Email=data['contact_email'],
-                        Contact_Name_2=contact_name2, Contact_Phone_2=contact_phone2, Contact_Email_2=contact_email2)
+    # no roles inadequate_Permits
+
+    # si tiene permisos
+    data_list = [language.to_json() for language in Language.Language.query.all()]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"languages": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/language/<id>', methods=['GET'])
+def language_by_id(id: int):
+    # comprobacion de roles
+
+    # no roles inadequate_Permits
+
+    # si tiene permisos
+    data_list = [language.to_json() for language in Language.Language.query.filter_by(ID_LANGUAGE=id)]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"languages": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/language/<name>', methods=['GET'])
+def language_by_name(name):
+    # comprobacion de roles
+    # no roles inadequate_Permits
+    data_list = [language.to_json() for language in Language.Language.query.filter_by(Name=name)]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"languages": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+@app.route('/api_v0/language', methods=['POST'])
+def section_add():
+    # TODO comprobacion de roles
+    data = request.form
+    if data is None or (3 > len(data) > 3):
+        return "[ERROR] - section_add() - data len()"
+    if data['category'] is None:
+        return "[ERROR] - section_add() - insert: category"
+    if data['description'] is None:
+        return "[ERROR] - section_add() - insert: description"
+    if data['publication_date'] is None:
+        return "[ERROR] - section_add() - insert: publication_date"
+    if data['schedule'] is None:
+        return "[ERROR] - section_add() - insert: schedule"
+    if data['img_resource'] is None:
+        return "[ERROR] - section_add() - insert: img_resource"
+    if data['price'] is None:
+        return "[ERROR] - section_add() - insert: price"
+
+    section = Section.Section(Category=data['category'], Description=data['description'],
+                              Publication_Date=data['publication_date'],
+                              Schedule=data['schedule'], Img_Resource=data['img_resource'], Price=data['price'])
+
     try:
         # comprobar permisos
-        Offer.Offer.query.add(offer)
-        Offer.Offer.query.commit()
-        msg = {"new offer": offer.to_json()}
+        Section.Section.query.add(section)
+        Section.Section.query.commit()
+        msg = {"new offer": section.to_json()}
         status_code = 200
     except Exception as ex:
         try:
-            Offer.Offer.query.rollback()
+            Section.Section.query.rollback()
         except Exception as ex:
             pass
-        msg = {"fuck new offer": offer.to_json()}
+        msg = {"no se pudo insetar section": section.to_json()}
         status_code = 500
-
     return Response(json.dumps(msg), status=status_code)
 
 
 # -------------------------------MEMBER_ACCOUNT-------------------------------#
-
+# TODO not implemented in v.0
 
 # -------------------------------MEMBER_LANGUAGE-------------------------------#
 
@@ -819,7 +626,7 @@ def offer_add():
 
 
 # -------------------------------PROFESSIONAL_PROFILE-------------------------------#
-
+# TODO not implemented in v.0
 
 # -------------------------------QUALIFICATION-------------------------------#
 @app.route('/api_v0/qualification', methods=['POST'])
@@ -861,7 +668,91 @@ def qualification_add():
     return Response(json.dumps(msg), status=status_code)
 
 
+@app.route('/api_v0/qualification-list', methods=['GET'])
+def qualification_list():
+    # comprobacion de roles
+
+    # no roles inadequate_Permits
+
+    # si tiene permisos
+    data_list = [qualification.to_json() for qualification in Qualification.Qualification.query.all()]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"qualification": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/qualification/<id>', methods=['GET'])
+def job_qualification_by_id(id: int):
+    # comprobacion de roles
+
+    # no roles inadequate_Permits
+
+    # si tiene permisos
+    data_list = [qualification.to_json() for qualification in
+                 Qualification.Qualification.query.filter_by(ID_QUALIFICATION=id)]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"qualification": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
 # -------------------------------REVIEW-------------------------------#
+# TODO not implemented in v.0
+
+# -------------------------------ROLE-------------------------------#
+@app.route('/api_v0/role-list', methods=['GET'])
+def role_list():
+    # 1º conseguir header de la peticion
+    # 2º si tiene permisos hacer la logica tal cual esta definida
+    #    si no tiene permisos return inadequate_Permits()
+    data_list = [role.to_json() for role in Role.Role.query.all()]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"roles": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/role/<id>', methods=['GET'])
+def role_by_id(id: int):
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None or not role.CanSeeApiRole:
+        return forbidden()
+    data_list = [role.to_json() for role in Role.Role.query.filter_by(ID_ROLE=id)]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"roles": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/role/<name>', methods=['GET'])
+def role_by_name(name):
+    # comprobacion de roles
+    # no roles inadequate_Permits
+    data_list = [role.to_json() for role in Role.Role.query.filter_by(Name=name)]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"roles": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+
+
+
+
+
 
 
 # LOGIN
@@ -942,9 +833,127 @@ def job_category_add():
 
 
 # -------------------------------SECTION-------------------------------#
+@app.route('/api_v0/section-list', methods=['GET'])
+def section_list():
+    # comprobacion de roles
+
+    # no roles inadequate_Permits
+
+    # si tiene permisos
+    data_list = [section.to_json() for section in Section.Section.query.all()]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"section": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/section/<category>', methods=['GET'])
+def section_by_category(category):
+    # comprobacion de roles
+
+    # no roles inadequate_Permits
+
+    # si tiene permisos
+    data_list = [section.to_json() for section in Section.Section.query.filter_by(Category=category)]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"section": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/section', methods=['POST'])
+def section_add():
+    data = request.form
+    if data is None or (6 > len(data) > 6):
+        return "[ERROR] - section_add() - data len()"
+    if data['category'] is None:
+        return "[ERROR] - section_add() - insert: category"
+    if data['description'] is None:
+        return "[ERROR] - section_add() - insert: description"
+    if data['publication_date'] is None:
+        return "[ERROR] - section_add() - insert: publication_date"
+    if data['schedule'] is None:
+        return "[ERROR] - section_add() - insert: schedule"
+    if data['img_resource'] is None:
+        return "[ERROR] - section_add() - insert: img_resource"
+    if data['price'] is None:
+        return "[ERROR] - section_add() - insert: price"
+
+    section = Section.Section(Category=data['category'], Description=data['description'],
+                              Publication_Date=data['publication_date'],
+                              Schedule=data['schedule'], Img_Resource=data['img_resource'], Price=data['price'])
+
+    try:
+        # comprobar permisos
+        Section.Section.query.add(section)
+        Section.Section.query.commit()
+        msg = {"new offer": section.to_json()}
+        status_code = 200
+    except Exception as ex:
+        try:
+            Section.Section.query.rollback()
+        except Exception as ex:
+            pass
+        msg = {"no se pudo insetar section": section.to_json()}
+        status_code = 500
+    return Response(json.dumps(msg), status=status_code)
+
+
+@app.route('/api_v0/section_update/<id>', methods=['POST', 'GET'])
+def section_update(id):
+    section = Section.Section.query.filter_by(ID_SECTION=id)
+    if len(section) == 0:
+        return not_found()
+    try:
+        section.Active = True
+        Section.Section.query.add(section)
+        msg = {"validate section": section.to_json()}
+        status_code = 200
+    except Exception as ex:
+        try:
+            Section.Section.query.rollback()
+        except Exception as ex:
+            pass
+        msg = {"no se pudo validar section": section.to_json()}
+        status_code = 500
+    return Response(json.dumps(msg), status=status_code)
 
 
 # -------------------------------USER-------------------------------#
+@app.route('/api_v0/user-list', methods=['GET'])
+def user_list():
+    # comprobacion de roles
+
+    # no roles inadequate_Permits
+
+    # si tiene permisos
+    data_list = [user.to_json() for user in User.User.query.all()]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"user": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
+
+
+@app.route('/api_v0/user/<id>', methods=['GET'])
+def user_by_id(id: int):
+    # comprobacion de roles
+
+    # no roles inadequate_Permits
+
+    # si tiene permisos
+    data_list = [user.to_json() for user in User.User.query.filter_by(ID_USER=id)]
+    if len(data_list) == 0:
+        return not_found()
+    msg = {"user": list}
+    return Response(json.dumps(
+        msg,
+    ), status=200)
 
 
 # FUNCIONES PARA LOS ERRORES MAS COMUNES
