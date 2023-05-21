@@ -8,7 +8,7 @@ from models import Language, Job_Category, Qualification, Role, User, Member, Me
 from config import config
 from aaahostur.security import security
 
-# region constants
+# region CONSTANTS
 ERROR_400_DEFAULT_MSG = "The server cannot or will not process the request."
 ERROR_403_DEFAULT_MSG = "You are not allowed to access to this endpoint."
 ERROR_404_DEFAULT_MSG = "The requested URL was not found on the server. " \
@@ -61,11 +61,13 @@ def index():
 # -------------------------------LANGUAGE-------------------------------#
 @app.route('/api_v0/language-list', methods=['GET'])
 def language_list():
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiLanguage:
+        return forbidden()
     data_list = [language.to_json() for language in Language.Language.query.all()]
     if len(data_list) == 0:
         return not_found()
@@ -77,11 +79,13 @@ def language_list():
 
 @app.route('/api_v0/language/<id>', methods=['GET'])
 def language_by_id(id: int):
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiLanguage:
+        return forbidden()
     data_list = [language.to_json() for language in Language.Language.query.filter_by(ID_LANGUAGE=id)]
     if len(data_list) == 0:
         return not_found()
@@ -93,8 +97,13 @@ def language_by_id(id: int):
 
 @app.route('/api_v0/language/<name>', methods=['GET'])
 def language_by_name(name):
-    # comprobacion de roles
-    # no roles inadequate_Permits
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiLanguage:
+        return forbidden()
     data_list = [language.to_json() for language in Language.Language.query.filter_by(Name=name)]
     if len(data_list) == 0:
         return not_found()
@@ -106,6 +115,7 @@ def language_by_name(name):
 
 @app.route('/api_v0/language', methods=['POST'])
 def language_add():
+    # TODO permisos xd???
     data = request.form
     if data is None or (5 > len(data) > 8):
         return "[ERROR] - offer_add() - data len()"
@@ -146,11 +156,13 @@ def language_add():
 # -------------------------------JOB CATEGORY-------------------------------#
 @app.route('/api_v0/job_category-list', methods=['GET'])
 def job_category_list():
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiJobCategory:
+        return forbidden()
     data_list = [job_Category.to_json() for job_Category in Job_Category.Job_Category.query.all()]
     if len(data_list) == 0:
         return not_found()
@@ -162,11 +174,13 @@ def job_category_list():
 
 @app.route('/api_v0/job_category/<id>', methods=['GET'])
 def job_category_by_id(id: int):
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiJobCategory:
+        return forbidden()
     data_list = [job_Category.to_json() for job_Category in
                  Job_Category.Job_Category.query.filter_by(ID_JOB_CATEGORY=id)]
     if len(data_list) == 0:
@@ -179,6 +193,7 @@ def job_category_by_id(id: int):
 
 @app.route('/api_v0/job_category', methods=['POST'])
 def job_category_add():
+    # TODO permisos xd???
     data = request.form
     if data is None or (2 > len(data) > 2):
         return "[ERROR] - job_category_add() - data len()"
@@ -208,11 +223,13 @@ def job_category_add():
 # -------------------------------QUALIFICATION-------------------------------#
 @app.route('/api_v0/qualification-list', methods=['GET'])
 def qualification_list():
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiQualification:
+        return forbidden()
     data_list = [qualification.to_json() for qualification in Qualification.Qualification.query.all()]
     if len(data_list) == 0:
         return not_found()
@@ -224,11 +241,13 @@ def qualification_list():
 
 @app.route('/api_v0/qualification/<id>', methods=['GET'])
 def job_qualification_by_id(id: int):
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiQualification:
+        return forbidden()
     data_list = [qualification.to_json() for qualification in
                  Qualification.Qualification.query.filter_by(ID_QUALIFICATION=id)]
     if len(data_list) == 0:
@@ -241,6 +260,7 @@ def job_qualification_by_id(id: int):
 
 @app.route('/api_v0/qualification', methods=['POST'])
 def qualification_add():
+    # TODO permisos xd???
     data = request.form
     if data is None or (5 > len(data) > 8):
         return "[ERROR] - offer_add() - data len()"
@@ -281,9 +301,13 @@ def qualification_add():
 # -------------------------------ROLE-------------------------------#
 @app.route('/api_v0/role-list', methods=['GET'])
 def role_list():
-    # 1º conseguir header de la peticion
-    # 2º si tiene permisos hacer la logica tal cual esta definida
-    #    si no tiene permisos return inadequate_Permits()
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiRole:
+        return forbidden()
     data_list = [role.to_json() for role in Role.Role.query.all()]
     if len(data_list) == 0:
         return not_found()
@@ -298,22 +322,11 @@ def role_by_id(id: int):
     if check_auth():
         return redirect(url_for(".login", _method='GET'))
     role = get_privileges_from_token(request.headers['auth'])
-    if role is None or not role.CanSeeApiRole:
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiRole:
         return forbidden()
     data_list = [role.to_json() for role in Role.Role.query.filter_by(ID_ROLE=id)]
-    if len(data_list) == 0:
-        return not_found()
-    msg = {"roles": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-@app.route('/api_v0/role/<name>', methods=['GET'])
-def role_by_name(name):
-    # comprobacion de roles
-    # no roles inadequate_Permits
-    data_list = [role.to_json() for role in Role.Role.query.filter_by(Name=name)]
     if len(data_list) == 0:
         return not_found()
     msg = {"roles": list}
@@ -325,11 +338,13 @@ def role_by_name(name):
 # -------------------------------USER-------------------------------#
 @app.route('/api_v0/user-list', methods=['GET'])
 def user_list():
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiUser:
+        return forbidden()
     data_list = [user.to_json() for user in User.User.query.all()]
     if len(data_list) == 0:
         return not_found()
@@ -341,11 +356,13 @@ def user_list():
 
 @app.route('/api_v0/user/<id>', methods=['GET'])
 def user_by_id(id: int):
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiUser:
+        return forbidden()
     data_list = [user.to_json() for user in User.User.query.filter_by(ID_USER=id)]
     if len(data_list) == 0:
         return not_found()
@@ -358,6 +375,13 @@ def user_by_id(id: int):
 # -------------------------------MEMBER-------------------------------#
 @app.route('/api_v0/member-list', methods=['GET'])
 def member_list():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiMember:
+        return forbidden()
     data_list = [member.to_json() for member in Member.Member.query.all()]
     if len(data_list) == 0:
         return not_found()
@@ -367,6 +391,13 @@ def member_list():
 
 @app.route('/api_v0/member/<id>', methods=['GET'])
 def member_by_id(id: int):
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiMember:
+        return forbidden()
     data_list = [member.to_json() for member in Member.Member.query.filter_by(ID_MEMBER=id)]
     if len(data_list) == 0:
         return not_found()
@@ -376,8 +407,8 @@ def member_by_id(id: int):
 
 @app.route('/api_v0/member', methods=['POST'])
 def member_add():
+    # TODO permisos xd???
     data = request.form
-
     if data['name'] is None:
         return "[ERROR] - member_add() - insert: name"
     if data['surname'] is None:
@@ -461,6 +492,7 @@ def member_add():
 # -------------------------------ACADEMIC PROFILE-------------------------------#
 @app.route('/api_v0/academic_profile', methods=['POST'])
 def academic_profile_add():
+    # TODO permisos xd???
     data = request.form
     if data is None or (5 > len(data) > 8):
         return bad_request("offer_add() - data len()")
@@ -504,11 +536,13 @@ def academic_profile_add():
 # -------------------------------SECTION-------------------------------#
 @app.route('/api_v0/section-list', methods=['GET'])
 def section_list():
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiSection:
+        return forbidden()
     data_list = [section.to_json() for section in Section.Section.query.all()]
     if len(data_list) == 0:
         return not_found()
@@ -520,11 +554,13 @@ def section_list():
 
 @app.route('/api_v0/section/<category>', methods=['GET'])
 def section_by_category(category):
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiSection:
+        return forbidden()
     data_list = [section.to_json() for section in Section.Section.query.filter_by(Category=category)]
     if len(data_list) == 0:
         return not_found()
@@ -536,6 +572,13 @@ def section_by_category(category):
 
 @app.route('/api_v0/section', methods=['POST'])
 def section_add():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanMakeSection:
+        return forbidden()
     data = request.form
     if data is None or (6 > len(data) > 6):
         return "[ERROR] - section_add() - data len()"
@@ -572,8 +615,15 @@ def section_add():
     return Response(json.dumps(msg), status=status_code)
 
 
-@app.route('/api_v0/section_update/<id>', methods=['POST', 'GET'])
+@app.route('/api_v0/section_update/<id>', methods=['PUT'])
 def section_update(id):
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanActiveSection:
+        return forbidden()
     section = Section.Section.query.filter_by(ID_SECTION=id)
     if len(section) == 0:
         return not_found()
@@ -595,11 +645,13 @@ def section_update(id):
 # -------------------------------COMPANY-------------------------------#
 @app.route('/api_v0/company-list', methods=['GET'])
 def company_list():
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiCompany:
+        return forbidden()
     data_list = [company.to_json() for company in Company.Company.query.all()]
     if len(data_list) == 0:
         return not_found()
@@ -611,11 +663,13 @@ def company_list():
 
 @app.route('/api_v0/company/<id>', methods=['GET'])
 def company_by_id(id: int):
-    # comprobacion de roles
-
-    # no roles inadequate_Permits
-
-    # si tiene permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiCompany:
+        return forbidden()
     data_list = [company.to_json() for company in Company.Company.query.filter_by(ID_COMPANY=id)]
     if len(data_list) == 0:
         return not_found()
@@ -627,6 +681,7 @@ def company_by_id(id: int):
 
 @app.route('/api_v0/company', methods=['POST'])
 def company_add():
+    # TODO permisos xd???
     data = request.form
     if data is None or (9 > len(data) > 9):
         return "[ERROR] - company_add() - data len()"
@@ -678,7 +733,13 @@ def company_add():
 # -------------------------------OFFER-------------------------------#
 @app.route('/api_v0/offer-list', methods=['GET'])
 def offer_list():
-    # comprobar permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
     data_list = [offer.to_json() for offer in Offer.Offer.query.all()]
     if len(data_list) == 0:
         return not_found()
@@ -688,7 +749,13 @@ def offer_list():
 
 @app.route('/api_v0/offer/<id>', methods=['GET'])
 def offer_by_id(id: int):
-    # comprobar permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
     data_list = [offer.to_json() for offer in Offer.Offer.query.filter_by(ID_OFFER=id)]
     if len(data_list) == 0:
         return not_found()
@@ -700,6 +767,13 @@ def offer_by_id(id: int):
 
 @app.route('/api_v0/offer', methods=['POST'])
 def offer_add():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanMakeOffer:
+        return forbidden()
     data = request.form
     if data is None or (5 > len(data) > 8):
         return "[ERROR] - offer_add() - data len()"
@@ -740,7 +814,13 @@ def offer_add():
 # -------------------------------MEMBER OFFER-------------------------------#
 @app.route('/api_v0/member_offer-list', methods=['GET'])
 def member_offer_list():
-    # comprobar permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiMember:
+        return forbidden()
     data_list = [member_offer.to_json() for member_offer in Member_Offer.Member_Offer.query.all()]
     if len(data_list) == 0:
         return not_found()
@@ -750,7 +830,13 @@ def member_offer_list():
 
 @app.route('/api_v0/member_offer/<id>', methods=['GET'])
 def member_offer_by_id(id: int):
-    # comprobar permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiMember:
+        return forbidden()
     data_list = [member_offer.to_json() for member_offer in Member_Offer.Member_Offer.query.filter_by(Id_Member=id)]
     if len(data_list) == 0:
         return not_found()
@@ -761,7 +847,13 @@ def member_offer_by_id(id: int):
 # -------------------------------JOB DEMAND-------------------------------#
 @app.route('/api_v0/job_demand-list', methods=['GET'])
 def job_demand_list():
-    # comprobar permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
     data_list = [job_demand.to_json() for job_demand in Job_Demand.Job_Demand.query.all()]
     if len(data_list) == 0:
         return not_found()
@@ -771,7 +863,13 @@ def job_demand_list():
 
 @app.route('/api_v0/job_demand/<id>', methods=['GET'])
 def job_demand_by_id(id: int):
-    # comprobar permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
     data_list = [job_demand.to_json() for job_demand in Job_Demand.Job_Demand.query.filter_by(Id_Offer=id)]
     if len(data_list) == 0:
         return not_found()
@@ -781,6 +879,13 @@ def job_demand_by_id(id: int):
 
 @app.route('/api_v0/job_demand', methods=['POST'])
 def job_demand_add():
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanMakeOffer:
+        return forbidden()
     data = request.form
     if data is None or (5 > len(data) > 5):
         return "[ERROR] - job_demand_add() - data len()"
@@ -829,7 +934,13 @@ def job_demand_add():
 # -------------------------------JOB DEMAND LANGUAGE-------------------------------#
 @app.route('/api_v0/job_demand_language-list', methods=['GET'])
 def job_demand_language_list():
-    # comprobar permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
     data_list = [job_demand_language.to_json() for job_demand_language in
                  Job_Demand_Language.Job_Demand_Language.query.all()]
     if len(data_list) == 0:
@@ -840,7 +951,13 @@ def job_demand_language_list():
 
 @app.route('/api_v0/job_demand_language/<id>', methods=['GET'])
 def job_demand_language_by_id(id: int):
-    # comprobar permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
     data_list = [job_demand_language.to_json() for job_demand_language in
                  Job_Demand_Language.Job_Demand_Language.query.filter_by(Id_Job_Demand=id)]
     if len(data_list) == 0:
@@ -852,7 +969,13 @@ def job_demand_language_by_id(id: int):
 # -------------------------------JOB DEMAND QUALIFICATION-------------------------------#
 @app.route('/api_v0/job_demand_qualification-list', methods=['GET'])
 def job_demand_qualification_list():
-    # comprobar permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
     data_list = [job_demand_qualification.to_json() for job_demand_qualification in
                  Job_Demand_Qualification.Job_Demand_Qualification.query.all()]
     if len(data_list) == 0:
@@ -863,7 +986,13 @@ def job_demand_qualification_list():
 
 @app.route('/api_v0/job_demand_qualification/<id>', methods=['GET'])
 def job_demand_qualification_by_id(id: int):
-    # comprobar permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
     data_list = [job_demand_qualification.to_json() for job_demand_qualification in
                  Job_Demand_Qualification.Job_Demand_Qualification.query.filter_by(Id_Job_Demand=id)]
     if len(data_list) == 0:
@@ -875,7 +1004,13 @@ def job_demand_qualification_by_id(id: int):
 # -------------------------------JOB DEMAND CATEGORY-------------------------------#
 @app.route('/api_v0/job_demand_category-list', methods=['GET'])
 def job_demand_category_list():
-    # comprobar permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
     data_list = [job_demand_category.to_json() for job_demand_category in
                  Job_Demand_Category.Job_Demand_Category.query.all()]
     if len(data_list) == 0:
@@ -886,7 +1021,13 @@ def job_demand_category_list():
 
 @app.route('/api_v0/job_demand_category/<id>', methods=['GET'])
 def job_demand_category_by_id(id: int):
-    # comprobar permisos
+    if check_auth():
+        return redirect(url_for(".login", _method='GET'))
+    role = get_privileges_from_token(request.headers['auth'])
+    if role is None:
+        return bad_request()
+    if not role.CanSeeApiOffer:
+        return forbidden()
     data_list = [job_demand_category.to_json() for job_demand_category in
                  Job_Demand_Category.Job_Demand_Category.query.filter_by(Id_Job_Demand=id)]
     if len(data_list) == 0:
