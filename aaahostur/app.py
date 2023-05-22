@@ -922,18 +922,6 @@ def role_by_id(id: int):
     ), status=200)
 
 
-@app.route('/api_v0/role/<name>', methods=['GET'])
-def role_by_name(name):
-    # TODO check roles
-    data_list = [role.to_json() for role in Role.Role.query.filter_by(Name=name)]
-    if len(data_list) == 0:
-        return not_found()
-    msg = {"roles": list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
 # -------------------------------SECTION-------------------------------#
 # READ ALL
 @app.route('/api_v0/section-list', methods=['GET'])
@@ -1141,12 +1129,12 @@ def login():
             if request.form['user-login'] is not None:
                 username = request.form['user-login']
                 if username == "":
-                    return bad_request()  # Usuario vacio
+                    return bad_request("Username cannot be empty")  # Usuario vacio
                 else:
                     if request.form['user-passwd'] is not None:
                         passwd = request.form['user-passwd']
                         if passwd == "":
-                            return bad_request()
+                            return bad_request("Password cannot be empty")
                         else:
                             user = User.User.query.filter_by(Email=username)
                             if user is not None:
