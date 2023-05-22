@@ -28,8 +28,8 @@ class Member(db.Model):
     Geographical_Mobility = db.Column(db.Boolean, default=False)
     Disability_Grade = db.Column(db.Integer, default=0)
     Join_Date = db.Column(db.String(256), default=dt.datetime.now(), nullable=False)
-    Active = db.Column(db.Boolean, default=True)
     Cancelation_Date = db.Column(db.String(256), nullable=True)
+    Active = db.Column(db.Boolean, default=True)
     Verify = db.Column(db.Boolean, default=False)
 
     Id_User_Verify = db.Column(db.Integer, db.ForeignKey("User.ID_USER"))
