@@ -16,5 +16,7 @@ class Qualification(db.Model):
         return {
             "id_qualification": self.ID_QUALIFICATION,
             "name": self.Name,
-            "description": self.Description
+            "description": self.Description,
+            "id_qualification_parent": self.Id_Qualification_Parent,
+            "id_job_category": self.Id_Job_Category
         }

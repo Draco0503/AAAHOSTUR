@@ -27,5 +27,6 @@ class Section(db.Model):
             "schedule": self.Schedule,
             "img_resource": self.Img_Resource,
             "price": self.Price,
-            "active": self.Active
+            "active": self.Active,
+            "id_user_creator": self.Id_User_Creator
         }
