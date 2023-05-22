@@ -17,7 +17,6 @@ ERROR_500_DEFAULT_MSG = "Something was wrong, please try it again later. " \
                         "If the problem persists please contact with the service provider."
 ERROR_504_DEFAULT_MSG = "The server did not get a response in time."
 
-
 # endregion
 # ==================================================================================================================== #
 
@@ -77,9 +76,9 @@ def academic_profile_add():
     # NULL fields
     promotion = '' if data['promotion'] is None else data['promotion']
 
-    academic_profile = Academic_Profile.Academic_Profile(School= data['school'], 
-                                                         Graduation_Date= data['graduation_date'], 
-                                                         Promotion= promotion)
+    academic_profile = Academic_Profile.Academic_Profile(School=data['school'],
+                                                         Graduation_Date=data['graduation_date'],
+                                                         Promotion=promotion)
     try:
         # TODO check role
         Academic_Profile.Academic_Profile.query.add(academic_profile)
@@ -92,7 +91,7 @@ def academic_profile_add():
         msg = {ERROR_500_DEFAULT_MSG: academic_profile.to_json()}
         status_code = 500
 
-    return Response(json.dumps(msg), status= status_code)
+    return Response(json.dumps(msg), status=status_code)
 
 
 # -------------------------------COMPANY_ACCOUNT-------------------------------#
@@ -117,6 +116,7 @@ def company_list():
         msg,
     ), status=200)
 
+
 # READ BY
 @app.route('/api_v0/company/<id>', methods=['GET'])
 def company_by_id(id: int):
@@ -134,6 +134,7 @@ def company_by_id(id: int):
     return Response(json.dumps(
         msg,
     ), status=200)
+
 
 # INSERT
 @app.route('/api_v0/company', methods=['POST'])
@@ -158,16 +159,16 @@ def company_add():
     province = "" if data['province'] is None else data['province']
     description = "" if data['description'] is None else data['description']
 
-    company = Company.Company(Type= data['type'], 
-                              CIF= data['cif'], 
-                              Address= address, 
-                              CP= cp,
-                              City= city, 
-                              Province= province, 
-                              Contact_Name= data['contact_name'],
-                              Contact_Phone= data['contact_phone'], 
-                              Contact_Email= data['contact_email'],
-                              Description= description)
+    company = Company.Company(Type=data['type'],
+                              CIF=data['cif'],
+                              Address=address,
+                              CP=cp,
+                              City=city,
+                              Province=province,
+                              Contact_Name=data['contact_name'],
+                              Contact_Phone=data['contact_phone'],
+                              Contact_Email=data['contact_email'],
+                              Description=description)
 
     try:
         # TODO check role
@@ -203,6 +204,7 @@ def job_category_list():
         msg,
     ), status=200)
 
+
 # READ BY
 @app.route('/api_v0/job_category/<id>', methods=['GET'])
 def job_category_by_id(id: int):
@@ -222,6 +224,7 @@ def job_category_by_id(id: int):
         msg,
     ), status=200)
 
+
 # INSERT
 @app.route('/api_v0/job_category', methods=['POST'])
 def job_category_add():
@@ -233,8 +236,8 @@ def job_category_add():
     if data['description'] is None:
         return bad_request(ERROR_400_DEFAULT_MSG + ' [job_category_add() - data <description>]')
 
-    job_category = Job_Category.Job_Category(Name= data['name'], 
-                                             Description= data['description'])
+    job_category = Job_Category.Job_Category(Name=data['name'],
+                                             Description=data['description'])
 
     try:
         # TODO check role
@@ -268,6 +271,7 @@ def job_demand_category_list():
         return not_found()
     msg = {"job_demand_categories": list}
     return Response(json.dumps(msg), status=200)
+
 
 # READ BY
 @app.route('/api_v0/job_demand_category/<id>', methods=['GET'])
@@ -305,6 +309,7 @@ def job_demand_language_list():
     msg = {"job_demand_languages": list}
     return Response(json.dumps(msg), status=200)
 
+
 # READ BY
 @app.route('/api_v0/job_demand_language/<id>', methods=['GET'])
 def job_demand_language_by_id(id: int):
@@ -341,6 +346,7 @@ def job_demand_qualification_list():
     msg = {"job_demand_qualifications": list}
     return Response(json.dumps(msg), status=200)
 
+
 # READ BY
 @app.route('/api_v0/job_demand_qualification/<id>', methods=['GET'])
 def job_demand_qualification_by_id(id: int):
@@ -376,6 +382,7 @@ def job_demand_list():
     msg = {"job_demands": list}
     return Response(json.dumps(msg), status=200)
 
+
 # READ BY
 @app.route('/api_v0/job_demand/<id>', methods=['GET'])
 def job_demand_by_id(id: int):
@@ -391,6 +398,7 @@ def job_demand_by_id(id: int):
         return not_found()
     msg = {"job_demands": list}  # there can be job_demands with the same id_offer
     return Response(json.dumps(msg), status=200)
+
 
 # INSERT
 @app.route('/api_v0/job_demand', methods=['POST'])
@@ -413,7 +421,7 @@ def job_demand_add():
         return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data <working_day>')
     if data['shift'] is None:
         return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data <shift>')
-    
+
     monthly_salary = "" if data['monthly_salary'] is None else data['monthly_salary']
     contract_type = "" if data['contract_type'] is None else data['contract_type']
     holidays = "" if data['holidays'] is None else data['holidays']
@@ -423,19 +431,19 @@ def job_demand_add():
     disability_grade = 0 if data['disability_grade'] is None else data['disability_grade']
     others = "" if data['others'] is None else data['others']
 
-    job_demand = Job_Demand.Job_Demand(Vacancies= data['vacancies'], 
-                                       Monthly_Salary= monthly_salary,
-                                       Contract_Type= contract_type, 
-                                       Schedule= data['schedule'],
-                                       Working_Day= data['working_day'], 
-                                       Shift= data['shift'], 
-                                       Holidays= holidays,
-                                       Experience= experience, 
-                                       Vehicle= vehicle,
-                                       Geographical_Mobility= geographical_mobility,
-                                       Disability_Grade= disability_grade, 
-                                       Others= others)
-    
+    job_demand = Job_Demand.Job_Demand(Vacancies=data['vacancies'],
+                                       Monthly_Salary=monthly_salary,
+                                       Contract_Type=contract_type,
+                                       Schedule=data['schedule'],
+                                       Working_Day=data['working_day'],
+                                       Shift=data['shift'],
+                                       Holidays=holidays,
+                                       Experience=experience,
+                                       Vehicle=vehicle,
+                                       Geographical_Mobility=geographical_mobility,
+                                       Disability_Grade=disability_grade,
+                                       Others=others)
+
     try:
         Job_Demand.Job_Demand.query.add(job_demand)
         Job_Demand.Job_Demand.query.commit()
@@ -468,6 +476,7 @@ def language_list():
     return Response(json.dumps(
         msg,
     ), status=200)
+
 
 # READ BY
 @app.route('/api_v0/language/<id>', methods=['GET'])
@@ -505,6 +514,7 @@ def language_by_name(name):
         msg,
     ), status=200)
 
+
 # INSERT
 @app.route('/api_v0/language', methods=['POST'])
 def language_add():
@@ -518,10 +528,10 @@ def language_add():
         return bad_request(ERROR_400_DEFAULT_MSG + ' [language_add() - data <lvl>')
     if data['certificate'] is None:
         return bad_request(ERROR_400_DEFAULT_MSG + ' [language_add() - data <certificate>')
-    
-    language = Language.Language(Name= data['name'], 
-                                 Lvl= data['lvl'], 
-                                 Certificate= data['certificate'])
+
+    language = Language.Language(Name=data['name'],
+                                 Lvl=data['lvl'],
+                                 Certificate=data['certificate'])
 
     try:
         Language.Language.query.add(language)
@@ -533,7 +543,7 @@ def language_add():
         Language.Language.query.rollback()
         msg = {ERROR_500_DEFAULT_MSG: language.to_json()}
         status_code = 500
-    
+
     return Response(json.dumps(msg), status=status_code)
 
 
@@ -542,7 +552,6 @@ def language_add():
 
 
 # -------------------------------MEMBER_LANGUAGE-------------------------------#
-# TODO not implemented in v.0
 
 
 # -------------------------------MEMBER_OFFER-------------------------------#
@@ -561,6 +570,7 @@ def member_offer_list():
         return not_found()
     msg = {"member_offers": list}
     return Response(json.dumps(msg), status=200)
+
 
 # READ BY
 @app.route('/api_v0/member_offer/<id>', methods=['GET'])
@@ -596,6 +606,7 @@ def member_list():
     msg = {"member_list": list}
     return Response(json.dumps(msg), status=200)
 
+
 # READ BY
 @app.route('/api_v0/member/<id>', methods=['GET'])
 def member_by_id(id: int):
@@ -611,6 +622,7 @@ def member_by_id(id: int):
         return not_found()
     msg = {"member_list": list}
     return Response(json.dumps(msg), status=200)
+
 
 # INSERT
 @app.route('/api_v0/member', methods=['POST'])
@@ -670,28 +682,28 @@ def member_add():
     geographical_mobility = "" if data['geographical_mobility'] is None else data["geographical_mobility"]
     disability_grade = "" if data['disability_grade'] is None else data["disability_grade"]
 
-    member = Member.Member(Name= data['name'], 
-                           Surname= data['surname'], 
-                           DNI= data['dni'], 
-                           Address= data['adderss'],
-                           CP= data['cp'], 
-                           City= data['city'], 
-                           Province= data['province'], 
-                           PNA_Address= pna_address,
-                           PNA_CP= pna_cp, 
-                           PNA_City= pna_city, 
-                           PNA_Province= pna_province, 
-                           Gender= data['gender'],
-                           Land_Line= land_line, 
-                           Mobile= data['mobile'], 
-                           Profile_Picture= data['profile_picture'],
-                           Birth_Date= data['birth_date'], 
-                           Vehicle= vehicle,
-                           Geographical_Mobility= geographical_mobility, 
-                           Disability_Grade= disability_grade,
-                           Join_Date= data['join_date'], 
-                           Cancelation_Date= data['cancelation_date'])
-    
+    member = Member.Member(Name=data['name'],
+                           Surname=data['surname'],
+                           DNI=data['dni'],
+                           Address=data['adderss'],
+                           CP=data['cp'],
+                           City=data['city'],
+                           Province=data['province'],
+                           PNA_Address=pna_address,
+                           PNA_CP=pna_cp,
+                           PNA_City=pna_city,
+                           PNA_Province=pna_province,
+                           Gender=data['gender'],
+                           Land_Line=land_line,
+                           Mobile=data['mobile'],
+                           Profile_Picture=data['profile_picture'],
+                           Birth_Date=data['birth_date'],
+                           Vehicle=vehicle,
+                           Geographical_Mobility=geographical_mobility,
+                           Disability_Grade=disability_grade,
+                           Join_Date=data['join_date'],
+                           Cancelation_Date=data['cancelation_date'])
+
     try:
         Member.Member.query.add(member)
         Member.Member.query.commit()
@@ -702,7 +714,7 @@ def member_add():
         Member.Member.query.rollback()
         msg = {ERROR_500_DEFAULT_MSG: member.to_json()}
         status_code = 500
-    
+
     return Response(json.dumps(msg), status=status_code)
 
 
@@ -723,6 +735,7 @@ def offer_list():
     msg = {"offers": list}
     return Response(json.dumps(msg), status=200)
 
+
 # READ BY
 @app.route('/api_v0/offer/<id>', methods=['GET'])
 def offer_by_id(id: int):
@@ -740,6 +753,7 @@ def offer_by_id(id: int):
         return internal_server_error()  # there can't be offers with the same id
     msg = {"offers": list}
     return Response(json.dumps(msg), status=200)
+
 
 # INSERT
 @app.route('/api_v0/offer', methods=['POST'])
@@ -769,15 +783,15 @@ def offer_add():
     contact_phone_2 = "" if data['contact_phone_2'] is None else data["contact_phone_2"]
     contact_email_2 = "" if data['contact_email_2'] is None else data["contact_email_2"]
 
-    offer = Offer.Offer(Company_Name= data['company_name'], 
-                        Address= data['address'], 
-                        Contact_Name= data['contact_name'],
-                        Contact_Phone= data['contact_phone'], 
-                        Contact_Email= data['contact_email'],
-                        Contact_Name_2= contact_name_2, 
-                        Contact_Phone_2= contact_phone_2, 
-                        Contact_Email_2= contact_email_2)
-    
+    offer = Offer.Offer(Company_Name=data['company_name'],
+                        Address=data['address'],
+                        Contact_Name=data['contact_name'],
+                        Contact_Phone=data['contact_phone'],
+                        Contact_Email=data['contact_email'],
+                        Contact_Name_2=contact_name_2,
+                        Contact_Phone_2=contact_phone_2,
+                        Contact_Email_2=contact_email_2)
+
     try:
         Offer.Offer.query.add(offer)
         Offer.Offer.query.commit()
@@ -788,7 +802,7 @@ def offer_add():
         Offer.Offer.query.rollback()
         msg = {ERROR_500_DEFAULT_MSG: offer.to_json()}
         status_code = 500
-    
+
     return Response(json.dumps(msg), status=status_code)
 
 
@@ -815,6 +829,7 @@ def qualification_list():
         msg,
     ), status=200)
 
+
 # READ BY
 @app.route('/api_v0/qualification/<id>', methods=['GET'])
 def job_qualification_by_id(id: int):
@@ -834,6 +849,7 @@ def job_qualification_by_id(id: int):
         msg,
     ), status=200)
 
+
 # INSERT
 @app.route('/api_v0/qualification', methods=['POST'])
 def qualification_add():
@@ -846,9 +862,9 @@ def qualification_add():
     if data['description'] is None:
         return bad_request(ERROR_400_DEFAULT_MSG + ' [qualification_add() - data <description>')
 
-    qualification = Qualification.Qualification(Name= data['name'], 
-                        Description= data['description'])
-    
+    qualification = Qualification.Qualification(Name=data['name'],
+                                                Description=data['description'])
+
     try:
         Qualification.Qualification.query.add(qualification)
         Qualification.Qualification.query.commit()
@@ -859,7 +875,7 @@ def qualification_add():
         Qualification.Qualification.query.rollback()
         msg = {ERROR_500_DEFAULT_MSG: qualification.to_json()}
         status_code = 500
-    
+
     return Response(json.dumps(msg), status=status_code)
 
 
@@ -886,6 +902,7 @@ def role_list():
         msg,
     ), status=200)
 
+
 # READ BY
 @app.route('/api_v0/role/<id>', methods=['GET'])
 def role_by_id(id: int):
@@ -903,6 +920,7 @@ def role_by_id(id: int):
     return Response(json.dumps(
         msg,
     ), status=200)
+
 
 @app.route('/api_v0/role/<name>', methods=['GET'])
 def role_by_name(name):
@@ -935,6 +953,7 @@ def section_list():
         msg,
     ), status=200)
 
+
 # READ BY
 @app.route('/api_v0/section/<category>', methods=['GET'])
 def section_by_category(category):
@@ -952,6 +971,7 @@ def section_by_category(category):
     return Response(json.dumps(
         msg,
     ), status=200)
+
 
 # INSERT
 @app.route('/api_v0/section', methods=['POST'])
@@ -979,12 +999,12 @@ def section_add():
     if data['price'] is None:
         return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <price>')
 
-    section = Section.Section(Category= data['category'], 
-                              Description= data['description'],
-                              Publication_Date= data['publication_date'],
-                              Schedule= data['schedule'], 
-                              Img_Resource= data['img_resource'], 
-                              Price= data['price'])
+    section = Section.Section(Category=data['category'],
+                              Description=data['description'],
+                              Publication_Date=data['publication_date'],
+                              Schedule=data['schedule'],
+                              Img_Resource=data['img_resource'],
+                              Price=data['price'])
 
     try:
         Section.Section.query.add(section)
@@ -996,8 +1016,9 @@ def section_add():
         Section.Section.query.rollback()
         msg = {ERROR_500_DEFAULT_MSG: section.to_json()}
         status_code = 500
-    
+
     return Response(json.dumps(msg), status=status_code)
+
 
 # UPDATE
 @app.route('/api_v0/section_update/<id>', methods=['PUT'])
@@ -1047,6 +1068,7 @@ def user_list():
         msg,
     ), status=200)
 
+
 # READ BY
 @app.route('/api_v0/user/<id>', methods=['GET'])
 def user_by_id(id: int):
@@ -1064,6 +1086,7 @@ def user_by_id(id: int):
     return Response(json.dumps(
         msg,
     ), status=200)
+
 
 # INSERT
 @app.route('/api_v0/user', methods=['POST'])
@@ -1083,9 +1106,9 @@ def user_add():
     if data['email'] is None:
         return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <email>')
 
-    user = User.User(Passwd= data['passwd'], 
-                     Email= data['email'])
-    
+    user = User.User(Passwd=data['passwd'],
+                     Email=data['email'])
+
     try:
         User.User.query.add(user)
         User.User.query.commit()
@@ -1147,7 +1170,7 @@ def login():
 
     else:
         return {}  # empty response
-    
+
 
 # endregion
 # ==================================================================================================================== #
@@ -1218,7 +1241,6 @@ if __name__ == '__main__':
     app.register_error_handler(504, gateway_timeout)
     # run
     app.run(host='0.0.0.0', port=80)
-
 
 # endregion
 # ==================================================================================================================== #
