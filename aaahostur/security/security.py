@@ -1,7 +1,5 @@
 import bcrypt
 import jwt
-from ..models.Role import Role
-
 
 def generate_salt():
     return bcrypt.gensalt()
