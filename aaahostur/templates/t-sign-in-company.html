@@ -12,3 +12,74 @@ TEXTBOX*: Nombre rep
 TEXTBOX*: Email rep
 TEXTBOX*: Telefono rep
 TEXTAREA: Descripcion rep -->
+{% extends 't-base.html' %}
+
+{% block mainContent %}
+
+<div class="foreign_container">
+    {{keyValue}}
+    <h1>Formulario de compañía</h1>
+    <br>
+    <h2>Datos de la empresa</h2>
+    <hr class="bg-color-darker-blue">
+    <label class="dis-block font-16pt" for="">Nombre:</label>
+    <input class="w80 pad-input font-14pt" type="text">
+    <br>
+    <br>
+    <label class="dis-block font-16pt" for="">CIF:</label>
+    <input class="w80 pad-input font-14pt" type="text">
+    <br>
+    <br>
+    <label class="dis-block font-16pt" for="">Tipo de empresa</label>
+    <br>
+    <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('_rbgroup', this)">
+        Nacional
+        <input class="_rbgroup" type="radio" name="rb-group" id="">
+        <span class="radiomark"></span>
+    </label>
+    <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('_rbgroup', this)">
+        Internacional
+        <input class="_rbgroup" type="radio" name="rb-group" id="">
+        <span class="radiomark"></span>
+    </label>
+    <br>
+    <br>
+    <label class="dis-block font-16pt" for="">Dirección:</label>
+    <input class="w80 pad-input font-14pt" type="text">
+    <br>
+    <br>
+    <label class="dis-block font-16pt" for="">C.P.:</label>
+    <input class="w80 pad-input font-14pt" type="text">
+    <br>
+    <br>
+    <label class="dis-block font-16pt" for="">Ciudad:</label>
+    <input class="w80 pad-input font-14pt" type="text">
+    <br>
+    <br>
+    <label class="dis-block font-16pt" for="">Provincia:</label>
+    <input class="w80 pad-input font-14pt" type="text">
+    <br>
+    <br>
+    <label class="dis-block font-16pt" for="">Descripción:</label>
+    <input class="w80 pad-input font-14pt" type="text">
+    <br>
+    <h2>Datos del representante de la empresa</h2>
+    <hr class="bg-color-darker-blue">
+    <label class="dis-block font-16pt" for="">Nombre:</label>
+    <input class="w80 pad-input font-14pt" type="text">
+    <br>
+    <br>
+    <label class="dis-block font-16pt" for="">Teléfono:</label>
+    <input class="w80 pad-input font-14pt" type="text">
+    <br>
+    <br>
+    <label class="dis-block font-16pt" for="">Correo electrónico:</label>
+    <input class="w80 pad-input font-14pt" type="text">
+    <br>
+    <br>
+    <input class="pad-o5rem font-16pt" type="reset" value="Reset" onclick="resetForm('_form', '_rbgroup')">
+    <input class="pad-o5rem font-16pt" type="submit" value="Submit">
+
+</div>
+
+{% endblock %}
