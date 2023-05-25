@@ -5,7 +5,7 @@ from models import Language, Job_Category, Qualification, Role, User, Member, Me
     Academic_Profile, Professional_Profile, Section, Company, Company_Account, Offer, Member_Offer, Job_Demand, \
     Job_Demand_Language, Job_Demand_Qualification, Job_Demand_Category, Review
 from config import config
-from aaahostur.security import security
+from security import security
 
 # region CONSTANTS
 ERROR_400_DEFAULT_MSG = "The server cannot or will not process the request."
@@ -1228,7 +1228,7 @@ if __name__ == '__main__':
     app.register_error_handler(500, internal_server_error)
     app.register_error_handler(504, gateway_timeout)
     # run
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='0.0.0.0', port=5000)
 
 # endregion
 # ==================================================================================================================== #
