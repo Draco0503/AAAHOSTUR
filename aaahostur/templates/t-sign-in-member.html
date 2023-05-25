@@ -1,152 +1,142 @@
-<!-- INFO
-Datos Personales
-TEXTBOX*: Nombre
-TEXTBOX*: Apellidos
-TEXTBOX*: DNI/NIE
-RADIOGROUP*: Sexo{
-Hombre, Mujer, Otro
-}
-DATE*: Fecha de nacimiento
-TEXTBOX*: Direccion
-TEXTBOX*: C.P.
-TEXTBOX*: Ciudad
-TEXTBOX*: Provincia
-CHECKBOX: Correo en otra direccion{
-    TEXTBOX*: Dir. efectos notificaciones postales
-    TEXTBOX*: C.P. efectos notificaciones postales
-    TEXTBOX*: Ciudad efectos notificaciones postales
-    TEXTBOX*: Provincia efectos notificaciones postales
-}
-
-TEXTBOX*: Telefono Móvil
-TEXTBOX: Telefono Fijo
-IMPUT FILE: Foto de perfil
-ESTO NO VA AQUI------------------------------------------------------------------------------x
-                                                        RADIOGROUP: Vehículo propio{
-                                                            No,Si
-                                                        }
-                                                        RADIOGROUP: Movilidad geografica{
-                                                            No,Si
-                                                        }
-                                                        CHECKBOX: Tiene Discapacidad{
-                                                            TEXTBOX*: Grado
-} -->
-
-<!-- FALTAN TODOS LOS ID DE LOS COMPONENTES -->
+<!-- TODO revisar ids -->
 {% extends 't-base.html' %}
 
 {% block mainContent %}
+{{keyValue}}
+<div class="foreign_container w80 container shadow pad-2rem">
+    <h1 class="">Formulario de registro de miembro</h1>
+    <hr class="bg-color-darker-blue mar-bot-3rem">
 
-<div class="foreign_container">
-    {{keyValue}}
-    <h1>Formulario de inscripción de miembros</h1>
-    <br>
-    <h2>Introduce tus datos</h2>
-    <hr class="bg-color-darker-blue">
-    <label class="dis-block font-16pt" for="">Correo electrónico:</label>
-    <input class="w80 pad-input font-14pt" type="text">
-    <br>
-    <label class="dis-block font-16pt" for="">Introduce tu contraseña:</label>
-    <input class="w80 pad-input font-14pt" type="password" name="" id="">
-    <br>
-    <label class="dis-block font-16pt" for="">Repite tu contraseña:</label>
-    <input class="w80 pad-input font-14pt" type="password" name="" id="">
-    <br>
-    <h2>Introduce tus datos personales</h2>
-    <hr class="bg-color-darker-blue">
-    <label class="dis-block font-16pt" for="">Nombre:</label>
-    <input class="w80 pad-input font-14pt" type="text">
-    <br>
-    <label class="dis-block font-16pt" for="">Apellidos:</label>
-    <input class="w80 pad-input font-14pt" type="text">
-    <br>
-    <label class="dis-block font-16pt" for="">DNI/NIE:</label>
-    <input class="w80 pad-input font-14pt" type="text">
-    <br>
-    <label class="dis-block font-16pt" for="">Sexo:</label>
-    <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('_rbgroup', this)">
-        Hombre
-        <input class="_rbgroup" type="radio" name="rb-group" id="rb1">
-        <span class="radiomark"></span>
-    </label>
-    <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('_rbgroup', this)">
-        Mujer
-        <input class="_rbgroup" type="radio" name="rb-group" id="rb1">
-        <span class="radiomark"></span>
-    </label> 
-    <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('_rbgroup', this)">
-        Nicholas Cage
-        <input class="_rbgroup" type="radio" name="rb-group" id="rb1">
-        <span class="radiomark"></span>
-    </label> 
-    <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('_rbgroup', this)">
-        Reptiliano
-        <input class="_rbgroup" type="radio" name="rb-group" id="rb1">
-        <span class="radiomark"></span>
-    </label> 
-    <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('_rbgroup', this)">
-        Otro
-        <input class="_rbgroup" type="radio" name="rb-group" id="rb1">
-        <span class="radiomark"></span>
-    </label> 
-    <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('_rbgroup', this)">
-        Prefiero no decirlo
-        <input class="_rbgroup" type="radio" name="rb-group" id="rb1">
-        <span class="radiomark"></span>
-    </label> 
-    <br>
-    <label class="dis-block font-16pt" for="">Fecha de nacimiento:</label>
-    <input class="w80 pad-input font-14pt" type="date" name="" id="">
-    <br>
-    <label class="dis-block font-16pt" for="">A continuación escriba su dirección completa</label>
-    <br>
-    <label class="dis-block font-16pt" for="">Dirección:</label>
-    <input class="w80 pad-input font-14pt" type="text">
-    <br>
-    <label class="dis-block font-16pt" for="">C.P.:</label>
-    <input class="w80 pad-input font-14pt" type="text">
-    <br>
-    <label class="dis-block font-16pt" for="">Ciudad:</label>
-    <input class="w80 pad-input font-14pt" type="text">
-    <br>
-    <label class="dis-block font-16pt" for="">Provincia:</label>
-    <input class="w80 pad-input font-14pt" type="text">
-    <br>
-    <label class="font-14pt custom-cr-input" for="" onclick="changeCheckboxState(this)">
-        ¿Dispone de otra dirección distinta a la anterior para recibir notificaciones postales?
-        <br>
-        En caso afirmativo seleccione la casilla.
-        <input type="checkbox" name="" id="cb1">
+    <h2 class="mar-bot-1rem">Datos de cuenta</h2>
+    <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+    <label class="dis-block font-16pt" for="user-email">Correo electrónico <span>*</span></label>
+    <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="user-email"required>
+    <label class="dis-block font-16pt" for="user-pwd">Contraseña <span>*</span></label>
+    <input class="w60 pad-input font-14pt mar-bot-2rem" type="password" id="user-pwd"required>
+    <label class="dis-block font-16pt" for="user-pwd-2">Introduzca de nuevo su contraseña <span>*</span></label>
+    <input class="w60 pad-input font-14pt mar-bot-2rem" type="password" id="user-pwd-2"required>
+
+    <h2 class="mar-bot-1rem">Datos personales</h2>
+    <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+    <label class="dis-block font-16pt" for="member-name">Nombre <span>*</span></label>
+    <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-name"required>
+    <label class="dis-block font-16pt" for="member-surname">Apellidos <span>*</span></label>
+    <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-surname"required>
+    <label class="dis-block font-16pt" for="member-dni-select">Documento de identificación <span>*</span></label>
+    <select class="w60 pad-input font-14pt mar-bot-2rem" name="member-qualification" id="member-dni-select" required>
+        <option value="">DNI</option>
+        <option value="">NIE</option>
+        <option value="">Pasaporte</option>
+        <option value="">La corona de Inglaterra</option>
+    </select>
+    <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-dni"required>
+    <label class="dis-block font-16pt" for="member-sex">Sexo <span>*</span></label>
+    <div id="rbgroup-gender" class="mar-bot-2rem">
+        <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-gender', this)">
+            Hombre
+            <input class="rbgroup-gender" type="radio" name="rb-group-gender" id="rbgroup-gender-rb1" value="H" checked>
+            <span class="radiomark"></span>
+        </label>                
+        <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-gender', this)">
+            Mujer
+            <input class="rbgroup-gender" type="radio" name="rb-group-gender" id="rbgroup-gender-rb2" value="M">
+            <span class="radiomark"></span>
+        </label>
+        <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-gender', this)">
+            Reptiliano
+            <input class="rbgroup-gender" type="radio" name="rb-group-gender" id="rbgroup-gender-rb3" value="M">
+            <span class="radiomark"></span>
+        </label>
+        <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-gender', this)">
+            Nichlas Cage
+            <input class="rbgroup-gender" type="radio" name="rb-group-gender" id="rbgroup-gender-rb4" value="M">
+            <span class="radiomark"></span>
+        </label>
+        <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-gender', this)">
+            Otro
+            <input class="rbgroup-gender" type="radio" name="rb-group-gender" id="rbgroup-gender-rb5" value="O">
+            <span class="radiomark"></span>
+        </label>
+        <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-gender', this)">
+            Prefiero no decirlo
+            <input class="rbgroup-gender" type="radio" name="rb-group-gender" id="rbgroup-gender-rb6" value="M">
+            <span class="radiomark"></span>
+        </label>
+    </div>
+    <label class="dis-block font-16pt" for="member-surname">Inserte una foto para de perfil <span>*</span></label>
+    <input class="w60 pad-input font-14pt mar-bot-2rem" type="file" id="member-image"required>
+    <label class="dis-block font-16pt" for="member-birthdate">Fecha de nacimiento <span>*</span></label>
+    <input class="w20 pad-input font-14pt mar-bot-2rem" type="date" name="member-birthdate" id="member-birthdate" required>
+    <label class="dis-block font-16pt" for="member-surname">Teléfono móvil <span>*</span></label>
+    <input class="w60 pad-input font-14pt mar-bot-2rem" type="number" id="member-mobile"required>
+    <label class="dis-block font-16pt" for="member-surname">Teléfono fijo <span>*</span></label>
+    <input class="w60 pad-input font-14pt mar-bot-2rem" type="number" id="member-landline"required>
+
+    <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+    <label class="dis-block font-16pt" for="member-surname">Dirección <span>*</span></label>
+    <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-address"required>
+    <label class="dis-block font-16pt" for="member-surname">C.P. <span>*</span></label>
+    <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-cp"required>
+    <label class="dis-block font-16pt" for="member-surname">Ciudad <span>*</span></label>
+    <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-city"required>
+    <label class="dis-block font-16pt" for="member-surname">Provincia <span>*</span></label>
+    <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-province"required>
+    <label class="font-14pt custom-cr-input mar-bot-2rem" for="" onclick="showPNAData(this)">
+        ¿Dispone de otra dirección distinta a la anterior, para recibir notificaciones postales?
+        <input type="checkbox" name="pna_cb" id="pna_cb">
         <span class="checkmark"></span>
     </label>
-    <br>
-    <label class="dis-block font-16pt" for="">Dirección N.P.:</label>
-    <input class="w80 pad-input font-14pt" type="text">
-    <br>
-    <label class="dis-block font-16pt" for="">C.P. N.P.:</label>
-    <input class="w80 pad-input font-14pt" type="text">
-    <br>
-    <label class="dis-block font-16pt" for="">Ciudad N.P.:</label>
-    <input class="w80 pad-input font-14pt" type="text">
-    <br>
-    <label class="dis-block font-16pt" for="">Provincia N.P.:</label>
-    <input class="w80 pad-input font-14pt" type="text">
-    <br>
-    <label class="dis-block font-16pt" for="">Teléfono móvil:</label>
-    <input class="w80 pad-input font-14pt" type="text">
-    <br>
-    <label class="dis-block font-16pt" for="">Teléfono fijo:</label>
-    <input class="w80 pad-input font-14pt" type="text">
-    <br>
-    <label class="dis-block font-16pt" for="">Inserte una foto de perfil:</label>
-    <input class="w80 font-14pt" type="file" name="" id="">
-    <br>
-    <label class="dis-block font-16pt" for="">¿Dispone de vehículo propio?</label>
-    <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('_rbgroup', this)">
-        Hombre
-        <input class="_rbgroup" type="radio" name="rb-group" id="rb1">
-        <span class="radiomark"></span>
-    </label>
-</div>
+    <div id="pna_data" class="dis-grid dis-none">
+        <label class="dis-block font-16pt" for="member-surname">Dirección de notificaciones postales <span>*</span></label>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-address-pn"required>
+        <label class="dis-block font-16pt" for="member-surname">C.P. de notificaciones postales <span>*</span></label>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-cp-pn"required>
+        <label class="dis-block font-16pt" for="member-surname">Ciudad de notificaciones postales <span>*</span></label>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-city-pn"required>
+        <label class="dis-block font-16pt" for="member-surname">Provincia de notificaciones postales <span>*</span></label>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-province-pn"required>
+    </div>
 
+    <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+    <label class="dis-block font-16pt mar-bot-1rem" for="member-car">¿Dispone de vehículo propio?</label>
+    <div id="rbgroup-car" class="mar-bot-2rem">
+        <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-car', this)">
+            No
+            <input class="rbgroup-car" type="radio" name="rb-group-car" id="rbgroup-car-rb1" value="n" checked>
+            <span class="radiomark"></span>
+        </label>                
+        <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-car', this)">
+            Si
+            <input class="rbgroup-car" type="radio" name="rb-group-car" id="rbgroup-car-rb2" value="y">
+            <span class="radiomark"></span>
+        </label>
+    </div>
+    <label class="dis-block font-16pt mar-bot-1rem" for="member-car">¿Dispone de movilidad geográfica?</label>
+    <div id="rbgroup-mov" class="mar-bot-2rem">
+        <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-mov', this)">
+            No
+            <input class="rbgroup-mov" type="radio" name="rb-group-mov" id="rbgroup-mov-rb1" value="n" checked>
+            <span class="radiomark"></span>
+        </label>                
+        <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-mov', this)">
+            Si
+            <input class="rbgroup-mov" type="radio" name="rb-group-mov" id="rbgroup-mov-rb2" value="y">
+            <span class="radiomark"></span>
+        </label>
+    </div>
+    <label class="font-14pt custom-cr-input mar-bot-2rem" for="" onclick="showHandicapData(this)">
+        ¿Padece alguna discapacidad?
+        <input type="checkbox" name="handicap_cb" id="handicap_cb">
+        <span class="checkmark"></span>
+    </label>
+    <div id="handicap_data" class="dis-grid dis-none">
+        <label class="dis-block font-16pt" for="member-handicap">Indique el grado <span>*</span></label>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-handicap">
+    </div>
+    <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+    <p class="">Los campos con <span class="font-14pt">*</span> son obligatorios</p>
+    <div class="w80 dis-flex flex-right">
+        <input class="w20 pad-o5rem font-16pt" type="submit" value="Enviar &rarr;">
+    </div>
+</div>
 {% endblock %}
