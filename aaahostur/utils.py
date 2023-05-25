@@ -6,5 +6,8 @@ from components import CreateComponents
 def format_date():
     pass
 
+def format_phone():
+    pass
+
 def format_decimal():
     pass

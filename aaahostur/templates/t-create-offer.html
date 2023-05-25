@@ -7,3 +7,49 @@ TEXBOX*: email de 1° contacto
 TEXBOX: 2° persona de contacto 
 TEXBOX: 2° teléfono de contacto
 TEXBOX: email 2° contacto -->
+{% extends 't-base.html' %}
+
+{% block mainContent %}
+
+<div class="foreign_container">
+    {{keyValue}}
+    <h1>Formulario de creación de oferta laboral</h1>
+    <br>
+    <h2>Información general de la oferta</h2>
+    <hr class="bg-color-darker-blue">
+    <label class="dis-block font-16pt" for="">Nombre de la compañía:</label>
+    <input class="w80 pad-input font-14pt" type="text">
+    <br>
+    <label class="dis-block font-16pt" for="">Nombre del centro de trabajo:</label>
+    <input class="w80 pad-input font-14pt" type="text">
+    <br>
+    <label class="dis-block font-16pt" for="">Dirección del centro de trabajo:</label>
+    <input class="w80 pad-input font-14pt" type="password" name="" id="">
+    <br>
+    <h2>Información de contacto</h2>
+    <hr class="bg-color-darker-blue">
+    <label class="dis-block font-16pt" for="">Nombre:</label>
+    <input class="w80 pad-input font-14pt" type="password" name="" id="">
+    <br>
+    <label class="dis-block font-16pt" for="">Teléfono</label>
+    <input class="w80 pad-input font-14pt" type="password" name="" id="">
+    <br>
+    <label class="dis-block font-16pt" for="">Correo electrónico:</label>
+    <input class="w80 pad-input font-14pt" type="password" name="" id="">
+    <br>
+    <label class="dis-block font-16pt" for="">En caso de tener más de un contacto</label>
+    <br>
+    <label class="dis-block font-16pt" for="">Nombre:</label>
+    <input class="w80 pad-input font-14pt" type="password" name="" id="">
+    <br>
+    <label class="dis-block font-16pt" for="">Teléfono:</label>
+    <input class="w80 pad-input font-14pt" type="password" name="" id="">
+    <br>
+    <label class="dis-block font-16pt" for="">Correo electrónico:</label>
+    <input class="w80 pad-input font-14pt" type="password" name="" id="">
+    <br>
+    <!-- condicional para añadir demandas de empleo dentro de la oferta laboral-->
+
+</div>
+
+{% endblock %}

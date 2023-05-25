@@ -1,8 +1,6 @@
 import bcrypt
 import jwt
 
-
-
 def generate_salt():
     return bcrypt.gensalt()
 
