@@ -111,7 +111,7 @@ def company_list():
     data_list = [company.to_json() for company in Company.Company.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"company": list}
+    msg = {"company": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
