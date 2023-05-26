@@ -126,7 +126,7 @@ def company_by_id(id: int):
     if role is None:
         return bad_request()
     if not role.CanSeeApiCompany:
-    data_list = [company.to_json() for company in Company.Company.query.filter_by(ID_COMPANY=id)]
+        data_list = [company.to_json() for company in Company.Company.query.filter_by(ID_COMPANY=id)]
     if len(data_list) == 0:
         return not_found()
     msg = {"company": data_list}
