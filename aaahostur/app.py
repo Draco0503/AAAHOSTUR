@@ -53,7 +53,7 @@ def get_privileges_from_token(token: str) -> Role.Role or None:
 # metodo de prueba de conexion
 @app.route('/prueba')
 def index():
-    return render_template('t-sign-in-member.html', prueba='holka')
+    return render_template('t-create-language.html', prueba='holka')
 
 
 # endregion
