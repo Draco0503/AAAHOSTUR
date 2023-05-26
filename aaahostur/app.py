@@ -126,11 +126,10 @@ def company_by_id(id: int):
     if role is None:
         return bad_request()
     if not role.CanSeeApiCompany:
-        return forbidden()
     data_list = [company.to_json() for company in Company.Company.query.filter_by(ID_COMPANY=id)]
     if len(data_list) == 0:
         return not_found()
-    msg = {"company": list}
+    msg = {"company": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -199,7 +198,7 @@ def job_category_list():
     data_list = [job_Category.to_json() for job_Category in Job_Category.Job_Category.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"job_Category": list}
+    msg = {"job_Category": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -219,7 +218,7 @@ def job_category_by_id(id: int):
                  Job_Category.Job_Category.query.filter_by(ID_JOB_CATEGORY=id)]
     if len(data_list) == 0:
         return not_found()
-    msg = {"job_Category": list}
+    msg = {"job_Category": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -287,7 +286,7 @@ def job_demand_category_by_id(id: int):
                  Job_Demand_Category.Job_Demand_Category.query.filter_by(Id_Job_Demand=id)]
     if len(data_list) == 0:
         return not_found()
-    msg = {"job_demand_categories": list}  # there can be job_demand_categories with the same id_job_demand
+    msg = {"job_demand_categories": data_list}  # there can be job_demand_categories with the same id_job_demand
     return Response(json.dumps(msg), status=200)
 
 
@@ -306,7 +305,7 @@ def job_demand_language_list():
                  Job_Demand_Language.Job_Demand_Language.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"job_demand_languages": list}
+    msg = {"job_demand_languages": data_list}
     return Response(json.dumps(msg), status=200)
 
 
@@ -324,7 +323,7 @@ def job_demand_language_by_id(id: int):
                  Job_Demand_Language.Job_Demand_Language.query.filter_by(Id_Job_Demand=id)]
     if len(data_list) == 0:
         return not_found()
-    msg = {"job_demand_languages": list}  # there can be job_demand_languages with the same id_job_demand
+    msg = {"job_demand_languages": data_list}  # there can be job_demand_languages with the same id_job_demand
     return Response(json.dumps(msg), status=200)
 
 
@@ -343,7 +342,7 @@ def job_demand_qualification_list():
                  Job_Demand_Qualification.Job_Demand_Qualification.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"job_demand_qualifications": list}
+    msg = {"job_demand_qualifications": data_list}
     return Response(json.dumps(msg), status=200)
 
 
@@ -361,7 +360,7 @@ def job_demand_qualification_by_id(id: int):
                  Job_Demand_Qualification.Job_Demand_Qualification.query.filter_by(Id_Job_Demand=id)]
     if len(data_list) == 0:
         return not_found()
-    msg = {"job_demand_qualifications": list}  # there can be job_demand_qualifications with the same id_job_demand
+    msg = {"job_demand_qualifications": data_list}  # there can be job_demand_qualifications with the same id_job_demand
     return Response(json.dumps(msg), status=200)
 
 
@@ -379,7 +378,7 @@ def job_demand_list():
     data_list = [job_demand.to_json() for job_demand in Job_Demand.Job_Demand.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"job_demands": list}
+    msg = {"job_demands": data_list}
     return Response(json.dumps(msg), status=200)
 
 
@@ -396,7 +395,7 @@ def job_demand_by_id(id: int):
     data_list = [job_demand.to_json() for job_demand in Job_Demand.Job_Demand.query.filter_by(Id_Offer=id)]
     if len(data_list) == 0:
         return not_found()
-    msg = {"job_demands": list}  # there can be job_demands with the same id_offer
+    msg = {"job_demands": data_list}  # there can be job_demands with the same id_offer
     return Response(json.dumps(msg), status=200)
 
 
@@ -472,7 +471,7 @@ def language_list():
     data_list = [language.to_json() for language in Language.Language.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"languages": list}
+    msg = {"languages": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -491,7 +490,7 @@ def language_by_id(id: int):
     data_list = [language.to_json() for language in Language.Language.query.filter_by(ID_LANGUAGE=id)]
     if len(data_list) == 0:
         return not_found()
-    msg = {"languages": list}
+    msg = {"languages": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -509,7 +508,7 @@ def language_by_name(name):
     data_list = [language.to_json() for language in Language.Language.query.filter_by(Name=name)]
     if len(data_list) == 0:
         return not_found()
-    msg = {"languages": list}
+    msg = {"languages": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -568,7 +567,7 @@ def member_offer_list():
     data_list = [member_offer.to_json() for member_offer in Member_Offer.Member_Offer.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"member_offers": list}
+    msg = {"member_offers": data_list}
     return Response(json.dumps(msg), status=200)
 
 
@@ -585,7 +584,7 @@ def member_offer_by_id(id: int):
     data_list = [member_offer.to_json() for member_offer in Member_Offer.Member_Offer.query.filter_by(Id_Member=id)]
     if len(data_list) == 0:
         return not_found()
-    msg = {"member_offers": list}  # there can be member_offers with the same id_member
+    msg = {"member_offers": data_list}  # there can be member_offers with the same id_member
     return Response(json.dumps(msg), status=200)
 
 
@@ -603,7 +602,7 @@ def member_list():
     data_list = [member.to_json() for member in Member.Member.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"member_list": list}
+    msg = {"member_list": data_list}
     return Response(json.dumps(msg), status=200)
 
 
@@ -620,7 +619,7 @@ def member_by_id(id: int):
     data_list = [member.to_json() for member in Member.Member.query.filter_by(ID_MEMBER=id)]
     if len(data_list) == 0:
         return not_found()
-    msg = {"member_list": list}
+    msg = {"member_list": data_list}
     return Response(json.dumps(msg), status=200)
 
 
@@ -732,7 +731,7 @@ def offer_list():
     data_list = [offer.to_json() for offer in Offer.Offer.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"offers": list}
+    msg = {"offers": data_list}
     return Response(json.dumps(msg), status=200)
 
 
@@ -751,7 +750,7 @@ def offer_by_id(id: int):
         return not_found()
     elif len(data_list) > 1:
         return internal_server_error()  # there can't be offers with the same id
-    msg = {"offers": list}
+    msg = {"offers": data_list}
     return Response(json.dumps(msg), status=200)
 
 
@@ -824,7 +823,7 @@ def qualification_list():
     data_list = [qualification.to_json() for qualification in Qualification.Qualification.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"qualification": list}
+    msg = {"qualification": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -844,7 +843,7 @@ def job_qualification_by_id(id: int):
                  Qualification.Qualification.query.filter_by(ID_QUALIFICATION=id)]
     if len(data_list) == 0:
         return not_found()
-    msg = {"qualification": list}
+    msg = {"qualification": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -897,7 +896,7 @@ def role_list():
     data_list = [role.to_json() for role in Role.Role.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"roles": list}
+    msg = {"roles": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -916,7 +915,7 @@ def role_by_id(id: int):
     data_list = [role.to_json() for role in Role.Role.query.filter_by(ID_ROLE=id)]
     if len(data_list) == 0:
         return not_found()
-    msg = {"roles": list}
+    msg = {"roles": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -936,7 +935,7 @@ def section_list():
     data_list = [section.to_json() for section in Section.Section.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"section": list}
+    msg = {"section": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -952,10 +951,10 @@ def section_by_category(category):
         return bad_request()
     if not role.CanSeeApiSection:
         return forbidden()
-    data_list = [section.to_json() for section in Section.Section.query.filter_by(Category=category)]
+    data_list = [section.to_json() for section in Section.Section.query.filter_by(Description=category)]
     if len(data_list) == 0:
         return not_found()
-    msg = {"section": list}
+    msg = {"section": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -1009,33 +1008,23 @@ def section_add():
 
 
 # UPDATE
-@app.route('/api_v0/section_update/<id>', methods=['PUT'])
+@app.route('/api_v0/section_update/<id>', methods=['GET', 'POST'])
 def section_update(id):
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
-    if not role.CanActiveSection:
-        return forbidden()
     section = Section.Section.query.filter_by(ID_SECTION=id)
     if len(section) == 0:
         return not_found()
     try:
         section.Active = True
-        Section.Section.query.add(section)
-        msg = {"validate section": section.to_json()}
-        status_code = 200
-    except Exception as ex:
-        try:
-            Section.Section.query.rollback()
-        except Exception as ex:
-            pass
-        msg = {"no se pudo validar section": section.to_json()}
-        status_code = 500
-
-    return Response(json.dumps(msg), status=status_code)
-
+        Section.Section.query.commit()
+        msg = {'section modificada': section.to_json()}
+        status = 200
+    except:
+         Section.Section.query.rollback()
+         msg = {ERROR_500_DEFAULT_MSG: section.to_json()}
+         status = 500
+    return Response(json.dumps(
+         msg,
+        ), status=200)
 
 # -------------------------------USER-------------------------------#
 # READ ALL
@@ -1051,7 +1040,7 @@ def user_list():
     data_list = [user.to_json() for user in User.User.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"user": list}
+    msg = {"user": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -1070,7 +1059,7 @@ def user_by_id(id: int):
     data_list = [user.to_json() for user in User.User.query.filter_by(ID_USER=id)]
     if len(data_list) == 0:
         return not_found()
-    msg = {"user": list}
+    msg = {"user": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
