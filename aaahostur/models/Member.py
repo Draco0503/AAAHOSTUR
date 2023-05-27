@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 import datetime as dt
-
 from . import db
-
 
 @dataclass()
 class Member(db.Model):
@@ -31,7 +29,7 @@ class Member(db.Model):
     Cancelation_Date = db.Column(db.String(256), nullable=True)
     Active = db.Column(db.Boolean, default=True)
     Verify = db.Column(db.Boolean, default=False)
-
+    
     Id_User_Verify = db.Column(db.Integer, db.ForeignKey("User.ID_USER"))
 
     member_account = db.relationship("Member_Account", backref="Member", lazy=True)

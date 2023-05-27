@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from . import db
 
-
 @dataclass()
 class Offer(db.Model):
     __tablename__ = "Offer"
@@ -11,9 +10,9 @@ class Offer(db.Model):
     Contact_Name = db.Column(db.String(512), nullable=False)
     Contact_Phone = db.Column(db.String(512), nullable=False)
     Contact_Email = db.Column(db.String(512), nullable=False)
-    Contact_Name_2 = db.Column(db.String(512))
-    Contact_Phone_2 = db.Column(db.String(512))
-    Contact_Email_2 = db.Column(db.String(512))
+    Contact_Name_2 = db.Column(db.String(512), nullable=True)
+    Contact_Phone_2 = db.Column(db.String(512), nullable=True)
+    Contact_Email_2 = db.Column(db.String(512), nullable=True)
     Verify = db.Column(db.Boolean, default=False)
     Active = db.Column(db.Boolean, default=True)
 

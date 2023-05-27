@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from . import db
 
-
 @dataclass()
 class Company(db.Model):
     __tablename__ = "Company"
@@ -18,9 +17,9 @@ class Company(db.Model):
     Description = db.Column(db.String(512), nullable=True)
     Verify = db.Column(db.Boolean, default=False)
     Active = db.Column(db.Boolean, default=True)
-
+    
     Id_Company_Parent = db.Column(db.Integer, db.ForeignKey("Company.ID_COMPANY"), nullable=True)
-    Id_User_Creator = db.Column(db.Integer, db.ForeignKey("User.ID_USER"))
+    Id_User_Creator = db.Column(db.Integer, db.ForeignKey("User.ID_USER"), nullable=True)
 
     company_account = db.relationship("Company_Account", backref="Company", lazy=True)
 

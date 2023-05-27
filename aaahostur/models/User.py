@@ -1,7 +1,5 @@
 from dataclasses import dataclass
-
 from . import db
-
 
 @dataclass()
 class User(db.Model):
@@ -9,6 +7,7 @@ class User(db.Model):
     ID_USER = db.Column(db.Integer, primary_key=True)
     Passwd = db.Column(db.String(512), nullable=False)
     Email = db.Column(db.String(512), unique=True, nullable=False)
+
     Id_Role = db.Column(db.Integer, db.ForeignKey("Role.ID_ROLE"), nullable=False)
 
     member = db.relationship("Member", backref="User", lazy=True, foreign_keys="[Member.ID_MEMBER]")
