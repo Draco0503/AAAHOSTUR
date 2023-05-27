@@ -234,6 +234,41 @@ def company_add():
     return Response(json.dumps(msg), status=status_code)
 
 
+# UPDATE
+@app.route("/api_v0/company/<id>", methods=["GET", "PUT"])
+def company_verify_update(id):
+    company = Company.Company.query.filter_by(ID_COMPANY=id)
+    # comprobación de que se almacen un dato
+    if company is None or company.count() == 0:
+        return not_found()
+    if company.count() > 1:
+        return internal_server_error()
+    else:
+        if request.method == "GET":
+            msg = {"company": [com.to_json() for com in company]}
+            return Response(json.dumps(msg), status=200)
+        elif request.method == "PUT":
+            data = request.form
+            #comprobacion que se guarde el valor que queremos cambiar
+            if 'verify' not in data or data['verify'] is None:
+                return bad_request()
+            else:   
+                try:
+                    # comprobacion de si queremos ponerlo en true o false
+                    verify = False if data['verify'] == 'False' else True
+                    for com in company:    # sabemos que solo puede haber un item en la lista "section"
+                        com.Verify = verify   
+                    msg = {"company": [com.to_json() for com in company]}
+                    db.session.commit()
+                    status_code = 200
+                except Exception as ex: 
+                     print(ex)           
+                     db.session.rollback()
+                if status_code != 200:
+                    return internal_server_error("An error has occurred processing PUT query")
+                return Response(json.dumps(msg), status=status_code)
+
+
 # -------------------------------JOB_CATEGORY--------------------------------------#
 # READ ALL
 @app.route('/api_v0/job_category-list', methods=['GET'])
@@ -767,6 +802,41 @@ def member_add():
     return Response(json.dumps(msg), status=status_code)
 
 
+# UPDATE
+@app.route("/api_v0/member/<id>", methods=["GET", "PUT"])
+def member_verify_update(id):
+    member = Member.Member.query.filter_by(ID_MEMBER=id)
+    # comprobación de que se almacen un dato
+    if member is None or member.count() == 0:
+        return not_found()
+    if member.count() > 1:
+        return internal_server_error()
+    else:
+        if request.method == "GET":
+            msg = {"member": [mem.to_json() for mem in member]}
+            return Response(json.dumps(msg), status=200)
+        elif request.method == "PUT":
+            data = request.form
+            #comprobacion que se guarde el valor que queremos cambiar
+            if 'verify' not in data or data['verify'] is None:
+                return bad_request()
+            else:   
+                try:
+                    # comprobacion de si queremos ponerlo en true o false
+                    verify = False if data['verify'] == 'False' else True
+                    for mem in member:    # sabemos que solo puede haber un item en la lista "section"
+                        mem.Verify = verify   
+                    msg = {"member": [mem.to_json() for mem in member]}
+                    db.session.commit()
+                    status_code = 200
+                except Exception as ex: 
+                     print(ex)           
+                     db.session.rollback()
+                if status_code != 200:
+                    return internal_server_error("An error has occurred processing PUT query")
+                return Response(json.dumps(msg), status=status_code)
+
+
 # -------------------------------OFFER-------------------------------#
 # READ ALL
 @app.route('/api_v0/offer-list', methods=['GET'])
@@ -853,6 +923,41 @@ def offer_add():
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
+
+
+# UPDATE
+@app.route("/api_v0/offer/<id>", methods=["GET", "PUT"])
+def offer_verify_update(id):
+    offer = Offer.Offer.query.filter_by(ID_OFFER=id)
+    # comprobación de que se almacen un dato
+    if offer is None or offer.count() == 0:
+        return not_found()
+    if offer.count() > 1:
+        return internal_server_error()
+    else:
+        if request.method == "GET":
+            msg = {"offer": [off.to_json() for off in offer]}
+            return Response(json.dumps(msg), status=200)
+        elif request.method == "PUT":
+            data = request.form
+            #comprobacion que se guarde el valor que queremos cambiar
+            if 'verify' not in data or data['verify'] is None:
+                return bad_request()
+            else:   
+                try:
+                    # comprobacion de si queremos ponerlo en true o false
+                    verify = False if data['verify'] == 'False' else True
+                    for off in offer:    # sabemos que solo puede haber un item en la lista "section"
+                        off.Verify = verify   
+                    msg = {"offer": [off.to_json() for off in offer]}
+                    db.session.commit()
+                    status_code = 200
+                except Exception as ex: 
+                     print(ex)           
+                     db.session.rollback()
+                if status_code != 200:
+                    return internal_server_error("An error has occurred processing PUT query")
+                return Response(json.dumps(msg), status=status_code)
 
 
 # -------------------------------PROFESSIONAL_PROFILE-------------------------------#
