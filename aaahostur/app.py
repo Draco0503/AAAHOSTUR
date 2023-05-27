@@ -48,6 +48,56 @@ def get_privileges_from_token(token: str) -> Role.Role or None:
 # endregion
 # ==================================================================================================================== #
 
+# ==================================== FUNCIONES PARA LOS ERRORES MAS COMUNES ======================================== #
+# region RESPONSES DE ERROR
+# Error 400-Bad Request
+def bad_request(msg: str = ERROR_400_DEFAULT_MSG) -> Response:
+    return Response(json.dumps({
+        "message": "{}".format(msg)
+    }), status=400)
+
+
+# Error 403-forbidden
+def forbidden(msg: str = ERROR_403_DEFAULT_MSG) -> Response:
+    return Response(json.dumps({
+        "title": "Forbidden",
+        "message": "{}".format(msg)
+    }), status=403)
+
+
+# Error 404-not found
+def not_found(msg: str = ERROR_404_DEFAULT_MSG) -> Response:
+    return Response(json.dumps({
+        "title": "Not found",
+        "message": "{}".format(msg)
+    }), status=404)
+
+
+# Error 429-Too many request
+def too_many_request(msg: str = ERROR_429_DEFAULT_MSG) -> Response:
+    return Response(json.dumps({
+        "title": "Too many request",
+        "message": "{}".format(msg)
+    }), status=429)
+
+
+# Error 500-Internal server error
+def internal_server_error(msg: str = ERROR_500_DEFAULT_MSG) -> Response:
+    return Response(json.dumps({
+        "message": "{}".format(msg)
+    }), status=500)
+
+
+# Error 504 Gateway Timeout
+def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
+    return Response(json.dumps({
+        "title": "Gateway Timeout",
+        "message": "{}".format(msg)
+    }), status=504)
+
+
+# endregion
+# ==================================================================================================================== #
 
 # region testing
 # metodo de prueba de conexion
@@ -1008,23 +1058,38 @@ def section_add():
 
 
 # UPDATE
-@app.route('/api_v0/section_update/<id>', methods=['GET', 'POST'])
-def section_update(id):
+@app.route("/api_v0/section/<id>", methods=["GET", "PUT"])
+def section_active_update(id):
     section = Section.Section.query.filter_by(ID_SECTION=id)
-    if len(section) == 0:
+    # comprobación de que se almacen un dato
+    if section is None or section.count() == 0:
         return not_found()
-    try:
-        section.Active = True
-        Section.Section.query.commit()
-        msg = {'section modificada': section.to_json()}
-        status = 200
-    except:
-         Section.Section.query.rollback()
-         msg = {ERROR_500_DEFAULT_MSG: section.to_json()}
-         status = 500
-    return Response(json.dumps(
-         msg,
-        ), status=200)
+    if section.count() > 1:
+        return internal_server_error()
+    else:
+        if request.method == "GET":
+            msg = {"section": [sect.to_json() for sect in section]}
+            return Response(json.dumps(msg), status=200)
+        elif request.method == "PUT":
+            data = request.form
+            #comprobacion que se guarde el valor que queremos cambiar
+            if 'active' not in data or data['active'] is None:
+                return bad_request()
+            else:   
+                try:
+                    # comprobacion de si queremos ponerlo en true o false
+                    active = False if data['active'] == 'False' else True
+                    for sect in section:    # sabemos que solo puede haber un item en la lista "section"
+                        sect.Active = active   
+                    msg = {"section": [sect.to_json() for sect in section]}
+                    db.session.commit()
+                    status_code = 200
+                except Exception as ex: 
+                     print(ex)           
+                     db.session.rollback()
+                if status_code != 200:
+                    return internal_server_error("An error has occurred processing PUT query")
+                return Response(json.dumps(msg), status=status_code)                            
 
 # -------------------------------USER-------------------------------#
 # READ ALL
@@ -1147,56 +1212,6 @@ def login():
 
     else:
         return {}  # empty response
-
-
-# endregion
-# ==================================================================================================================== #
-# ==================================== FUNCIONES PARA LOS ERRORES MAS COMUNES ======================================== #
-# region RESPONSES DE ERROR
-# Error 400-Bad Request
-def bad_request(msg: str = ERROR_400_DEFAULT_MSG) -> Response:
-    return Response(json.dumps({
-        "message": "{}".format(msg)
-    }), status=400)
-
-
-# Error 403-forbidden
-def forbidden(msg: str = ERROR_403_DEFAULT_MSG) -> Response:
-    return Response(json.dumps({
-        "title": "Forbidden",
-        "message": "{}".format(msg)
-    }), status=403)
-
-
-# Error 404-not found
-def not_found(msg: str = ERROR_404_DEFAULT_MSG) -> Response:
-    return Response(json.dumps({
-        "title": "Not found",
-        "message": "{}".format(msg)
-    }), status=404)
-
-
-# Error 429-Too many request
-def too_many_request(msg: str = ERROR_429_DEFAULT_MSG) -> Response:
-    return Response(json.dumps({
-        "title": "Too many request",
-        "message": "{}".format(msg)
-    }), status=429)
-
-
-# Error 500-Internal server error
-def internal_server_error(msg: str = ERROR_500_DEFAULT_MSG) -> Response:
-    return Response(json.dumps({
-        "message": "{}".format(msg)
-    }), status=500)
-
-
-# Error 504 Gateway Timeout
-def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
-    return Response(json.dumps({
-        "title": "Gateway Timeout",
-        "message": "{}".format(msg)
-    }), status=504)
 
 
 # endregion
