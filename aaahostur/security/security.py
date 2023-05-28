@@ -1,23 +1,21 @@
 import bcrypt
 import jwt
 
-def generate_salt():
-    return bcrypt.gensalt()
-
 
 class Security:
     def __init__(self, secret, algorithm):
         self._secret = secret
         self._algorithm = algorithm
 
-    def hashed_password(self, password) -> bytes:
+    def hashed_password(self, password) -> str:
         pwd_bytes = password.encode('utf-8')
         salt = bcrypt.gensalt()
-        return bcrypt.hashpw(pwd_bytes, salt)
+        return bcrypt.hashpw(pwd_bytes, salt).decode()
 
     def verify_password(self, password, hashed_password) -> bool:
         pwd_bytes = password.encode('utf-8')
-        return bcrypt.checkpw(pwd_bytes, hashed_password)
+        hsd_pwd = hashed_password.encode('utf-8')
+        return bcrypt.checkpw(pwd_bytes, hsd_pwd)
 
     def generate_jwt(self, payload: dict):
         return jwt.encode(payload, self._secret, algorithm=self._algorithm)

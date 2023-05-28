@@ -28,6 +28,14 @@
     color: var(--aaahostur-color-blue);
 }
 
+.yellow-hover-text {
+    color: var(--aaahostur-primary-color-not-that-yellow) !important;
+}
+
+.yellow-hover-text:hover {
+    text-decoration: underline;
+}
+
 .shadow {
     box-shadow: 0 2px 10px var(--aaahostur-primary-color-darker-blue);
 }
