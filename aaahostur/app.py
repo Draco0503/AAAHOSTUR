@@ -128,7 +128,7 @@ def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
 # region testing
 # metodo de prueba de conexion
 @app.route('/prueba')
-def index():
+def prueba():
     return render_template('t-sign-in-member.html', prueba='holka')
 
 
@@ -274,28 +274,28 @@ def company_verify_update(id):
             return Response(json.dumps(msg), status=200)
         elif request.method == "PUT":
             data = request.form
-            #comprobacion que se guarde el valor que queremos cambiar
-
+            # comprobacion que se guarde el valor que queremos cambiar
 
             if 'verify' not in data or data['verify'] is None:
                 return bad_request()
-            else:   
+            else:
                 try:
                     # comprobacion de si queremos ponerlo en true o false
                     verify = False if data['verify'] == 'False' else True
-                    for com in company:    # sabemos que solo puede haber un item en la lista "section"
-                        com.Verify = verify   
+                    for com in company:  # sabemos que solo puede haber un item en la lista "section"
+                        com.Verify = verify
                     msg = {"company": [com.to_json() for com in company]}
 
                     db.session.commit()
                     status_code = 200
-                except Exception as ex: 
-                     print(ex)           
-                     db.session.rollback()
+                except Exception as ex:
+                    print(ex)
+                    db.session.rollback()
                 if status_code != 200:
                     return internal_server_error("An error has occurred processing PUT query")
                 return Response(json.dumps(msg), status=status_code)
-            
+
+
 @app.route("/api_v0/company/<id>", methods=["GET", "PUT"])
 def company_active_update(id):
     company = Company.Company.query.filter_by(ID_COMPANY=id)
@@ -312,22 +312,24 @@ def company_active_update(id):
             data = request.form
             if 'active' not in data or data['active'] is None:
                 return bad_request()
-            else:   
+            else:
                 try:
                     active = False if data['active'] == 'False' else True
-                    for comp in company:    # sabemos que solo puede haber un item en la lista "section"
-                        comp.Active = active   
+                    for comp in company:  # sabemos que solo puede haber un item en la lista "section"
+                        comp.Active = active
                     msg = {"company": [comp.to_json() for comp in company]}
                     db.session.commit()
                     status_code = 200
-                except Exception as ex: 
-                     print(ex)           
-                     db.session.rollback()
+                except Exception as ex:
+                    print(ex)
+                    db.session.rollback()
                 if status_code != 200:
                     return internal_server_error("An error has occurred processing PUT query")
-                return Response(json.dumps(msg), status=status_code) 
+                return Response(json.dumps(msg), status=status_code)
 
-# -------------------------------JOB_CATEGORY--------------------------------------#
+            # -------------------------------JOB_CATEGORY--------------------------------------#
+
+
 # READ ALL
 @app.route('/api_v0/job_category-list', methods=['GET'])
 def job_category_list():
@@ -674,6 +676,7 @@ def language_add():
 
     return Response(json.dumps(msg), status=status_code)
 
+
 # -------------------------------MEMBER_ACCOUNT-------------------------------#
 # TODO not implemented in v.0
 
@@ -856,27 +859,26 @@ def member_verify_update(id):
             return Response(json.dumps(msg), status=200)
         elif request.method == "PUT":
             data = request.form
-            #comprobacion que se guarde el valor que queremos cambiar
+            # comprobacion que se guarde el valor que queremos cambiar
             if 'verify' not in data or data['verify'] is None:
 
                 return bad_request()
-            else:   
+            else:
                 try:
                     # comprobacion de si queremos ponerlo en true o false
                     verify = False if data['verify'] == 'False' else True
-                    for mem in member:    # sabemos que solo puede haber un item en la lista "section"
-                        mem.Verify = verify   
+                    for mem in member:  # sabemos que solo puede haber un item en la lista "section"
+                        mem.Verify = verify
                     msg = {"member": [mem.to_json() for mem in member]}
 
                     db.session.commit()
                     status_code = 200
-                except Exception as ex: 
-                     print(ex)           
-                     db.session.rollback()
+                except Exception as ex:
+                    print(ex)
+                    db.session.rollback()
                 if status_code != 200:
                     return internal_server_error("An error has occurred processing PUT query")
                 return Response(json.dumps(msg), status=status_code)
-
 
 
 # UPDATE
@@ -890,29 +892,31 @@ def member_active_update(id):
         return internal_server_error()
     else:
         if request.method == "GET":
-             msg = {"member": [memb.to_json() for memb in member]}
-             return Response(json.dumps(msg), status=200)
+            msg = {"member": [memb.to_json() for memb in member]}
+            return Response(json.dumps(msg), status=200)
         elif request.method == "PUT":
             data = request.form
         if 'active' not in data or data['active'] is None:
             return bad_request()
-        else:   
+        else:
             try:
                 # comprobacion de si queremos ponerlo en true o false
                 active = False if data['active'] == 'False' else True
-                for memb in member:    # sabemos que solo puede haber un item en la lista "section"
-                    memb.Active = active   
+                for memb in member:  # sabemos que solo puede haber un item en la lista "section"
+                    memb.Active = active
                 msg = {"member": [memb.to_json() for memb in member]}
                 db.session.commit()
                 status_code = 200
-            except Exception as ex: 
-                     print(ex)           
-                     db.session.rollback()
+            except Exception as ex:
+                print(ex)
+                db.session.rollback()
             if status_code != 200:
-                    return internal_server_error("An error has occurred processing PUT query")
-            return Response(json.dumps(msg), status=status_code) 
+                return internal_server_error("An error has occurred processing PUT query")
+            return Response(json.dumps(msg), status=status_code)
 
-# -------------------------------OFFER-------------------------------#
+        # -------------------------------OFFER-------------------------------#
+
+
 # READ ALL
 @app.route('/api_v0/offer-list', methods=['GET'])
 def offer_list():
@@ -1000,7 +1004,6 @@ def offer_add():
 # UPDATE
 @app.route("/api_v0/offer/<id>", methods=["GET", "PUT"])
 def offer_verify_update(id):
-
     offer = Offer.Offer.query.filter_by(ID_OFFER=id)
     # comprobación de que se almacen un dato
     if offer is None or offer.count() == 0:
@@ -1013,28 +1016,27 @@ def offer_verify_update(id):
             return Response(json.dumps(msg), status=200)
         elif request.method == "PUT":
             data = request.form
-            #comprobacion que se guarde el valor que queremos cambiar
+            # comprobacion que se guarde el valor que queremos cambiar
             if 'verify' not in data or data['verify'] is None:
 
                 return bad_request()
-            else:   
+            else:
                 try:
                     # comprobacion de si queremos ponerlo en true o false
 
                     verify = False if data['verify'] == 'False' else True
-                    for off in offer:    # sabemos que solo puede haber un item en la lista "section"
-                        off.Verify = verify   
+                    for off in offer:  # sabemos que solo puede haber un item en la lista "section"
+                        off.Verify = verify
 
                     msg = {"offer": [off.to_json() for off in offer]}
                     db.session.commit()
                     status_code = 200
-                except Exception as ex: 
-                     print(ex)           
-                     db.session.rollback()
+                except Exception as ex:
+                    print(ex)
+                    db.session.rollback()
                 if status_code != 200:
                     return internal_server_error("An error has occurred processing PUT query")
                 return Response(json.dumps(msg), status=status_code)
-
 
 
 # UPDATE
@@ -1052,26 +1054,28 @@ def offer_active_update(id):
             return Response(json.dumps(msg), status=200)
         elif request.method == "PUT":
             data = request.form
-            #comprobacion que se guarde el valor que queremos cambiar
+            # comprobacion que se guarde el valor que queremos cambiar
             if 'active' not in data or data['active'] is None:
-                 return bad_request()
-            else:   
+                return bad_request()
+            else:
                 try:
                     # comprobacion de si queremos ponerlo en true o false
                     active = False if data['active'] == 'False' else True
-                    for off in offer:    # sabemos que solo puede haber un item en la lista "section"
-                        off.Active = active   
+                    for off in offer:  # sabemos que solo puede haber un item en la lista "section"
+                        off.Active = active
                     msg = {"offer": [off.to_json() for off in offer]}
                     db.session.commit()
                     status_code = 200
-                except Exception as ex: 
-                     print(ex)           
-                     db.session.rollback()
+                except Exception as ex:
+                    print(ex)
+                    db.session.rollback()
                 if status_code != 200:
                     return internal_server_error("An error has occurred processing PUT query")
-                return Response(json.dumps(msg), status=status_code) 
+                return Response(json.dumps(msg), status=status_code)
 
-# -------------------------------PROFESSIONAL_PROFILE-------------------------------#
+            # -------------------------------PROFESSIONAL_PROFILE-------------------------------#
+
+
 # TODO not implemented in v.0
 
 
@@ -1301,6 +1305,7 @@ def section_active_update(id):
                     return internal_server_error("An error has occurred processing PUT query")
                 return Response(json.dumps(msg), status=status_code)
 
+
 # -------------------------------USER------------------------------- #
 
 
@@ -1362,7 +1367,7 @@ def user_add():
 
     try:
         User.User.query.add(user)
-        db,session.commit()
+        db, session.commit()
         msg = {'NEW user ADDED': user.to_json()}
         status_code = 200
 
@@ -1385,28 +1390,34 @@ def login():
     if request.method == 'GET':
         # Check if the user is already logged
         if not not_auth_header():
-            return redirect(url_for("index", _method="GET"))    # Redirect to index if true
-        return render_template('t-login.html')
+            return redirect(url_for("index", _method="GET"))  # Redirect to index if True
+        return render_template('t-login.html')  # Load login if False
     elif request.method == 'POST':
+        # Check for the length of the form request
         if len(request.form) != 2:
             return bad_request()
-        if request.form['user-login'] is not None:
+        # Check for the 'user-login' field
+        if 'user-login' in request.form and request.form['user-login'] is not None:
             username = request.form['user-login']
             if username == "":
-                return bad_request("Username cannot be empty")  # Usuario vacio
-            if request.form['user-passwd'] is not None:
+                return bad_request("Username cannot be empty")  # Empty user
+            if 'user-passwd' in request.form and request.form['user-passwd'] is not None:
                 passwd = request.form['user-passwd']
                 if passwd == "":
-                    return bad_request("Password cannot be empty")
+                    return bad_request("Password cannot be empty")  # Empty password
+                # Search for the user
                 user = User.User.query.filter_by(Email=username).first()
                 if user is not None:
+                    # As the method says
                     if sec.verify_password(passwd, user.Passwd):
+                        # Generate the auth token
                         token_info = sec.generate_jwt({
                             "user": user.Email,
                             "user-role": user.Id_Role,
                             "curr_time": dt.now().strftime("%y-%m-%d %H:%M:%S"),
                             "exp_time": (dt.now() + timedelta(minutes=30)).strftime("%y-%m-%d %H:%M:%S")
                         })
+                        # Custom response to add the auth cookie
                         resp = make_response(redirect(url_for("index", _method="GET")))
                         resp.set_cookie('auth', token_info)
                         return resp
@@ -1414,10 +1425,8 @@ def login():
                         return bad_request("Wrong password")
                 else:
                     return bad_request("Wrong user")
-
         else:
             return bad_request()
-
     else:
         return bad_request("{} method not supported".format(request.method))
 
