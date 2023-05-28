@@ -1439,6 +1439,25 @@ def index():
     return render_template("t-index.html", payload=payload, code=200)
 
 
+# REGISTER
+@app.route("/register/member", methods=["GET", "POST"])
+def register_member():
+    render_template("t-sign-in-member.html", code=200)
+    if request.method == "POST":
+        print('hola')
+        print(request.method)
+        print(request.form)
+        email = request.form.get('user-email')
+        pwd = request.form.get('user-pwd')
+        print(email)
+        print(pwd)
+    print('hola2')
+    return render_template("t-sign-in-member.html", code=200)
+    
+
+
+
+
 # endregion
 # ==================================================================================================================== #
 # ========================================================= MAIN ===================================================== #
