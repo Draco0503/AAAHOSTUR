@@ -5,7 +5,7 @@ from . import db
 @dataclass()
 class Section(db.Model):
     __tablename__ = "Section"
-    ID_SECTION = db.Column(db.Integer, primary_key=True)
+    ID_SECTION = db.Column(db.Integer, primary_key=True, autoincrement=True)
     Category = db.Column(db.Enum(Publication_Category))
     Description = db.Column(db.String(512), nullable=False)
     Publication_Date = db.Column(db.String(256), nullable=False)

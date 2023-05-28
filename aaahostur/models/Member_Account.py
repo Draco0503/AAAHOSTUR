@@ -4,7 +4,7 @@ from . import db
 @dataclass()
 class Member_Account(db.Model):
     __tablename__ = "Member_Account"
-    ID_MEMBER_ACCOUNT = db.Column(db.Integer, primary_key=True)
+    ID_MEMBER_ACCOUNT = db.Column(db.Integer, primary_key=True, autoincrement=True)
     Account_Holder = db.Column(db.String(512), nullable=False)
     Account_Number = db.Column(db.String(512), nullable=False, unique=True)
     SEPA_Form = db.Column(db.Boolean, default=False)

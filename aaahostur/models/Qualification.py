@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from . import db
 
+
 @dataclass()
 class Qualification(db.Model):
     __tablename__ = "Qualification"
-    ID_QUALIFICATION = db.Column(db.Integer, primary_key=True)
+    ID_QUALIFICATION = db.Column(db.Integer, primary_key=True, autoincrement=True)
     Name = db.Column(db.String(512), nullable=False)
     Description = db.Column(db.String(512), nullable=False)
     

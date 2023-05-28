@@ -4,7 +4,7 @@ from . import db
 @dataclass()
 class Role(db.Model):
     __tablename__ = "Role"
-    ID_ROLE = db.Column(db.Integer, primary_key=True)
+    ID_ROLE = db.Column(db.Integer, primary_key=True, autoincrement=True)
     Name = db.Column(db.String(20), nullable=False)
     Description = db.Column(db.String(512))
     CanVerifyMember = db.Column(db.Boolean, default=False)

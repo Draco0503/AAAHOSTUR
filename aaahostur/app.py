@@ -73,19 +73,23 @@ def user_privileges() -> Role.Role or Response:
     return role
 
 
+def key_in_request_form(key) -> bool:
+    return key in request.form and request.form[key] is not None
+
+
 # endregion
 # ==================================================================================================================== #
 
-# ==================================== FUNCIONES PARA LOS ERRORES MAS COMUNES ======================================== #
-# region RESPONSES DE ERROR
-# Error 400-Bad Request
+# ============================================ COMMON ERROR RESPONSES ================================================ #
+# region COMMON ERROR RESPONSES
+# 400-Bad Request
 def bad_request(msg: str = ERROR_400_DEFAULT_MSG) -> Response:
     return Response(json.dumps({
         "message": "{}".format(msg)
     }), status=400)
 
 
-# Error 403-forbidden
+# 403-forbidden
 def forbidden(msg: str = ERROR_403_DEFAULT_MSG) -> Response:
     return Response(json.dumps({
         "title": "Forbidden",
@@ -93,7 +97,7 @@ def forbidden(msg: str = ERROR_403_DEFAULT_MSG) -> Response:
     }), status=403)
 
 
-# Error 404-not found
+# 404-not found
 def not_found(msg: str = ERROR_404_DEFAULT_MSG) -> Response:
     return Response(json.dumps({
         "title": "Not found",
@@ -101,7 +105,7 @@ def not_found(msg: str = ERROR_404_DEFAULT_MSG) -> Response:
     }), status=404)
 
 
-# Error 429-Too many request
+# 429-Too many request
 def too_many_request(msg: str = ERROR_429_DEFAULT_MSG) -> Response:
     return Response(json.dumps({
         "title": "Too many request",
@@ -109,14 +113,14 @@ def too_many_request(msg: str = ERROR_429_DEFAULT_MSG) -> Response:
     }), status=429)
 
 
-# Error 500-Internal server error
+# 500-Internal server error
 def internal_server_error(msg: str = ERROR_500_DEFAULT_MSG) -> Response:
     return Response(json.dumps({
         "message": "{}".format(msg)
     }), status=500)
 
 
-# Error 504 Gateway Timeout
+# 504 Gateway Timeout
 def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
     return Response(json.dumps({
         "title": "Gateway Timeout",
@@ -128,7 +132,7 @@ def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
 # ==================================================================================================================== #
 
 # region testing
-# metodo de prueba de conexion
+# method for testing purposes
 @app.route('/prueba')
 def prueba():
     return render_template('t-sign-in-member.html', prueba='holka')
@@ -147,19 +151,19 @@ def academic_profile_add():
     # NOT NULL fields
     if data is None or (2 > len(data) > 3):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data len()]')
-    if data['school'] is None:
+    if not key_in_request_form('school'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <school>]')
-    if data['graduation_date'] is None:
+    if not key_in_request_form('graduation_date'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <graduation_date>]')
 
     # NULL fields
-    promotion = '' if data['promotion'] is None else data['promotion']
+    promotion = '' if not key_in_request_form('promotion') else data['promotion']
 
     academic_profile = Academic_Profile.Academic_Profile(School=data['school'],
                                                          Graduation_Date=data['graduation_date'],
                                                          Promotion=promotion)
     try:
-        Academic_Profile.Academic_Profile.query.add(academic_profile)
+        db.session.add(academic_profile)
         db.session.commit()
         msg = {'NEW academic_profile ADDED': academic_profile.to_json()}
         status_code = 200
@@ -218,22 +222,22 @@ def company_add():
     data = request.form
     if data is None or (5 > len(data) > 10):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data len()]')
-    if data['type'] is None:
+    if not key_in_request_form('type'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <type>')
-    if data['cif'] is None:
+    if not key_in_request_form('cif'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <cif>]')
-    if data['contact_name'] is None:
+    if not key_in_request_form('contact_name'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <contact_name>]')
-    if data['contact_phone'] is None:
+    if not key_in_request_form('contact_phone'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <contact_phone>]')
-    if data['contact_email'] is None:
+    if not key_in_request_form('contact_email'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <contact_email>]')
 
-    address = "" if data['address'] is None else data['address']
-    cp = "" if data['cp'] is None else data['cp']
-    city = "" if data['city'] is None else data['city']
-    province = "" if data['province'] is None else data['province']
-    description = "" if data['description'] is None else data['description']
+    address = "" if not key_in_request_form('address') else data['address']
+    cp = "" if not key_in_request_form('cp') else data['cp']
+    city = "" if not key_in_request_form('city') else data['city']
+    province = "" if not key_in_request_form('province') else data['province']
+    description = "" if not key_in_request_form('description') else data['description']
 
     company = Company.Company(Type=data['type'],
                               CIF=data['cif'],
@@ -247,8 +251,7 @@ def company_add():
                               Description=description)
 
     try:
-        # TODO check role
-        Company.Company.query.add(company)
+        db.session.add(company)
         db.session.commit()
         msg = {'NEW company ADDED': company.to_json()}
         status_code = 200
@@ -265,7 +268,7 @@ def company_add():
 @app.route("/api_v0/company/<id>", methods=["GET", "PUT"])
 def company_verify_update(id):
     company = Company.Company.query.filter_by(ID_COMPANY=id)
-    # comprobación de que se almacen un dato
+    # Check if exists
     if company is None or company.count() == 0:
         return not_found()
     if company.count() > 1:
@@ -276,15 +279,16 @@ def company_verify_update(id):
             return Response(json.dumps(msg), status=200)
         elif request.method == "PUT":
             data = request.form
-            # comprobacion que se guarde el valor que queremos cambiar
-
-            if 'verify' not in data or data['verify'] is None:
+            # Check that the value given is present
+            if not key_in_request_form('verify'):
                 return bad_request()
             else:
+                status_code = 400
+                msg = ERROR_400_DEFAULT_MSG
                 try:
-                    # comprobacion de si queremos ponerlo en true o false
-                    verify = False if data['verify'] == 'False' else True
-                    for com in company:  # sabemos que solo puede haber un item en la lista "section"
+                    # Anything that is not 'True' is False
+                    verify = True if data['verify'] == 'True' else False
+                    for com in company:  # At this point we now its only one in the list
                         com.Verify = verify
                     msg = {"company": [com.to_json() for com in company]}
 
@@ -301,7 +305,7 @@ def company_verify_update(id):
 @app.route("/api_v0/company/<id>", methods=["GET", "PUT"])
 def company_active_update(id):
     company = Company.Company.query.filter_by(ID_COMPANY=id)
-    # comprobación de que se almacen un dato
+    # Check if exists
     if company is None or company.count() == 0:
         return not_found()
     if company.count() > 1:
@@ -312,12 +316,15 @@ def company_active_update(id):
             return Response(json.dumps(msg), status=200)
         elif request.method == "PUT":
             data = request.form
-            if 'active' not in data or data['active'] is None:
+            # Check that the value given is present
+            if not key_in_request_form('active'):
                 return bad_request()
             else:
+                status_code = 400
+                msg = ERROR_400_DEFAULT_MSG
                 try:
                     active = False if data['active'] == 'False' else True
-                    for comp in company:  # sabemos que solo puede haber un item en la lista "section"
+                    for comp in company:  # At this point we now its only one in the list
                         comp.Active = active
                     msg = {"company": [comp.to_json() for comp in company]}
                     db.session.commit()
@@ -375,9 +382,9 @@ def job_category_add():
     data = request.form
     if data is None or (2 > len(data) > 2):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [job_category_add() - data len()]')
-    if data['name'] is None:
+    if not key_in_request_form('name'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [job_category_add() - data <name>')
-    if data['description'] is None:
+    if not key_in_request_form('description'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [job_category_add() - data <description>]')
 
     job_category = Job_Category.Job_Category(Name=data['name'],
@@ -385,7 +392,7 @@ def job_category_add():
 
     try:
         # TODO check role
-        Job_Category.Job_Category.query.add(job_category)
+        db.session.add(job_category)
         db.session.commit()
         msg = {'NEW job_category ADDED': job_category.to_json()}
         status_code = 200
@@ -548,23 +555,23 @@ def job_demand_add():
     data = request.form
     if data is None or (5 > len(data) > 12):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data len()]')
-    if data['vacancies'] is None:
+    if not key_in_request_form('vacancies'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data <vacancies>')
-    if data['schedule'] is None:
+    if not key_in_request_form('schedule'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data <schedule>')
-    if data['working_day'] is None:
+    if not key_in_request_form('working_day'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data <working_day>')
-    if data['shift'] is None:
+    if not key_in_request_form('shift'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data <shift>')
 
-    monthly_salary = "" if data['monthly_salary'] is None else data['monthly_salary']
-    contract_type = "" if data['contract_type'] is None else data['contract_type']
-    holidays = "" if data['holidays'] is None else data['holidays']
-    experience = "" if data['experience'] is None else data['experience']
-    vehicle = False if data['vehicle'] is None else data['vehicle']
-    geographical_mobility = False if data['geographical_mobility'] is None else data['geographical_mobility']
-    disability_grade = 0 if data['disability_grade'] is None else data['disability_grade']
-    others = "" if data['others'] is None else data['others']
+    monthly_salary = "" if not key_in_request_form('monthly_salary') else data['monthly_salary']
+    contract_type = "" if not key_in_request_form('contract_type') else data['contract_type']
+    holidays = "" if not key_in_request_form('holidays') else data['holidays']
+    experience = "" if not key_in_request_form('experience') else data['experience']
+    vehicle = False if not key_in_request_form('vehicle') else data['vehicle']
+    geographical_mobility = False if not key_in_request_form('geographical_mobility') else data['geographical_mobility']
+    disability_grade = 0 if not key_in_request_form('disability_grade') else data['disability_grade']
+    others = "" if not key_in_request_form('others') else data['others']
 
     job_demand = Job_Demand.Job_Demand(Vacancies=data['vacancies'],
                                        Monthly_Salary=monthly_salary,
@@ -580,7 +587,7 @@ def job_demand_add():
                                        Others=others)
 
     try:
-        Job_Demand.Job_Demand.query.add(job_demand)
+        db.session.add(job_demand)
         db.session.commit()
         msg = {'NEW job_demand ADDED': job_demand.to_json()}
         status_code = 200
@@ -654,11 +661,11 @@ def language_add():
     data = request.form
     if data is None or (3 > len(data) > 3):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [language_add() - data len()]')
-    if data['name'] is None:
+    if not key_in_request_form('name'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [language_add() - data <name>')
-    if data['lvl'] is None:
+    if not key_in_request_form('lvl'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [language_add() - data <lvl>')
-    if data['certificate'] is None:
+    if not key_in_request_form('certificate'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [language_add() - data <certificate>')
 
     language = Language.Language(Name=data['name'],
@@ -666,7 +673,7 @@ def language_add():
                                  Certificate=data['certificate'])
 
     try:
-        Language.Language.query.add(language)
+        db.session.add(language)
         db.session.commit()
         msg = {'NEW language ADDED': language.to_json()}
         status_code = 200
@@ -758,31 +765,31 @@ def member_add():
     data = request.form
     if data is None or (18 > len(data) > 21):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data len()]')
-    if data['name'] is None:
+    if not key_in_request_form('name'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <name>')
-    if data['surname'] is None:
+    if not key_in_request_form('surname'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <surname>')
-    if data['dni'] is None:
+    if not key_in_request_form('dni'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <dni>')
-    if data['address'] is None:
+    if not key_in_request_form('address'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <address>')
-    if data['cp'] is None:
+    if not key_in_request_form('cp'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <cp>')
-    if data['city'] is None:
+    if not key_in_request_form('city'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <city>')
-    if data['province'] is None:
+    if not key_in_request_form('province'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <province>')
-    if data['gender'] is None:
+    if not key_in_request_form('gender'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <gender>')
-    if data['mobile'] is None:
+    if not key_in_request_form('mobile'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <mobile>')
-    if data['profile_picture'] is None:
+    if not key_in_request_form('profile_picture'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <profile_picture>')
-    if data['birth_date'] is None:
+    if not key_in_request_form('birth_date'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <birth_date>')
-    if data['join_date'] is None:
+    if not key_in_request_form('join_date'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <join_date>')
-    if data['cancellation_date'] is None:
+    if not key_in_request_form('cancellation_date'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <cancellation_date>')
 
     pna_address = ""
@@ -790,29 +797,29 @@ def member_add():
     pna_city = ""
     pna_province = ""
 
-    if data['pna_data'] is not None:
-        if data['pna_address'] is None:
+    if key_in_request_form('pna_data'):
+        if not key_in_request_form('pna_address'):
             return "[ERROR] - member_add() - insert: pna_address"
-        if data['pna_cp'] is None:
+        if not key_in_request_form('pna_cp'):
             return "[ERROR] - member_add() - insert: pna_cp"
-        if data['pna_city'] is None:
+        if not key_in_request_form('pna_city'):
             return "[ERROR] - member_add() - insert: pna_city"
-        if data['pna_province'] is None:
+        if not key_in_request_form('pna_province'):
             return "[ERROR] - member_add() - insert: pna_province"
         pna_address = data['pna_address']
         pna_cp = data['pna_cp']
         pna_city = data['pna_city']
         pna_province = data['pna_province']
 
-    land_line = "" if data['land_line'] is None else data["land_line"]
-    vehicle = "" if data['vehicle'] is None else data["vehicle"]
-    geographical_mobility = "" if data['geographical_mobility'] is None else data["geographical_mobility"]
-    disability_grade = "" if data['disability_grade'] is None else data["disability_grade"]
+    land_line = "" if not key_in_request_form('land_line') else data["land_line"]
+    vehicle = "" if not key_in_request_form('vehicle') else data["vehicle"]
+    geographical_mobility = "" if not key_in_request_form('geographical_mobility') else data["geographical_mobility"]
+    disability_grade = "" if not key_in_request_form('disability_grade') else data["disability_grade"]
 
     member = Member.Member(Name=data['name'],
                            Surname=data['surname'],
                            DNI=data['dni'],
-                           Address=data['adderss'],
+                           Address=data['address'],
                            CP=data['cp'],
                            City=data['city'],
                            Province=data['province'],
@@ -829,10 +836,10 @@ def member_add():
                            Geographical_Mobility=geographical_mobility,
                            Disability_Grade=disability_grade,
                            Join_Date=data['join_date'],
-                           Cancelation_Date=data['cancelation_date'])
+                           Cancelation_Date=data['cancellation_date'])
 
     try:
-        Member.Member.query.add(member)
+        db.session.add(member)
         db.session.commit()
         msg = {'NEW member ADDED': member.to_json()}
         status_code = 200
@@ -849,7 +856,7 @@ def member_add():
 @app.route("/api_v0/member/<id>", methods=["GET", "PUT"])
 def member_verify_update(id):
     member = Member.Member.query.filter_by(ID_MEMBER=id)
-    # comprobación de que se almacen un dato
+    # Check if exists
     if member is None or member.count() == 0:
         return not_found()
     if member.count() > 1:
@@ -860,14 +867,15 @@ def member_verify_update(id):
             return Response(json.dumps(msg), status=200)
         elif request.method == "PUT":
             data = request.form
-            # comprobacion que se guarde el valor que queremos cambiar
-            if 'verify' not in data or data['verify'] is None:
-
+            # Check that the value given is present
+            if not key_in_request_form('verify'):
                 return bad_request()
             else:
+                status_code = 400
+                msg = ERROR_400_DEFAULT_MSG
                 try:
                     # comprobacion de si queremos ponerlo en true o false
-                    verify = False if data['verify'] == 'False' else True
+                    verify = True if data['verify'] == 'True' else False
                     for mem in member:  # sabemos que solo puede haber un item en la lista "section"
                         mem.Verify = verify
                     msg = {"member": [mem.to_json() for mem in member]}
@@ -897,23 +905,25 @@ def member_active_update(id):
             return Response(json.dumps(msg), status=200)
         elif request.method == "PUT":
             data = request.form
-        if 'active' not in data or data['active'] is None:
-            return bad_request()
-        else:
-            try:
-                # comprobacion de si queremos ponerlo en true o false
-                active = False if data['active'] == 'False' else True
-                for memb in member:  # sabemos que solo puede haber un item en la lista "section"
-                    memb.Active = active
-                msg = {"member": [memb.to_json() for memb in member]}
-                db.session.commit()
-                status_code = 200
-            except Exception as ex:
-                print(ex)
-                db.session.rollback()
-            if status_code != 200:
-                return internal_server_error("An error has occurred processing PUT query")
-            return Response(json.dumps(msg), status=status_code)
+            if not key_in_request_form('active'):
+                return bad_request()
+            else:
+                status_code = 400
+                msg = ERROR_400_DEFAULT_MSG
+                try:
+                    # comprobacion de si queremos ponerlo en true o false
+                    active = False if data['active'] == 'False' else True
+                    for memb in member:  # sabemos que solo puede haber un item en la lista "section"
+                        memb.Active = active
+                    msg = {"member": [memb.to_json() for memb in member]}
+                    db.session.commit()
+                    status_code = 200
+                except Exception as ex:
+                    print(ex)
+                    db.session.rollback()
+                if status_code != 200:
+                    return internal_server_error("An error has occurred processing PUT query")
+                return Response(json.dumps(msg), status=status_code)
 
         # -------------------------------OFFER-------------------------------#
 
@@ -964,20 +974,20 @@ def offer_add():
     data = request.form
     if data is None or (5 > len(data) > 8):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [qualification_add() - data len()]')
-    if data['company_name'] is None:
+    if not key_in_request_form('company_name'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <company_name>')
-    if data['address'] is None:
+    if not key_in_request_form('address'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <address>')
-    if data['contact_name'] is None:
+    if not key_in_request_form('contact_name'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <contact_name>')
-    if data['contact_phone'] is None:
+    if not key_in_request_form('contact_phone'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <contact_phone>')
-    if data['contact_email'] is None:
+    if not key_in_request_form('contact_email'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <contact_email>')
 
-    contact_name_2 = "" if data['contact_name_2'] is None else data["contact_name_2"]
-    contact_phone_2 = "" if data['contact_phone_2'] is None else data["contact_phone_2"]
-    contact_email_2 = "" if data['contact_email_2'] is None else data["contact_email_2"]
+    contact_name_2 = "" if not key_in_request_form('contact_name_2') else data["contact_name_2"]
+    contact_phone_2 = "" if not key_in_request_form('contact_phone_2') else data["contact_phone_2"]
+    contact_email_2 = "" if not key_in_request_form('contact_email_2') else data["contact_email_2"]
 
     offer = Offer.Offer(Company_Name=data['company_name'],
                         Address=data['address'],
@@ -989,7 +999,7 @@ def offer_add():
                         Contact_Email_2=contact_email_2)
 
     try:
-        Offer.Offer.query.add(offer)
+        db.session.add(offer)
         db.session.commit()
         msg = {'NEW offer ADDED': offer.to_json()}
         status_code = 200
@@ -1018,14 +1028,15 @@ def offer_verify_update(id):
         elif request.method == "PUT":
             data = request.form
             # comprobacion que se guarde el valor que queremos cambiar
-            if 'verify' not in data or data['verify'] is None:
+            if not key_in_request_form('verify'):
 
                 return bad_request()
             else:
+                status_code = 400
+                msg = ERROR_400_DEFAULT_MSG
                 try:
                     # comprobacion de si queremos ponerlo en true o false
-
-                    verify = False if data['verify'] == 'False' else True
+                    verify = True if data['verify'] == 'True' else False
                     for off in offer:  # sabemos que solo puede haber un item en la lista "section"
                         off.Verify = verify
 
@@ -1056,9 +1067,11 @@ def offer_active_update(id):
         elif request.method == "PUT":
             data = request.form
             # comprobacion que se guarde el valor que queremos cambiar
-            if 'active' not in data or data['active'] is None:
+            if not key_in_request_form('active'):
                 return bad_request()
             else:
+                status_code = 400
+                msg = ERROR_400_DEFAULT_MSG
                 try:
                     # comprobacion de si queremos ponerlo en true o false
                     active = False if data['active'] == 'False' else True
@@ -1125,16 +1138,16 @@ def qualification_add():
     data = request.form
     if data is None or (2 > len(data) > 2):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [qualification_add() - data len()]')
-    if data['name'] is None:
+    if not key_in_request_form('name'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [qualification_add() - data <name>')
-    if data['description'] is None:
+    if not key_in_request_form('description'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [qualification_add() - data <description>')
 
     qualification = Qualification.Qualification(Name=data['name'],
                                                 Description=data['description'])
 
     try:
-        Qualification.Qualification.query.add(qualification)
+        db.session.add(qualification)
         db.session.commit()
         msg = {'NEW qualification ADDED': qualification.to_json()}
         status_code = 200
@@ -1237,17 +1250,17 @@ def section_add():
     data = request.form
     if data is None or (6 > len(data) > 6):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data len()]')
-    if data['category'] is None:
+    if not key_in_request_form('category'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <category>')
-    if data['description'] is None:
+    if not key_in_request_form('description'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <description>')
-    if data['publication_date'] is None:
+    if not key_in_request_form('publication_date'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <publication_date>')
-    if data['schedule'] is None:
+    if not key_in_request_form('schedule'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <schedule>')
-    if data['img_resource'] is None:
+    if not key_in_request_form('img_resource'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <img_resource>')
-    if data['price'] is None:
+    if not key_in_request_form('price'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <price>')
 
     section = Section.Section(Category=data['category'],
@@ -1258,7 +1271,7 @@ def section_add():
                               Price=data['price'])
 
     try:
-        Section.Section.query.add(section)
+        db.session.add(section)
         db.session.commit()
         msg = {'NEW section ADDED': section.to_json()}
         status_code = 200
@@ -1287,7 +1300,7 @@ def section_active_update(id):
         elif request.method == "PUT":
             data = request.form
             # comprobacion que se guarde el valor que queremos cambiar
-            if 'active' not in data or data['active'] is None:
+            if not key_in_request_form('active'):
                 return bad_request()
             else:
                 status_code = 400
@@ -1349,28 +1362,22 @@ def user_by_id(id: int):
 # INSERT
 @app.route('/api_v0/user', methods=['POST'])
 def user_add():
-    role = user_privileges()
-    if type(role) is Response:
-        return role
-    # Now we can ask for the requirement set
-    if not role.CanMakeOffer:
-        return forbidden()
     data = request.form
-    if data is None or (2 > len(data) > 2):
+    if data is None or len(data) != 3:
         return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data len()]')
-    if data['passwd'] is None:
+    if not key_in_request_form('passwd'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <passwd>')
-    if data['email'] is None:
+    if not key_in_request_form('email'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <email>')
-    if data['role'] is None:
+    if not key_in_request_form('role'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <role>]')
 
-    user = User.User(Passwd=data['passwd'],
+    user = User.User(Passwd=sec.hashed_password(data['passwd']),
                      Email=data['email'],
                      Id_Role=int(data['role']))
 
     try:
-        User.User.query.add(user)
+        db.session.add(user)
         db.session.commit()
         new_user = User.User.query.filter_by(Email=user.Email).first()
         msg = {'NEW user ADDED': new_user.to_json()}
@@ -1402,11 +1409,11 @@ def login():
         if len(request.form) != 2:
             return bad_request()
         # Check for the 'user-login' field
-        if 'user-login' in request.form and request.form['user-login'] is not None:
+        if key_in_request_form('user-login'):
             username = request.form['user-login']
             if username == "":
                 return bad_request("Username cannot be empty")  # Empty user
-            if 'user-passwd' in request.form and request.form['user-passwd'] is not None:
+            if key_in_request_form('user-passwd'):
                 passwd = request.form['user-passwd']
                 if passwd == "":
                     return bad_request("Password cannot be empty")  # Empty password
@@ -1462,30 +1469,30 @@ def register_member():
                 "cp": data["member-cp"],
                 "city": data["member-city"],
                 "province": data["member-province"],
-                # "gender": data[],
+                "gender": data["rb-group-gender"],
                 "mobile": data["member-mobile"],
-                # "profile_picture": data[],
+                "profile_picture": data["member-profilepic"],
                 "birth_date": data["member-birthdate"],
-                "join_date": dt.now(),
+                "join_date": dt.now().strftime("%y-%m-%d %H:%M:%S"),
                 "cancellation_date": "",
-                # "pna_data": data[],
+                "pna_data": None if not key_in_request_form('pna_cb') else data["pna_cb"],
                 "pna_address": data["member-pna-address"],
                 "pna_cp": data["member-pna-cp"],
                 "pna_city": data["member-pna-city"],
                 "pna_province": data["member-pna-province"],
                 "land_line": data["member-landline"],
-                # "vehicle": data[],
-                # "geographical_mobility": data[],
+                "vehicle": data["rb-group-car"],
+                "geographical_mobility": data["rb-group-mov"],
                 "disability_grade": data["member-handicap"]
             }
             print(data)
             # user_created = requests.post('http://localhost:5000/api_v0/user', data=user_data_form)
-            # # Check if the user has been created
+            # Check if the user has been created
             # if user_created.status_code == 200:
             #     member_data_form["id"] = user_created.json()["NEW user ADDED"].get("id_user")
             #     member_created = requests.post('http://localhost:5000/api_v0/member', data=member_data_form)
             #     if member_created.status_code == 200:
-            #         return redirect(url_for("login", _method="GET"))
+            #         return redirect(url_for("login"))
     else:
         return render_template("t-sign-in-member.html")
 
@@ -1495,13 +1502,13 @@ def register_member():
 # ========================================================= MAIN ===================================================== #
 # region MAIN
 if __name__ == '__main__':
-    # acceso al diccionario con las credenciales para acceder a la base de datos
+    # Conf contains DB settings
     app.config.from_object(conf)
-    # Conexion con la base de datos
+    # DB Connection (if db exists and not(table models) it will create the tables without data)
     db.init_app(app)
     with app.app_context():
         db.create_all()
-    # para manegar los errores
+    # HTTP Common errors handlers
     app.register_error_handler(404, not_found)
     app.register_error_handler(403, forbidden)
     app.register_error_handler(429, too_many_request)

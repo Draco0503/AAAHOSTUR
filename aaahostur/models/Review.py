@@ -4,7 +4,7 @@ from . import db
 @dataclass()
 class Review(db.Model):
     __tablename__ = 'Review'
-    ID_REVIEW = db.Column(db.Integer, primary_key=True)
+    ID_REVIEW = db.Column(db.Integer, primary_key=True, autoincrement=True)
     Score = db.Column(db.Integer, nullable=False)
     Description = db.Column(db.String(512), nullable=True)
     Business_Sender = db.Column(db.Integer, nullable=False)

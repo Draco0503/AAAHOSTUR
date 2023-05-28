@@ -4,7 +4,7 @@ from . import db
 @dataclass()
 class Offer(db.Model):
     __tablename__ = "Offer"
-    ID_OFFER = db.Column(db.Integer, primary_key=True)
+    ID_OFFER = db.Column(db.Integer, primary_key=True, autoincrement=True)
     Company_Name = db.Column(db.String(512), nullable=False)
     Address = db.Column(db.String(512), nullable=False)
     Contact_Name = db.Column(db.String(512), nullable=False)
