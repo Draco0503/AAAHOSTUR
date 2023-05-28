@@ -103,7 +103,7 @@ def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
 # metodo de prueba de conexion
 @app.route('/prueba')
 def index():
-    return render_template('t-member-profile.html', prueba='holka')
+    return render_template('t-sign-in-member.html', prueba='holka')
 
 
 # endregion
