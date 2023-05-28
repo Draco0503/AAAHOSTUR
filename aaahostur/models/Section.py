@@ -1,8 +1,6 @@
 from dataclasses import dataclass
-
 from .Publication_Category import Publication_Category
 from . import db
-
 
 @dataclass()
 class Section(db.Model):
