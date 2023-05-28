@@ -1,5 +1,5 @@
 from datetime import datetime as dt, timedelta
-from flask import Flask, request, session, json, render_template, Response, redirect, url_for
+from flask import Flask, request, session, json, render_template, Response, redirect, url_for, make_response
 from models import db
 from models import Language, Job_Category, Qualification, Role, User, Member, Member_Account, Member_Language, \
     Academic_Profile, Professional_Profile, Section, Company, Company_Account, Offer, Member_Offer, Job_Demand, \
@@ -31,18 +31,36 @@ sec = security.Security(conf.SECRET_KEY, conf.ALGORITHM)
 
 
 # region should be in utils
-def check_auth() -> bool:
+def not_auth_header() -> bool:
     """True if 'auth' header not found or empty"""
-    return 'auth' not in request.headers or request.headers['auth'] is None
+    return request.cookies.get('auth') is None
 
 
-def get_privileges_from_token(token: str) -> Role.Role or None:
+def get_user_from_token(token: str) -> tuple[str, Role.Role or str]:
     """Gets the role from the validated token"""
     payload = sec.decode_jwt(token)
     if payload is None or len(payload) != 4:
-        return None
-    else:
-        return Role.Role.query.filter_by(ID_ROLE=int(payload.get('user-role')))
+        return "", "Payload format not correct"
+    if dt.now() > dt.strptime(payload.get("exp_time"), "%y-%m-%d %H:%M:%S"):
+        return "", "Token expired, please log in again"
+    user = User.User.query.filter_by(Email=payload.get("user")).first()
+    if user is None:
+        return "", "User not found"
+    if user.Id_Role != int(payload.get("user-role")):
+        return "", "This user have not this role..."
+    return user.Email, Role.Role.query.filter_by(ID_ROLE=int(payload.get("user-role")))
+
+
+def user_privileges() -> Role.Role or Response:
+    # Check if auth cookie exists
+    if not_auth_header():
+        return redirect(url_for(".login", _method='GET'))
+    # Then it gets user's email and role from the token stored
+    user, role = get_user_from_token(request.headers['auth'])
+    # Its defined that when user is "" an error has occurred
+    if user == "":
+        return bad_request(role)
+    return role
 
 
 # endregion
@@ -102,7 +120,7 @@ def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
 # region testing
 # metodo de prueba de conexion
 @app.route('/prueba')
-def index():
+def prueba():
     return render_template('t-create-language.html', prueba='holka')
 
 
@@ -114,6 +132,7 @@ def index():
 # INSERT
 @app.route('/api_v0/academic_profile', methods=['POST'])
 def academic_profile_add():
+    # PARA HACER ESTA LLAMADA HAY QUE ASEGURARSE DE QUE EXISTE EL MIEMBRO
     data = request.form
     # NOT NULL fields
     if data is None or (2 > len(data) > 3):
@@ -130,7 +149,6 @@ def academic_profile_add():
                                                          Graduation_Date=data['graduation_date'],
                                                          Promotion=promotion)
     try:
-        # TODO check role
         Academic_Profile.Academic_Profile.query.add(academic_profile)
         Academic_Profile.Academic_Profile.query.commit()
         msg = {'NEW academic_profile ADDED': academic_profile.to_json()}
@@ -151,11 +169,10 @@ def academic_profile_add():
 # READ ALL
 @app.route('/api_v0/company-list', methods=['GET'])
 def company_list():
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiCompany:
         return forbidden()
     data_list = [company.to_json() for company in Company.Company.query.all()]
@@ -170,13 +187,13 @@ def company_list():
 # READ BY
 @app.route('/api_v0/company/<id>', methods=['GET'])
 def company_by_id(id: int):
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiCompany:
-        data_list = [company.to_json() for company in Company.Company.query.filter_by(ID_COMPANY=id)]
+        return forbidden()
+    data_list = [company.to_json() for company in Company.Company.query.filter_by(ID_COMPANY=id)]
     if len(data_list) == 0:
         return not_found()
     msg = {"company": data_list}
@@ -238,11 +255,10 @@ def company_add():
 # READ ALL
 @app.route('/api_v0/job_category-list', methods=['GET'])
 def job_category_list():
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiJobCategory:
         return forbidden()
     data_list = [job_Category.to_json() for job_Category in Job_Category.Job_Category.query.all()]
@@ -257,11 +273,10 @@ def job_category_list():
 # READ BY
 @app.route('/api_v0/job_category/<id>', methods=['GET'])
 def job_category_by_id(id: int):
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiJobCategory:
         return forbidden()
     data_list = [job_Category.to_json() for job_Category in
@@ -307,11 +322,10 @@ def job_category_add():
 # READ ALL
 @app.route('/api_v0/job_demand_category-list', methods=['GET'])
 def job_demand_category_list():
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiOffer:
         return forbidden()
     data_list = [job_demand_category.to_json() for job_demand_category in
@@ -325,11 +339,10 @@ def job_demand_category_list():
 # READ BY
 @app.route('/api_v0/job_demand_category/<id>', methods=['GET'])
 def job_demand_category_by_id(id: int):
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiOffer:
         return forbidden()
     data_list = [job_demand_category.to_json() for job_demand_category in
@@ -344,11 +357,10 @@ def job_demand_category_by_id(id: int):
 # READ ALL
 @app.route('/api_v0/job_demand_language-list', methods=['GET'])
 def job_demand_language_list():
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiOffer:
         return forbidden()
     data_list = [job_demand_language.to_json() for job_demand_language in
@@ -362,11 +374,10 @@ def job_demand_language_list():
 # READ BY
 @app.route('/api_v0/job_demand_language/<id>', methods=['GET'])
 def job_demand_language_by_id(id: int):
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiOffer:
         return forbidden()
     data_list = [job_demand_language.to_json() for job_demand_language in
@@ -381,11 +392,10 @@ def job_demand_language_by_id(id: int):
 # READ ALL
 @app.route('/api_v0/job_demand_qualification-list', methods=['GET'])
 def job_demand_qualification_list():
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiOffer:
         return forbidden()
     data_list = [job_demand_qualification.to_json() for job_demand_qualification in
@@ -399,11 +409,10 @@ def job_demand_qualification_list():
 # READ BY
 @app.route('/api_v0/job_demand_qualification/<id>', methods=['GET'])
 def job_demand_qualification_by_id(id: int):
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiOffer:
         return forbidden()
     data_list = [job_demand_qualification.to_json() for job_demand_qualification in
@@ -418,11 +427,10 @@ def job_demand_qualification_by_id(id: int):
 # READ ALL
 @app.route('/api_v0/job_demand-list', methods=['GET'])
 def job_demand_list():
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiOffer:
         return forbidden()
     data_list = [job_demand.to_json() for job_demand in Job_Demand.Job_Demand.query.all()]
@@ -435,11 +443,10 @@ def job_demand_list():
 # READ BY
 @app.route('/api_v0/job_demand/<id>', methods=['GET'])
 def job_demand_by_id(id: int):
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiOffer:
         return forbidden()
     data_list = [job_demand.to_json() for job_demand in Job_Demand.Job_Demand.query.filter_by(Id_Offer=id)]
@@ -452,11 +459,10 @@ def job_demand_by_id(id: int):
 # INSERT
 @app.route('/api_v0/job_demand', methods=['POST'])
 def job_demand_add():
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanMakeOffer:
         return forbidden()
     data = request.form
@@ -511,11 +517,10 @@ def job_demand_add():
 # READ ALL
 @app.route('/api_v0/language-list', methods=['GET'])
 def language_list():
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiLanguage:
         return forbidden()
     data_list = [language.to_json() for language in Language.Language.query.all()]
@@ -530,11 +535,10 @@ def language_list():
 # READ BY
 @app.route('/api_v0/language/<id>', methods=['GET'])
 def language_by_id(id: int):
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiLanguage:
         return forbidden()
     data_list = [language.to_json() for language in Language.Language.query.filter_by(ID_LANGUAGE=id)]
@@ -548,11 +552,10 @@ def language_by_id(id: int):
 
 @app.route('/api_v0/language/<name>', methods=['GET'])
 def language_by_name(name):
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiLanguage:
         return forbidden()
     data_list = [language.to_json() for language in Language.Language.query.filter_by(Name=name)]
@@ -607,11 +610,10 @@ def language_add():
 # READ ALL
 @app.route('/api_v0/member_offer-list', methods=['GET'])
 def member_offer_list():
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiMember:
         return forbidden()
     data_list = [member_offer.to_json() for member_offer in Member_Offer.Member_Offer.query.all()]
@@ -624,11 +626,10 @@ def member_offer_list():
 # READ BY
 @app.route('/api_v0/member_offer/<id>', methods=['GET'])
 def member_offer_by_id(id: int):
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiMember:
         return forbidden()
     data_list = [member_offer.to_json() for member_offer in Member_Offer.Member_Offer.query.filter_by(Id_Member=id)]
@@ -642,11 +643,10 @@ def member_offer_by_id(id: int):
 # READ ALL
 @app.route('/api_v0/member-list', methods=['GET'])
 def member_list():
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiMember:
         return forbidden()
     data_list = [member.to_json() for member in Member.Member.query.all()]
@@ -659,11 +659,10 @@ def member_list():
 # READ BY
 @app.route('/api_v0/member/<id>', methods=['GET'])
 def member_by_id(id: int):
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiMember:
         return forbidden()
     data_list = [member.to_json() for member in Member.Member.query.filter_by(ID_MEMBER=id)]
@@ -771,11 +770,10 @@ def member_add():
 # READ ALL
 @app.route('/api_v0/offer-list', methods=['GET'])
 def offer_list():
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiOffer:
         return forbidden()
     data_list = [offer.to_json() for offer in Offer.Offer.query.all()]
@@ -788,11 +786,10 @@ def offer_list():
 # READ BY
 @app.route('/api_v0/offer/<id>', methods=['GET'])
 def offer_by_id(id: int):
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiOffer:
         return forbidden()
     data_list = [offer.to_json() for offer in Offer.Offer.query.filter_by(ID_OFFER=id)]
@@ -807,11 +804,10 @@ def offer_by_id(id: int):
 # INSERT
 @app.route('/api_v0/offer', methods=['POST'])
 def offer_add():
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanMakeOffer:
         return forbidden()
     data = request.form
@@ -863,11 +859,10 @@ def offer_add():
 # READ ALL
 @app.route('/api_v0/qualification-list', methods=['GET'])
 def qualification_list():
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiQualification:
         return forbidden()
     data_list = [qualification.to_json() for qualification in Qualification.Qualification.query.all()]
@@ -882,11 +877,10 @@ def qualification_list():
 # READ BY
 @app.route('/api_v0/qualification/<id>', methods=['GET'])
 def job_qualification_by_id(id: int):
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiQualification:
         return forbidden()
     data_list = [qualification.to_json() for qualification in
@@ -936,11 +930,10 @@ def qualification_add():
 # READ ALL
 @app.route('/api_v0/role-list', methods=['GET'])
 def role_list():
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiRole:
         return forbidden()
     data_list = [role.to_json() for role in Role.Role.query.all()]
@@ -955,11 +948,10 @@ def role_list():
 # READ BY
 @app.route('/api_v0/role/<id>', methods=['GET'])
 def role_by_id(id: int):
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiRole:
         return forbidden()
     data_list = [role.to_json() for role in Role.Role.query.filter_by(ID_ROLE=id)]
@@ -975,11 +967,10 @@ def role_by_id(id: int):
 # READ ALL
 @app.route('/api_v0/section-list', methods=['GET'])
 def section_list():
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiSection:
         return forbidden()
     data_list = [section.to_json() for section in Section.Section.query.all()]
@@ -994,11 +985,10 @@ def section_list():
 # READ BY
 @app.route('/api_v0/section/<category>', methods=['GET'])
 def section_by_category(category):
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiSection:
         return forbidden()
     data_list = [section.to_json() for section in Section.Section.query.filter_by(Description=category)]
@@ -1013,11 +1003,10 @@ def section_by_category(category):
 # INSERT
 @app.route('/api_v0/section', methods=['POST'])
 def section_add():
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanMakeSection:
         return forbidden()
     data = request.form
@@ -1072,34 +1061,36 @@ def section_active_update(id):
             return Response(json.dumps(msg), status=200)
         elif request.method == "PUT":
             data = request.form
-            #comprobacion que se guarde el valor que queremos cambiar
+            # comprobacion que se guarde el valor que queremos cambiar
             if 'active' not in data or data['active'] is None:
                 return bad_request()
-            else:   
+            else:
+                status_code = 400
+                msg = {"default message"}
                 try:
                     # comprobacion de si queremos ponerlo en true o false
                     active = False if data['active'] == 'False' else True
-                    for sect in section:    # sabemos que solo puede haber un item en la lista "section"
-                        sect.Active = active   
+                    for sect in section:  # sabemos que solo puede haber un item en la lista "section"
+                        sect.Active = active
                     msg = {"section": [sect.to_json() for sect in section]}
                     db.session.commit()
                     status_code = 200
-                except Exception as ex: 
-                     print(ex)           
-                     db.session.rollback()
+                except Exception as ex:
+                    db.session.rollback()
                 if status_code != 200:
                     return internal_server_error("An error has occurred processing PUT query")
-                return Response(json.dumps(msg), status=status_code)                            
+                return Response(json.dumps(msg), status=status_code)
 
-# -------------------------------USER-------------------------------#
+# -------------------------------USER------------------------------- #
+
+
 # READ ALL
 @app.route('/api_v0/user-list', methods=['GET'])
 def user_list():
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiUser:
         return forbidden()
     data_list = [user.to_json() for user in User.User.query.all()]
@@ -1114,11 +1105,10 @@ def user_list():
 # READ BY
 @app.route('/api_v0/user/<id>', methods=['GET'])
 def user_by_id(id: int):
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanSeeApiUser:
         return forbidden()
     data_list = [user.to_json() for user in User.User.query.filter_by(ID_USER=id)]
@@ -1133,11 +1123,10 @@ def user_by_id(id: int):
 # INSERT
 @app.route('/api_v0/user', methods=['POST'])
 def user_add():
-    if check_auth():
-        return redirect(url_for(".login", _method='GET'))
-    role = get_privileges_from_token(request.headers['auth'])
-    if role is None:
-        return bad_request()
+    role = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
     if not role.CanMakeOffer:
         return forbidden()
     data = request.form
@@ -1173,45 +1162,50 @@ def user_add():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        if not check_auth():  # and security.validate(request.headers['auth']):
-            return redirect('/', code=200)  # todo
+        if not not_auth_header():
+            return redirect(url_for("index", _method="GET"))
         return render_template('t-login.html')
     elif request.method == 'POST':
         if len(request.form) != 2:
             return bad_request()
-        else:
-            if request.form['user-login'] is not None:
-                username = request.form['user-login']
-                if username == "":
-                    return bad_request("Username cannot be empty")  # Usuario vacio
+        if request.form['user-login'] is not None:
+            username = request.form['user-login']
+            if username == "":
+                return bad_request("Username cannot be empty")  # Usuario vacio
+            if request.form['user-passwd'] is not None:
+                passwd = request.form['user-passwd']
+                if passwd == "":
+                    return bad_request("Password cannot be empty")
+                user = User.User.query.filter_by(Email=username).first()
+                if user is not None:
+                    if sec.verify_password(passwd, user.Passwd):
+                        token_info = sec.generate_jwt({
+                            "user": user.Email,
+                            "user-role": user.Id_Role,
+                            "curr_time": dt.now().strftime("%y-%m-%d %H:%M:%S"),
+                            "exp_time": (dt.now() + timedelta(minutes=30)).strftime("%y-%m-%d %H:%M:%S")
+                        })
+                        resp = make_response(redirect(url_for("index", _method="GET")))
+                        resp.set_cookie('auth', token_info)
+                        return resp
+                    else:
+                        return bad_request("Wrong password")
                 else:
-                    if request.form['user-passwd'] is not None:
-                        passwd = request.form['user-passwd']
-                        if passwd == "":
-                            return bad_request("Password cannot be empty")
-                        else:
-                            user = User.User.query.filter_by(Email=username)
-                            if user is not None:
-                                if sec.verify_password(passwd, user.Passwd):
-                                    token_info = sec.generate_jwt({
-                                        "user": user.Email,
-                                        "user-role": user.Id_Role,
-                                        "curr": dt.now(),
-                                        "exp": dt.now() + timedelta(minutes=30)
-                                    })
-                                    # TODO pasar el token generado a todas las cabeceras de petición y redirect a index
-                                    auth_header = {'auth': sec.generate_jwt(token_info)}
-                                    redirect()
-                                else:
-                                    return "Contraseña incorrecta"
-                            else:
-                                return "Email incorrecto"
+                    return bad_request("Wrong user")
 
-            else:
-                return bad_request()
+        else:
+            return bad_request()
 
     else:
-        return {}  # empty response
+        return bad_request("{} method not supported".format(request.method))
+
+
+@app.route("/", methods=["GET"])
+def index():
+    if not_auth_header():
+        return render_template("t-index.html", code=200)
+    payload = sec.decode_jwt(request.cookies.get('auth'))
+    return render_template("t-index.html", payload=payload, code=200)
 
 
 # endregion

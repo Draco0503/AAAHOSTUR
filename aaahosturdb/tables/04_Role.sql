@@ -22,12 +22,88 @@ CREATE TABLE Role (
     CanActiveMemberBankAcc BOOLEAN DEFAULT FALSE,
     CanSeeReview BOOLEAN DEFAULT FALSE,
     CanMakeReview BOOLEAN DEFAULT FALSE,
+    -- API SCOPES (x10)
+    CanSeeApiRole BOOLEAN DEFAULT FALSE,
+    CanSeeApiLanguage BOOLEAN DEFAULT FALSE,
+    CanSeeApiJobCategory BOOLEAN DEFAULT FALSE,
+    CanSeeApiQualification BOOLEAN DEFAULT FALSE,
+    CanSeeApiUser BOOLEAN DEFAULT FALSE,
+    CanSeeApiSection BOOLEAN DEFAULT FALSE,
+    CanSeeApiCompany BOOLEAN DEFAULT FALSE,
+    CanSeeApiMember BOOLEAN DEFAULT FALSE,
+    CanSeeApiOffer BOOLEAN DEFAULT FALSE,
+    CanSeeApiReview BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (ID_ROLE)
 );
 
-INSERT INTO Role VALUES(101, "SUPERADMIN", "The highest role", 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-INSERT INTO Role VALUES(102, "ADMIN", "The manager", 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-INSERT INTO Role VALUES(103, "PUBLISHER", "To manage sections", 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0);
-INSERT INTO Role VALUES(104, "MEMBER", "Member can apply to offers", 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1);
-INSERT INTO Role VALUES(105, "COMPANY", "Companies can make offers", 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1);
+INSERT INTO Role(ID_ROLE, Name, Description, CanVerifyMember,
+                 CanVerifyCompany, CanVerifyAdmin, CanVerifyOffer,
+                 CanVerifyReview, CanSeeOffer, CanApplyOffer,
+                 CanMakeOffer, CanSeeSection, CanMakeSection,
+                 CanActiveMember, CanActiveCompany, CanActiveSection,
+                 CanActiveOffer, CanActiveReview, CanActiveCompanyBankAcc,
+                 CanActiveMemberBankAcc, CanSeeReview, CanMakeReview,
+                 CanSeeApiRole, CanSeeApiLanguage, CanSeeApiJobCategory,
+                 CanSeeApiQualification, CanSeeApiUser, CanSeeApiSection,
+                 CanSeeApiCompany, CanSeeApiMember, CanSeeApiOffer,
+                 CanSeeApiReview)
+         VALUES(101, "SUPERADMIN", "The highest role",
+         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+         1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+INSERT INTO Role(ID_ROLE, Name, Description, CanVerifyMember,
+                 CanVerifyCompany, CanVerifyAdmin, CanVerifyOffer,
+                 CanVerifyReview, CanSeeOffer, CanApplyOffer,
+                 CanMakeOffer, CanSeeSection, CanMakeSection,
+                 CanActiveMember, CanActiveCompany, CanActiveSection,
+                 CanActiveOffer, CanActiveReview, CanActiveCompanyBankAcc,
+                 CanActiveMemberBankAcc, CanSeeReview, CanMakeReview,
+                 CanSeeApiRole, CanSeeApiLanguage, CanSeeApiJobCategory,
+                 CanSeeApiQualification, CanSeeApiUser, CanSeeApiSection,
+                 CanSeeApiCompany, CanSeeApiMember, CanSeeApiOffer,
+                 CanSeeApiReview)
+          VALUES(102, "ADMIN", "The manager",
+          1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+          1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+INSERT INTO Role(ID_ROLE, Name, Description, CanVerifyMember,
+                 CanVerifyCompany, CanVerifyAdmin, CanVerifyOffer,
+                 CanVerifyReview, CanSeeOffer, CanApplyOffer,
+                 CanMakeOffer, CanSeeSection, CanMakeSection,
+                 CanActiveMember, CanActiveCompany, CanActiveSection,
+                 CanActiveOffer, CanActiveReview, CanActiveCompanyBankAcc,
+                 CanActiveMemberBankAcc, CanSeeReview, CanMakeReview,
+                 CanSeeApiRole, CanSeeApiLanguage, CanSeeApiJobCategory,
+                 CanSeeApiQualification, CanSeeApiUser, CanSeeApiSection,
+                 CanSeeApiCompany, CanSeeApiMember, CanSeeApiOffer,
+                 CanSeeApiReview)
+          VALUES(103, "PUBLISHER", "To manage sections",
+          0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0,
+          0, 1, 1, 1, 0, 1, 0, 0, 1, 1);
+INSERT INTO Role(ID_ROLE, Name, Description, CanVerifyMember,
+                 CanVerifyCompany, CanVerifyAdmin, CanVerifyOffer,
+                 CanVerifyReview, CanSeeOffer, CanApplyOffer,
+                 CanMakeOffer, CanSeeSection, CanMakeSection,
+                 CanActiveMember, CanActiveCompany, CanActiveSection,
+                 CanActiveOffer, CanActiveReview, CanActiveCompanyBankAcc,
+                 CanActiveMemberBankAcc, CanSeeReview, CanMakeReview,
+                 CanSeeApiRole, CanSeeApiLanguage, CanSeeApiJobCategory,
+                 CanSeeApiQualification, CanSeeApiUser, CanSeeApiSection,
+                 CanSeeApiCompany, CanSeeApiMember, CanSeeApiOffer,
+                 CanSeeApiReview)
+          VALUES(104, "MEMBER", "Member can apply to offers",
+          0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
+          0, 1, 1, 1, 0, 1, 0, 0, 1, 0);
+INSERT INTO Role(ID_ROLE, Name, Description, CanVerifyMember,
+                 CanVerifyCompany, CanVerifyAdmin, CanVerifyOffer,
+                 CanVerifyReview, CanSeeOffer, CanApplyOffer,
+                 CanMakeOffer, CanSeeSection, CanMakeSection,
+                 CanActiveMember, CanActiveCompany, CanActiveSection,
+                 CanActiveOffer, CanActiveReview, CanActiveCompanyBankAcc,
+                 CanActiveMemberBankAcc, CanSeeReview, CanMakeReview,
+                 CanSeeApiRole, CanSeeApiLanguage, CanSeeApiJobCategory,
+                 CanSeeApiQualification, CanSeeApiUser, CanSeeApiSection,
+                 CanSeeApiCompany, CanSeeApiMember, CanSeeApiOffer,
+                 CanSeeApiReview)
+          VALUES(105, "COMPANY", "Companies can make offers",
+          0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
+          0, 1, 1, 1, 0, 1, 0, 0, 1, 0);
 -- INSERT INTO Role VALUES(106, "DEFAULT_USER", "Only watching", 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
