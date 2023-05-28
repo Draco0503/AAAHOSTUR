@@ -59,19 +59,19 @@
                 <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-surname" required>
                 <label class="dis-block font-16pt" for="member-dni">DNI/NIE <span>*</span></label>
                 <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-dni" required>
-                <label class="dis-block font-16pt mar-bot-1rem" for="member-gender">Genero <span>*</span></label>
+                <label class="dis-block font-16pt mar-bot-1rem" for="rbgroup-gender">Genero <span>*</span></label>
                 <div id="rbgroup-gender" class="mar-bot-2rem">
-                    <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-gender', this)">
+                    <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-gender', this)">
                         Hombre
                         <input class="rbgroup-gender" type="radio" name="rb-group-gender" id="rbgroup-gender-rb1" value="H" checked>
                         <span class="radiomark"></span>
                     </label>                
-                    <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-gender', this)">
+                    <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-gender', this)">
                         Mujer
                         <input class="rbgroup-gender" type="radio" name="rb-group-gender" id="rbgroup-gender-rb2" value="M">
                         <span class="radiomark"></span>
                     </label>
-                    <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-gender', this)">
+                    <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-gender', this)">
                         Otro
                         <input class="rbgroup-gender" type="radio" name="rb-group-gender" id="rbgroup-gender-rb3" value="O">
                         <span class="radiomark"></span>
@@ -95,7 +95,7 @@
                 <label class="dis-block font-16pt" for="member-province">Provincia <span>*</span></label>
                 <input class="w60 pad-input font-14pt mar-bot-1rem" type="text" id="member-province" required>
                 <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
-                <label class="font-14pt custom-cr-input mar-bot-2rem" for="" onclick="showPNAData(this)">
+                <label class="font-14pt custom-cr-input mar-bot-2rem" onclick="showPNAData(this)">
                     ¿Recibe el correo en otra dirección?
                     <input type="checkbox" name="pna_cb" id="pna_cb">
                     <span class="checkmark"></span>
@@ -128,34 +128,34 @@
                 <label class="dis-block font-16pt mar-bot-1rem" for="member-profilepic">Foto de perfil</label>
                 <input class="w80 font-14pt mar-bot-2rem" type="file" name="member-profilepic" id="member-profilepic">
                 <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
-                <label class="dis-block font-16pt mar-bot-1rem" for="member-car">Vehículo propio</label>
+                <label class="dis-block font-16pt mar-bot-1rem" for="rbgroup-car">Vehículo propio</label>
                 <div id="rbgroup-car" class="mar-bot-2rem">
-                    <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-car', this)">
+                    <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-car', this)">
                         No
                         <input class="rbgroup-car" type="radio" name="rb-group-car" id="rbgroup-car-rb1" value="n" checked>
                         <span class="radiomark"></span>
                     </label>                
-                    <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-car', this)">
+                    <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-car', this)">
                         Si
                         <input class="rbgroup-car" type="radio" name="rb-group-car" id="rbgroup-car-rb2" value="y">
                         <span class="radiomark"></span>
                     </label>
                 </div>
-                <label class="dis-block font-16pt mar-bot-1rem" for="member-car">Movilidad geográfica</label>
+                <label class="dis-block font-16pt mar-bot-1rem" for="rbgroup-mov">Movilidad geográfica</label>
                 <div id="rbgroup-mov" class="mar-bot-2rem">
-                    <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-mov', this)">
+                    <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-mov', this)">
                         No
                         <input class="rbgroup-mov" type="radio" name="rb-group-mov" id="rbgroup-mov-rb1" value="n" checked>
                         <span class="radiomark"></span>
                     </label>                
-                    <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('rbgroup-mov', this)">
+                    <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-mov', this)">
                         Si
                         <input class="rbgroup-mov" type="radio" name="rb-group-mov" id="rbgroup-mov-rb2" value="y">
                         <span class="radiomark"></span>
                     </label>
                 </div>
                 <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
-                <label class="font-14pt custom-cr-input mar-bot-2rem" for="" onclick="showHandicapData(this)">
+                <label class="font-14pt custom-cr-input mar-bot-2rem" onclick="showHandicapData(this)">
                     ¿Tiene alguna discapacidad?
                     <input type="checkbox" name="handicap_cb" id="handicap_cb">
                     <span class="checkmark"></span>

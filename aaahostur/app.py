@@ -1,4 +1,6 @@
 from datetime import datetime as dt, timedelta
+
+import requests
 from flask import Flask, request, session, json, render_template, Response, redirect, url_for, make_response
 from models import db
 from models import Language, Job_Category, Qualification, Role, User, Member, Member_Account, Member_Language, \
@@ -753,7 +755,6 @@ def member_by_id(id: int):
 # INSERT
 @app.route('/api_v0/member', methods=['POST'])
 def member_add():
-    # TODO check roles
     data = request.form
     if data is None or (18 > len(data) > 21):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data len()]')
@@ -781,8 +782,8 @@ def member_add():
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <birth_date>')
     if data['join_date'] is None:
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <join_date>')
-    if data['cancelation_date'] is None:
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <cancelation_date>')
+    if data['cancellation_date'] is None:
+        return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <cancellation_date>')
 
     pna_address = ""
     pna_cp = ""
@@ -1361,14 +1362,18 @@ def user_add():
         return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <passwd>')
     if data['email'] is None:
         return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <email>')
+    if data['role'] is None:
+        return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <role>]')
 
     user = User.User(Passwd=data['passwd'],
-                     Email=data['email'])
+                     Email=data['email'],
+                     Id_Role=int(data['role']))
 
     try:
         User.User.query.add(user)
-        db, session.commit()
-        msg = {'NEW user ADDED': user.to_json()}
+        db.session.commit()
+        new_user = User.User.query.filter_by(Email=user.Email).first()
+        msg = {'NEW user ADDED': new_user.to_json()}
         status_code = 200
 
     except Exception as ex:
@@ -1437,6 +1442,52 @@ def index():
         return render_template("t-index.html", code=200)
     payload = sec.decode_jwt(request.cookies.get('auth'))
     return render_template("t-index.html", payload=payload, code=200)
+
+
+@app.route("/register/member", methods=["GET", "POST"])
+def register_member():
+    if request.method == "POST":
+        data = request.form
+        if data["user-pwd"] == data["user-pwd-2"]:
+            user_data_form = {
+                "email": request.form["user-email"],
+                "passwd": request.form["user-pwd"],
+                "role": 104
+            }
+            member_data_form = {
+                "name": data["member-name"],
+                "surname": data["member-surname"],
+                "dni": data["member-dni"],
+                "address": data["member-address"],
+                "cp": data["member-cp"],
+                "city": data["member-city"],
+                "province": data["member-province"],
+                # "gender": data[],
+                "mobile": data["member-mobile"],
+                # "profile_picture": data[],
+                "birth_date": data["member-birthdate"],
+                "join_date": dt.now(),
+                "cancellation_date": "",
+                # "pna_data": data[],
+                "pna_address": data["member-pna-address"],
+                "pna_cp": data["member-pna-cp"],
+                "pna_city": data["member-pna-city"],
+                "pna_province": data["member-pna-province"],
+                "land_line": data["member-landline"],
+                # "vehicle": data[],
+                # "geographical_mobility": data[],
+                "disability_grade": data["member-handicap"]
+            }
+            print(data)
+            # user_created = requests.post('http://localhost:5000/api_v0/user', data=user_data_form)
+            # # Check if the user has been created
+            # if user_created.status_code == 200:
+            #     member_data_form["id"] = user_created.json()["NEW user ADDED"].get("id_user")
+            #     member_created = requests.post('http://localhost:5000/api_v0/member', data=member_data_form)
+            #     if member_created.status_code == 200:
+            #         return redirect(url_for("login", _method="GET"))
+    else:
+        return render_template("t-sign-in-member.html")
 
 
 # endregion
