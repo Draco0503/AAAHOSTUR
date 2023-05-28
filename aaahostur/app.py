@@ -38,17 +38,25 @@ def not_auth_header() -> bool:
 
 def get_user_from_token(token: str) -> tuple[str, Role.Role or str]:
     """Gets the role from the validated token"""
-    payload = sec.decode_jwt(token)
-    if payload is None or len(payload) != 4:
-        return "", "Payload format not correct"
-    if dt.now() > dt.strptime(payload.get("exp_time"), "%y-%m-%d %H:%M:%S"):
-        return "", "Token expired, please log in again"
-    user = User.User.query.filter_by(Email=payload.get("user")).first()
-    if user is None:
-        return "", "User not found"
-    if user.Id_Role != int(payload.get("user-role")):
-        return "", "This user have not this role..."
-    return user.Email, Role.Role.query.filter_by(ID_ROLE=int(payload.get("user-role")))
+    try:
+        # Getting the payload from the stored token
+        payload = sec.decode_jwt(token)
+        # Check for correct payload's length
+        if payload is None or len(payload) != 4:
+            return "", "Payload format not correct"
+        # Check if token has not expired
+        if dt.now() > dt.strptime(payload.get("exp_time"), "%y-%m-%d %H:%M:%S"):
+            return "", "Token expired, please log in again"
+        # Check if the user exists
+        user = User.User.query.filter_by(Email=payload.get("user")).first()
+        if user is None:
+            return "", "User not found"
+        # Check if the user's role and the role given are the same
+        if user.Id_Role != int(payload.get("user-role")):
+            return "", "This user have not this role..."
+        return user.Email, Role.Role.query.filter_by(ID_ROLE=int(payload.get("user-role")))
+    except Exception as ex:
+        return "", "The server could not process your token info"
 
 
 def user_privileges() -> Role.Role or Response:
@@ -1373,9 +1381,11 @@ def user_add():
 # LOGIN
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+    # This definition can be called from some methods
     if request.method == 'GET':
+        # Check if the user is already logged
         if not not_auth_header():
-            return redirect(url_for("index", _method="GET"))
+            return redirect(url_for("index", _method="GET"))    # Redirect to index if true
         return render_template('t-login.html')
     elif request.method == 'POST':
         if len(request.form) != 2:
