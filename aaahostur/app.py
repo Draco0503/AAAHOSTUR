@@ -135,7 +135,7 @@ def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
 # method for testing purposes
 @app.route('/prueba')
 def prueba():
-    return render_template('t-sign-in-member.html', prueba='holka')
+    return render_template('t-sign-in-company.html', prueba='holka')
 
 
 # endregion
@@ -1495,6 +1495,41 @@ def register_member():
             #         return redirect(url_for("login"))
     else:
         return render_template("t-sign-in-member.html")
+    
+
+@app.route("/register/company", methods=["GET", "POST"])
+def register_company():
+    if request.method == "POST":
+        data = request.form
+        if data["user-pwd"] == data["user-pwd-2"]:
+            user_data_form = {
+                "email": request.form["user-email"],
+                "passwd": request.form["user-pwd"],
+                "role": 104
+            }
+            company_data_form = {
+                "name": data["company-name"],
+                "type": data["rb-group-company-type"],
+                "cif": data["company-cif"],
+                "address": data["company-address"],
+                "cp": data["company-cp"],
+                "city": data["company-city"],
+                "province": data["company-province"],
+                "contact_name": data["company-contact1-name"],
+                "contact_phone": data["company-contact1-email"],
+                "contact_email": data["company-contact1-tlf"],
+                "description": data["company-desc"]
+            }
+            print(data)
+            # user_created = requests.post('http://localhost:5000/api_v0/user', data=user_data_form)
+            # Check if the user has been created
+            # if user_created.status_code == 200:
+            #     member_data_form["id"] = user_created.json()["NEW user ADDED"].get("id_user")
+            #     member_created = requests.post('http://localhost:5000/api_v0/member', data=member_data_form)
+            #     if member_created.status_code == 200:
+            #         return redirect(url_for("login"))
+    else:
+        return render_template("t-sign-in-company.html")
 
 
 # endregion
