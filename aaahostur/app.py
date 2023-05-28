@@ -103,7 +103,7 @@ def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
 # metodo de prueba de conexion
 @app.route('/prueba')
 def index():
-    return render_template('t-create-language.html', prueba='holka')
+    return render_template('t-member-profile.html', prueba='holka')
 
 
 # endregion
@@ -874,7 +874,7 @@ def member_verify_update(id):
 
 # UPDATE
 @app.route("/api_v0/member/<id>", methods=["GET", "PUT"])
-def section_active_update(id):
+def member_active_update(id):
     member = Member.Member.query.filter_by(ID_MEMBER=id)
     # comprobación de que se almacen un dato
     if member is None or member.count() == 0:
