@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from . import db
 
-
 @dataclass()
 class Role(db.Model):
     __tablename__ = "Role"

@@ -150,12 +150,12 @@ def academic_profile_add():
                                                          Promotion=promotion)
     try:
         Academic_Profile.Academic_Profile.query.add(academic_profile)
-        Academic_Profile.Academic_Profile.query.commit()
+        db.session.commit()
         msg = {'NEW academic_profile ADDED': academic_profile.to_json()}
         status_code = 200
 
     except Exception as ex:
-        Academic_Profile.Academic_Profile.query.rollback()
+        db.session.rollback()
         msg = {ERROR_500_DEFAULT_MSG: academic_profile.to_json()}
         status_code = 500
 
@@ -239,17 +239,85 @@ def company_add():
     try:
         # TODO check role
         Company.Company.query.add(company)
-        Company.Company.query.commit()
+        db.session.commit()
         msg = {'NEW company ADDED': company.to_json()}
         status_code = 200
 
     except Exception as ex:
-        Company.Company.query.rollback()
+        db.session.rollback()
         msg = {ERROR_500_DEFAULT_MSG: company.to_json()}
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
 
+
+# UPDATE
+@app.route("/api_v0/company/<id>", methods=["GET", "PUT"])
+def company_verify_update(id):
+    company = Company.Company.query.filter_by(ID_COMPANY=id)
+    # comprobación de que se almacen un dato
+    if company is None or company.count() == 0:
+        return not_found()
+    if company.count() > 1:
+        return internal_server_error()
+    else:
+        if request.method == "GET":
+            msg = {"company": [com.to_json() for com in company]}
+            return Response(json.dumps(msg), status=200)
+        elif request.method == "PUT":
+            data = request.form
+            #comprobacion que se guarde el valor que queremos cambiar
+
+
+            if 'verify' not in data or data['verify'] is None:
+                return bad_request()
+            else:   
+                try:
+                    # comprobacion de si queremos ponerlo en true o false
+                    verify = False if data['verify'] == 'False' else True
+                    for com in company:    # sabemos que solo puede haber un item en la lista "section"
+                        com.Verify = verify   
+                    msg = {"company": [com.to_json() for com in company]}
+
+                    db.session.commit()
+                    status_code = 200
+                except Exception as ex: 
+                     print(ex)           
+                     db.session.rollback()
+                if status_code != 200:
+                    return internal_server_error("An error has occurred processing PUT query")
+                return Response(json.dumps(msg), status=status_code)
+            
+@app.route("/api_v0/company/<id>", methods=["GET", "PUT"])
+def company_active_update(id):
+    company = Company.Company.query.filter_by(ID_COMPANY=id)
+    # comprobación de que se almacen un dato
+    if company is None or company.count() == 0:
+        return not_found()
+    if company.count() > 1:
+        return internal_server_error()
+    else:
+        if request.method == "GET":
+            msg = {"company": [comp.to_json() for comp in company]}
+            return Response(json.dumps(msg), status=200)
+        elif request.method == "PUT":
+            data = request.form
+            if 'active' not in data or data['active'] is None:
+                return bad_request()
+            else:   
+                try:
+                    active = False if data['active'] == 'False' else True
+                    for comp in company:    # sabemos que solo puede haber un item en la lista "section"
+                        comp.Active = active   
+                    msg = {"company": [comp.to_json() for comp in company]}
+                    db.session.commit()
+                    status_code = 200
+                except Exception as ex: 
+                     print(ex)           
+                     db.session.rollback()
+                if status_code != 200:
+                    return internal_server_error("An error has occurred processing PUT query")
+                return Response(json.dumps(msg), status=status_code) 
 
 # -------------------------------JOB_CATEGORY--------------------------------------#
 # READ ALL
@@ -306,12 +374,12 @@ def job_category_add():
     try:
         # TODO check role
         Job_Category.Job_Category.query.add(job_category)
-        Job_Category.Job_Category.query.commit()
+        db.session.commit()
         msg = {'NEW job_category ADDED': job_category.to_json()}
         status_code = 200
 
     except Exception as ex:
-        Job_Category.Job_Category.query.rollback()
+        db.session.rollback()
         msg = {ERROR_500_DEFAULT_MSG: job_category.to_json()}
         status_code = 500
 
@@ -501,12 +569,12 @@ def job_demand_add():
 
     try:
         Job_Demand.Job_Demand.query.add(job_demand)
-        Job_Demand.Job_Demand.query.commit()
+        db.session.commit()
         msg = {'NEW job_demand ADDED': job_demand.to_json()}
         status_code = 200
 
     except Exception as ex:
-        Job_Demand.Job_Demand.query.rollback()
+        db.session.rollback()
         msg = {ERROR_500_DEFAULT_MSG: job_demand.to_json()}
         status_code = 500
 
@@ -587,17 +655,16 @@ def language_add():
 
     try:
         Language.Language.query.add(language)
-        Language.Language.query.commit()
+        db.session.commit()
         msg = {'NEW language ADDED': language.to_json()}
         status_code = 200
 
     except Exception as ex:
-        Language.Language.query.rollback()
+        db.session.rollback()
         msg = {ERROR_500_DEFAULT_MSG: language.to_json()}
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
-
 
 # -------------------------------MEMBER_ACCOUNT-------------------------------#
 # TODO not implemented in v.0
@@ -754,17 +821,88 @@ def member_add():
 
     try:
         Member.Member.query.add(member)
-        Member.Member.query.commit()
+        db.session.commit()
         msg = {'NEW member ADDED': member.to_json()}
         status_code = 200
 
     except Exception as ex:
-        Member.Member.query.rollback()
+        db.session.rollback()
         msg = {ERROR_500_DEFAULT_MSG: member.to_json()}
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
 
+
+# UPDATE
+@app.route("/api_v0/member/<id>", methods=["GET", "PUT"])
+def member_verify_update(id):
+    member = Member.Member.query.filter_by(ID_MEMBER=id)
+    # comprobación de que se almacen un dato
+    if member is None or member.count() == 0:
+        return not_found()
+    if member.count() > 1:
+        return internal_server_error()
+    else:
+        if request.method == "GET":
+            msg = {"member": [mem.to_json() for mem in member]}
+            return Response(json.dumps(msg), status=200)
+        elif request.method == "PUT":
+            data = request.form
+            #comprobacion que se guarde el valor que queremos cambiar
+            if 'verify' not in data or data['verify'] is None:
+
+                return bad_request()
+            else:   
+                try:
+                    # comprobacion de si queremos ponerlo en true o false
+                    verify = False if data['verify'] == 'False' else True
+                    for mem in member:    # sabemos que solo puede haber un item en la lista "section"
+                        mem.Verify = verify   
+                    msg = {"member": [mem.to_json() for mem in member]}
+
+                    db.session.commit()
+                    status_code = 200
+                except Exception as ex: 
+                     print(ex)           
+                     db.session.rollback()
+                if status_code != 200:
+                    return internal_server_error("An error has occurred processing PUT query")
+                return Response(json.dumps(msg), status=status_code)
+
+
+
+# UPDATE
+@app.route("/api_v0/member/<id>", methods=["GET", "PUT"])
+def member_active_update(id):
+    member = Member.Member.query.filter_by(ID_MEMBER=id)
+    # comprobación de que se almacen un dato
+    if member is None or member.count() == 0:
+        return not_found()
+    if member.count() > 1:
+        return internal_server_error()
+    else:
+        if request.method == "GET":
+             msg = {"member": [memb.to_json() for memb in member]}
+             return Response(json.dumps(msg), status=200)
+        elif request.method == "PUT":
+            data = request.form
+        if 'active' not in data or data['active'] is None:
+            return bad_request()
+        else:   
+            try:
+                # comprobacion de si queremos ponerlo en true o false
+                active = False if data['active'] == 'False' else True
+                for memb in member:    # sabemos que solo puede haber un item en la lista "section"
+                    memb.Active = active   
+                msg = {"member": [memb.to_json() for memb in member]}
+                db.session.commit()
+                status_code = 200
+            except Exception as ex: 
+                     print(ex)           
+                     db.session.rollback()
+            if status_code != 200:
+                    return internal_server_error("An error has occurred processing PUT query")
+            return Response(json.dumps(msg), status=status_code) 
 
 # -------------------------------OFFER-------------------------------#
 # READ ALL
@@ -839,17 +977,91 @@ def offer_add():
 
     try:
         Offer.Offer.query.add(offer)
-        Offer.Offer.query.commit()
+        db.session.commit()
         msg = {'NEW offer ADDED': offer.to_json()}
         status_code = 200
 
     except Exception as ex:
-        Offer.Offer.query.rollback()
+        db.session.rollback()
         msg = {ERROR_500_DEFAULT_MSG: offer.to_json()}
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
 
+
+# UPDATE
+@app.route("/api_v0/offer/<id>", methods=["GET", "PUT"])
+def offer_verify_update(id):
+
+    offer = Offer.Offer.query.filter_by(ID_OFFER=id)
+    # comprobación de que se almacen un dato
+    if offer is None or offer.count() == 0:
+        return not_found()
+    if offer.count() > 1:
+        return internal_server_error()
+    else:
+        if request.method == "GET":
+            msg = {"offer": [off.to_json() for off in offer]}
+            return Response(json.dumps(msg), status=200)
+        elif request.method == "PUT":
+            data = request.form
+            #comprobacion que se guarde el valor que queremos cambiar
+            if 'verify' not in data or data['verify'] is None:
+
+                return bad_request()
+            else:   
+                try:
+                    # comprobacion de si queremos ponerlo en true o false
+
+                    verify = False if data['verify'] == 'False' else True
+                    for off in offer:    # sabemos que solo puede haber un item en la lista "section"
+                        off.Verify = verify   
+
+                    msg = {"offer": [off.to_json() for off in offer]}
+                    db.session.commit()
+                    status_code = 200
+                except Exception as ex: 
+                     print(ex)           
+                     db.session.rollback()
+                if status_code != 200:
+                    return internal_server_error("An error has occurred processing PUT query")
+                return Response(json.dumps(msg), status=status_code)
+
+
+
+# UPDATE
+@app.route("/api_v0/offer/<id>", methods=["GET", "PUT"])
+def offer_active_update(id):
+    offer = Offer.Offer.query.filter_by(ID_OFFER=id)
+    # comprobación de que se almacen un dato
+    if offer is None or offer.count() == 0:
+        return not_found()
+    if offer.count() > 1:
+        return internal_server_error()
+    else:
+        if request.method == "GET":
+            msg = {"offer": [off.to_json() for off in offer]}
+            return Response(json.dumps(msg), status=200)
+        elif request.method == "PUT":
+            data = request.form
+            #comprobacion que se guarde el valor que queremos cambiar
+            if 'active' not in data or data['active'] is None:
+                 return bad_request()
+            else:   
+                try:
+                    # comprobacion de si queremos ponerlo en true o false
+                    active = False if data['active'] == 'False' else True
+                    for off in offer:    # sabemos que solo puede haber un item en la lista "section"
+                        off.Active = active   
+                    msg = {"offer": [off.to_json() for off in offer]}
+                    db.session.commit()
+                    status_code = 200
+                except Exception as ex: 
+                     print(ex)           
+                     db.session.rollback()
+                if status_code != 200:
+                    return internal_server_error("An error has occurred processing PUT query")
+                return Response(json.dumps(msg), status=status_code) 
 
 # -------------------------------PROFESSIONAL_PROFILE-------------------------------#
 # TODO not implemented in v.0
@@ -910,12 +1122,12 @@ def qualification_add():
 
     try:
         Qualification.Qualification.query.add(qualification)
-        Qualification.Qualification.query.commit()
+        db.session.commit()
         msg = {'NEW qualification ADDED': qualification.to_json()}
         status_code = 200
 
     except Exception as ex:
-        Qualification.Qualification.query.rollback()
+        db.session.rollback()
         msg = {ERROR_500_DEFAULT_MSG: qualification.to_json()}
         status_code = 500
 
@@ -1034,12 +1246,12 @@ def section_add():
 
     try:
         Section.Section.query.add(section)
-        Section.Section.query.commit()
+        db.session.commit()
         msg = {'NEW section ADDED': section.to_json()}
         status_code = 200
 
     except Exception as ex:
-        Section.Section.query.rollback()
+        db.session.rollback()
         msg = {ERROR_500_DEFAULT_MSG: section.to_json()}
         status_code = 500
 
@@ -1142,12 +1354,12 @@ def user_add():
 
     try:
         User.User.query.add(user)
-        User.User.query.commit()
+        db,session.commit()
         msg = {'NEW user ADDED': user.to_json()}
         status_code = 200
 
     except Exception as ex:
-        User.User.query.rollback()
+        db.session.rollback()
         msg = {ERROR_500_DEFAULT_MSG: user.to_json()}
         status_code = 500
 
