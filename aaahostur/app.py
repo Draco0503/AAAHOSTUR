@@ -238,7 +238,7 @@ def company_add():
     city = "" if not key_in_request_form('city') else data['city']
     province = "" if not key_in_request_form('province') else data['province']
     description = "" if not key_in_request_form('description') else data['description']
-
+    # TODO falta el atributo name en company
     company = Company.Company(Type=data['type'],
                               CIF=data['cif'],
                               Address=address,
