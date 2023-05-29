@@ -565,7 +565,11 @@ footer .center {
     text-align: center;
     font-family: Calibri;
     font-size: 12pt;
+}
 
+.marigin-3porc{
+    margin-top: 3%;
+    margin-left: 3%;
 }
     
 .info-map > flex-right{
