@@ -4,7 +4,7 @@ from . import db
 @dataclass()
 class User(db.Model):
     __tablename__ = "User"
-    ID_USER = db.Column(db.Integer, primary_key=True)
+    ID_USER = db.Column(db.Integer, primary_key=True, autoincrement=True)
     Passwd = db.Column(db.String(512), nullable=False)
     Email = db.Column(db.String(512), unique=True, nullable=False)
 
