@@ -336,9 +336,8 @@ def company_active_update(id):
                     return internal_server_error("An error has occurred processing PUT query")
                 return Response(json.dumps(msg), status=status_code)
 
-            # -------------------------------JOB_CATEGORY--------------------------------------#
 
-
+# -------------------------------JOB_CATEGORY--------------------------------------#
 # READ ALL
 @app.route('/api_v0/job_category-list', methods=['GET'])
 def job_category_list():
