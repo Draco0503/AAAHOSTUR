@@ -58,21 +58,21 @@ def get_user_from_token(token: str) -> tuple[str, Role.Role or str]:
         # Check if the user's role and the role given are the same
         if user.Id_Role != int(payload.get("user-role")):
             return "", "This user have not this role..."
-        return user.Email, Role.Role.query.filter_by(ID_ROLE=int(payload.get("user-role")))
+        return user.Email, Role.Role.query.filter_by(ID_ROLE=int(payload.get("user-role"))).first()
     except Exception as ex:
         return "", "The server could not process your token info"
 
 
-def user_privileges() -> Role.Role or Response:
+def user_privileges() -> tuple[Role.Role or Response, str]:
     # Check if auth cookie exists
     if not_auth_header():
-        return redirect(url_for(".login", _method='GET'))
+        return redirect(url_for(".login", _method='GET')), "Not header"
     # Then it gets user's email and role from the token stored
-    user, role = get_user_from_token(request.headers['auth'])
+    user, role = get_user_from_token(request.cookies.get('auth'))
     # Its defined that when user is "" an error has occurred
-    if user == "":
-        return bad_request(role)
-    return role
+    if user == "" or type(role) == str:
+        return bad_request(role), "Not found"
+    return role, user
 
 
 def key_in_request_form(key) -> bool:
@@ -192,7 +192,7 @@ def academic_profile_add():
 # READ ALL
 @app.route('/api_v0/company-list', methods=['GET'])
 def company_list():
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -210,7 +210,7 @@ def company_list():
 # READ BY
 @app.route('/api_v0/company/<id>', methods=['GET'])
 def company_by_id(id: int):
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -350,7 +350,7 @@ def company_active_update(id):
 # READ ALL
 @app.route('/api_v0/job_category-list', methods=['GET'])
 def job_category_list():
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -368,7 +368,7 @@ def job_category_list():
 # READ BY
 @app.route('/api_v0/job_category/<id>', methods=['GET'])
 def job_category_by_id(id: int):
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -417,7 +417,7 @@ def job_category_add():
 # READ ALL
 @app.route('/api_v0/job_demand_category-list', methods=['GET'])
 def job_demand_category_list():
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -434,7 +434,7 @@ def job_demand_category_list():
 # READ BY
 @app.route('/api_v0/job_demand_category/<id>', methods=['GET'])
 def job_demand_category_by_id(id: int):
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -452,7 +452,7 @@ def job_demand_category_by_id(id: int):
 # READ ALL
 @app.route('/api_v0/job_demand_language-list', methods=['GET'])
 def job_demand_language_list():
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -469,7 +469,7 @@ def job_demand_language_list():
 # READ BY
 @app.route('/api_v0/job_demand_language/<id>', methods=['GET'])
 def job_demand_language_by_id(id: int):
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -487,7 +487,7 @@ def job_demand_language_by_id(id: int):
 # READ ALL
 @app.route('/api_v0/job_demand_qualification-list', methods=['GET'])
 def job_demand_qualification_list():
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -504,7 +504,7 @@ def job_demand_qualification_list():
 # READ BY
 @app.route('/api_v0/job_demand_qualification/<id>', methods=['GET'])
 def job_demand_qualification_by_id(id: int):
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -522,7 +522,7 @@ def job_demand_qualification_by_id(id: int):
 # READ ALL
 @app.route('/api_v0/job_demand-list', methods=['GET'])
 def job_demand_list():
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -538,7 +538,7 @@ def job_demand_list():
 # READ BY
 @app.route('/api_v0/job_demand/<id>', methods=['GET'])
 def job_demand_by_id(id: int):
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -554,7 +554,7 @@ def job_demand_by_id(id: int):
 # INSERT
 @app.route('/api_v0/job_demand', methods=['POST'])
 def job_demand_add():
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -612,7 +612,7 @@ def job_demand_add():
 # READ ALL
 @app.route('/api_v0/language-list', methods=['GET'])
 def language_list():
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -630,7 +630,7 @@ def language_list():
 # READ BY
 @app.route('/api_v0/language/<id>', methods=['GET'])
 def language_by_id(id: int):
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -647,7 +647,7 @@ def language_by_id(id: int):
 
 @app.route('/api_v0/language/<name>', methods=['GET'])
 def language_by_name(name):
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -705,7 +705,7 @@ def language_add():
 # READ ALL
 @app.route('/api_v0/member_offer-list', methods=['GET'])
 def member_offer_list():
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -721,7 +721,7 @@ def member_offer_list():
 # READ BY
 @app.route('/api_v0/member_offer/<id>', methods=['GET'])
 def member_offer_by_id(id: int):
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -738,7 +738,7 @@ def member_offer_by_id(id: int):
 # READ ALL
 @app.route('/api_v0/member-list', methods=['GET'])
 def member_list():
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -754,16 +754,17 @@ def member_list():
 # READ BY
 @app.route('/api_v0/member/<id>', methods=['GET'])
 def member_by_id(id: int):
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
+    # print(type(role))
     if not role.CanSeeApiMember:
         return forbidden()
-    data_list = [member.to_json() for member in Member.Member.query.filter_by(ID_MEMBER=id)]
-    if len(data_list) == 0:
+    member = Member.Member.query.filter_by(ID_MEMBER=id).first()
+    if member is None:
         return not_found()
-    msg = {"member_list": data_list}
+    msg = {"member": member.to_json()}
     return Response(json.dumps(msg), status=200)
 
 
@@ -868,7 +869,7 @@ def member_add():
 
 
 # UPDATE
-@app.route("/api_v0/member/<id>", methods=["GET", "PUT"])
+@app.route("/api_v0/member/<id>", methods=["PUT"])
 def member_verify_update(id):
     member = Member.Member.query.filter_by(ID_MEMBER=id)
     # Check if exists
@@ -877,10 +878,7 @@ def member_verify_update(id):
     if member.count() > 1:
         return internal_server_error()
     else:
-        if request.method == "GET":
-            msg = {"member": [mem.to_json() for mem in member]}
-            return Response(json.dumps(msg), status=200)
-        elif request.method == "PUT":
+        if request.method == "PUT":
             data = request.form
             # Check that the value given is present
             if not key_in_request_form('verify'):
@@ -906,7 +904,7 @@ def member_verify_update(id):
 
 
 # UPDATE
-@app.route("/api_v0/member/<id>", methods=["GET", "PUT"])
+@app.route("/api_v0/member/<id>", methods=["PUT"])
 def member_active_update(id):
     member = Member.Member.query.filter_by(ID_MEMBER=id)
     # comprobación de que se almacen un dato
@@ -915,10 +913,7 @@ def member_active_update(id):
     if member.count() > 1:
         return internal_server_error()
     else:
-        if request.method == "GET":
-            msg = {"member": [memb.to_json() for memb in member]}
-            return Response(json.dumps(msg), status=200)
-        elif request.method == "PUT":
+        if request.method == "PUT":
             data = request.form
             if not key_in_request_form('active'):
                 return bad_request()
@@ -946,7 +941,7 @@ def member_active_update(id):
 # READ ALL
 @app.route('/api_v0/offer-list', methods=['GET'])
 def offer_list():
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -962,7 +957,7 @@ def offer_list():
 # READ BY
 @app.route('/api_v0/offer/<id>', methods=['GET'])
 def offer_by_id(id: int):
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -980,7 +975,7 @@ def offer_by_id(id: int):
 # INSERT
 @app.route('/api_v0/offer', methods=['POST'])
 def offer_add():
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -1112,7 +1107,7 @@ def offer_active_update(id):
 # READ ALL
 @app.route('/api_v0/qualification-list', methods=['GET'])
 def qualification_list():
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -1130,7 +1125,7 @@ def qualification_list():
 # READ BY
 @app.route('/api_v0/qualification/<id>', methods=['GET'])
 def job_qualification_by_id(id: int):
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -1183,7 +1178,7 @@ def qualification_add():
 # READ ALL
 @app.route('/api_v0/role-list', methods=['GET'])
 def role_list():
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -1201,7 +1196,7 @@ def role_list():
 # READ BY
 @app.route('/api_v0/role/<id>', methods=['GET'])
 def role_by_id(id: int):
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -1220,7 +1215,7 @@ def role_by_id(id: int):
 # READ ALL
 @app.route('/api_v0/section-list', methods=['GET'])
 def section_list():
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -1238,7 +1233,7 @@ def section_list():
 # READ BY
 @app.route('/api_v0/section/<category>', methods=['GET'])
 def section_by_category(category):
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -1256,7 +1251,7 @@ def section_by_category(category):
 # INSERT
 @app.route('/api_v0/section', methods=['POST'])
 def section_add():
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -1341,7 +1336,7 @@ def section_active_update(id):
 # READ ALL
 @app.route('/api_v0/user-list', methods=['GET'])
 def user_list():
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -1357,9 +1352,9 @@ def user_list():
 
 
 # READ BY
-@app.route('/api_v0/user/<id>', methods=['GET'])
+@app.route('/api_v0/user/<int:id>', methods=['GET'])
 def user_by_id(id: int):
-    role = user_privileges()
+    role, _ = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
@@ -1406,6 +1401,21 @@ def user_add():
     return Response(json.dumps(msg), status=status_code)
 
 
+@app.route("/api_v0/user/<username>", methods=["GET"])
+def get_user_by_name(username: str):
+    role, user_token = user_privileges()
+    if type(role) is Response:
+        return role
+    if user_token != username:
+        return forbidden()
+    username = username.replace("%40", "@")
+    user = User.User.query.filter_by(Email=username).first()
+    if user is None:
+        return not_found()
+    msg = {"user": user.to_json()}
+    return Response(json.dumps(msg), status=200)
+
+
 # endregion
 # ==================================================================================================================== #
 # =======================================================   PAGES   ================================================== #
@@ -1413,7 +1423,6 @@ def user_add():
 # LOGIN
 @app.route("/login", methods=['GET', 'POST'])
 def login():
-    error = ""
     # This definition can be called from some methods
     if request.method == 'GET':
         # Check if the user is already logged
@@ -1577,7 +1586,47 @@ def register_member():
         return render_template("t-sign-in-member.html")
     else:
         return bad_request("{} method not supported".format(request.method))
-    
+
+
+@app.route("/profile", methods=["GET"])
+def profile():
+    role, user_token = user_privileges()
+    if type(role) is Response:
+        return role
+    user_token = user_token.replace("@", "%40")
+    user_info = requests.get("http://localhost:5000/api_v0/user/{}".format(user_token), cookies=request.cookies)
+
+    if user_info.status_code == 200:
+        context = {
+            'user': {
+                'email': user_info.json()['user']['email']
+            }
+        }
+        # print(context)
+        member_info = requests.get("http://localhost:5000/api_v0/member/{}".format(int(user_info.json()['user']['id_user'])), cookies=request.cookies)
+        if member_info.status_code == 200:
+            print(member_info.json())
+            context['member'] = {
+                'name': member_info.json()['member']['name'],
+                'surname': member_info.json()['member']['surname'],
+                'dni': member_info.json()['member']['dni'],
+                'gender': member_info.json()['member']['gender'],
+                'profilepic': member_info.json()['member']['profile_picture'],
+                'birthdate': member_info.json()['member']['birth_date'],
+                'mobile': member_info.json()['member']['mobile'],
+                'landline': member_info.json()['member']['land_line'],
+                'address': member_info.json()['member']['address'],
+                'cp': member_info.json()['member']['cp'],
+                'city': member_info.json()['member']['city'],
+                'province': member_info.json()['member']['province'],
+                'vehicle': member_info.json()['member']['vehicle'],
+                'mov': member_info.json()['member']['geographical_mobility'],
+                'handicap': member_info.json()['member']['disability_grade']
+            }
+        print(context)
+        return render_template("t-member-profile.html", context=context)
+    return render_template("t-member-profile.html")
+
 
 @app.route("/register/company", methods=["GET", "POST"])
 def register_company():

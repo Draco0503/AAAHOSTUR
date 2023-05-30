@@ -40,7 +40,7 @@
                 <div class="user-box">
 <!--                    <img class="navbar-item" src="" alt="">-->
                     {% if payload is defined and not none %}
-                        <a href="/me" class="navbar-item yellow-hover-text">{{ payload.get("user") }}</a>
+                        <a href="/profile" class="navbar-item yellow-hover-text">{{ payload.get("user") }}</a>
                     {% else %}
                         <a href="/login" class="navbar-item">Iniciar sesión</a>
                     {% endif %}

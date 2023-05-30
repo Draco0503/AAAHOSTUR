@@ -41,7 +41,7 @@ class Member(db.Model):
                 'name': self.Name,
                 'surname': self.Surname,
                 'dni': self.DNI,
-                'adderss': self.Address,
+                'address': self.Address,
                 'cp': self.CP,
                 'city': self.City,
                 'province': self.Province,
@@ -59,7 +59,7 @@ class Member(db.Model):
                 'disability_grade': self.Disability_Grade,
                 'join_date': self.Join_Date,
                 'active': self.Active,
-                'cancelation_date': self.Cancelation_Date,
+                'cancellation_date': self.Cancelation_Date,
                 'verify': self.Verify,
                 'id_user_verify': self.Id_User_Verify
                 }

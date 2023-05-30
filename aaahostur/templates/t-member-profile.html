@@ -1,61 +1,69 @@
-<!-- TODO revisar ids -->
 {% extends 't-base.html' %}
 
 {% block mainContent %}
 <div class="foreign_container w80 container shadow pad-2rem">
     <h1 class="">Perfil de miembro</h1>
     <hr class="bg-color-darker-blue mar-bot-3rem">
+    {% if context is defined and not none %}
+        <h2 class="mar-bot-1rem">Datos de cuenta</h2>
+        <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+        {% if context['user'] is not none %}
+            <label class="dis-block font-16pt">Correo electrónico :</label>
+            <p class="">{{ context['user']['email'] }}</p>
+        {% else %}
+            <h2>No se ha podido cargar la información de cuenta</h2>
+        {% endif %}
+        <h2 class="mar-bot-1rem">Datos personales</h2>
+        <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+        {% if context['member'] is not none %}
+            <label class="dis-block font-16pt">Nombre :</label>
+            <p class="">{{ context['member']['name'] }}</p>
+            <label class="dis-block font-16pt">Apellidos :</label>
+            <p class="">{{ context['member']['surname'] }}</p>
+            <label class="dis-block font-16pt">Documento de identificación :</label>
+            <p class="">{{ context['member']['dni'] }}</p>
+            <label class="dis-block font-16pt">Sexo :</label>
+            <p class="">{{ context['member']['gender'] }}</p>
+            <label class="dis-block font-16pt" >Foto de perfil :</label>
+            <p class="">{{ context['member']['profilepic'] }}</p>
+            <label class="dis-block font-16pt">Fecha de nacimiento :</label>
+            <p class="">{{ context['member']['birthdate'] }}</p>
+            <label class="dis-block font-16pt" >Teléfono móvil :</label>
+            <p class="">{{ context['member']['mobile'] }}</p>
+            <label class="dis-block font-16pt" >Teléfono fijo :</label>
+            <p class="">{{ context['member']['landline'] }}</p>
 
-    <h2 class="mar-bot-1rem">Datos de cuenta</h2>
-    <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
-    <label class="dis-block font-16pt" for="user-email">Correo electrónico <span>:</span></label>
-    <p class="">{{member_email}}</p>
-
-    <h2 class="mar-bot-1rem">Datos personales</h2>
-    <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
-    <label class="dis-block font-16pt" for="member-name">Nombre :</label>
-    <p class="">{{member_name}}</p>
-    <label class="dis-block font-16pt" for="member-surname">Apellidos :</label>
-    <p class="">{{member_surname}}</p>
-    <label class="dis-block font-16pt" for="member-dni-select">Documento de identificación :</label>
-    <p class="">{{member_dni}}</p>
-    <label class="dis-block font-16pt" for="member-sex">Sexo <span>:</span></label>
-    <p class="">{{member_gender}}</p>
-    <label class="dis-block font-16pt" for="member-surname">Inserte una foto para de perfil :</label>
-    <p class="">{{member_image}}</p>
-    <label class="dis-block font-16pt" for="member-birthdate">Fecha de nacimiento :</label>
-    <p class="">{{member_birthdate}}</p>
-    <label class="dis-block font-16pt" for="member-surname">Teléfono móvil :</label>
-    <p class="">{{member_mobile}}</p>
-    <label class="dis-block font-16pt" for="member-surname">Teléfono fijo :</label>
-    <p class="">{{member_landline}}</p>
-
-    <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
-    <label class="dis-block font-16pt" for="member-surname">Dirección :</label>
-    <p class="">{{member_address}}</p>
-    <label class="dis-block font-16pt" for="member-surname">C.P. :</label>
-    <p class="">{{member_cp}}</p>
-    <label class="dis-block font-16pt" for="member-surname">Ciudad :</label>
-    <p class="">{{member_city}}</p>
-    <label class="dis-block font-16pt" for="member-surname">Provincia :</label>
-    <p class="">{{member_province}}</p>
-    <label class="dis-block font-16pt" for="member-surname">Dirección de notificaciones postales :</label>
-    <p class="">{{member_pn_address}}</p>
-    <label class="dis-block font-16pt" for="member-surname">C.P. de notificaciones postales :</label>
-    <p class="">{{member_pn_cp}}</p>
-    <label class="dis-block font-16pt" for="member-surname">Ciudad de notificaciones postales :</label>
-    <p class="">{{member_pn_city}}</p>
-    <label class="dis-block font-16pt" for="member-surname">Provincia de notificaciones postales :</label>
-    <p class="">{{member_pn_province}}</p>
-
-    <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
-    <label class="dis-block font-16pt mar-bot-1rem" for="member-car">¿Dispone de vehículo propio? :</label>
-    <p class="">{{member_vehicle}}</p>
-    <label class="dis-block font-16pt mar-bot-1rem" for="member-car">¿Dispone de movilidad geográfica? :</label>
-    <p class="">{{member_geographic}}</p>
-    <label class="dis-block font-16pt" for="member-handicap">¿Padece alguna discapacidad? :</label>
-    <p class="">{{member_disable}}</p>
-    <label class="dis-block font-16pt" for="member-handicap">Indique el grado :</label>
-    <p class="">{{member_disable_grade}}</p>
+            <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+            <label class="dis-block font-16pt" >Dirección :</label>
+            <p class="">{{ context['member']['address'] }}</p>
+            <label class="dis-block font-16pt" >C.P. :</label>
+            <p class="">{{ context['member']['cp'] }}</p>
+            <label class="dis-block font-16pt" >Ciudad :</label>
+            <p class="">{{ context['member']['city'] }}</p>
+            <label class="dis-block font-16pt" >Provincia :</label>
+            <p class="">{{ context['member']['province'] }}</p>
+            {% if context['member']['pna'] %}
+                <label class="dis-block font-16pt" >Dirección de notificaciones postales :</label>
+                <p class="">{{ context['member']['pna']['address'] }}</p>
+                <label class="dis-block font-16pt" >C.P. de notificaciones postales :</label>
+                <p class="">{{ context['member']['pna']['cp'] }}</p>
+                <label class="dis-block font-16pt" >Ciudad de notificaciones postales :</label>
+                <p class="">{{ context['member']['pna']['city'] }}</p>
+                <label class="dis-block font-16pt" >Provincia de notificaciones postales :</label>
+                <p class="">{{ context['member']['pna']['province'] }}</p>
+            {% endif %}
+            <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+            <label class="dis-block font-16pt mar-bot-1rem">Vehículo propio :</label>
+            <p class="">{{ context['member']['vehicle'] }}</p>
+            <label class="dis-block font-16pt mar-bot-1rem">Disponibilidad geográfica :</label>
+            <p class="">{{ context['member']['mov'] }}</p>
+            <label class="dis-block font-16pt">Grado de discapacidad :</label>
+            <p class="">{{ context['member']['handicap'] }}</p>
+        {% else %}
+            <h2 class="mar-bot-1rem">No se ha podido cargar la información de miembro</h2>
+        {% endif %}
+    {% else %}
+        <h2 class="mar-bot-1rem">No se ha podido cargar la información de usuario</h2>
+    {% endif %}
 </div>
 {% endblock %}
