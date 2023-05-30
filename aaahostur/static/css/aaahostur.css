@@ -390,6 +390,14 @@ input[type="button"]:hover {
     font-weight: bold;
 }
 
+.black-title {
+    margin: auto;
+    text-align: center;
+    font-weight: bold;
+    font-size: 22px;
+    font-style: var(--aaahostur-color-black);
+}
+
 .navbar > div.left {
     flex: 1 0 20%;
 }
@@ -540,6 +548,38 @@ footer .center {
     border-top: 2px solid var(--aaahostur-color-black);
 }
 
+.map{
+    margin-top: 2rem;
+    margin-left: 6rem;
+    display: flex;
+    justify-content: left;
+    --float: left;
+}
+.office{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+.text-pictureOffice{
+    text-align: center;
+    font-family: Calibri;
+    font-size: 12pt;
+}
+
+.marigin-3porc{
+    margin-top: 3%;
+    margin-left: 3%;
+}
+    
+.info-map > flex-right{
+    color: var(--aaahostur-primary-color-darker-blue);
+    font-size: 18pt;
+}
+.job{
+    display: flex;
+    justify-content: center;
+}
 .foo-col {
     flex: 0 0 25%;
     max-width: 25%;

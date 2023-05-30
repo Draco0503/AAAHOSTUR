@@ -15,6 +15,7 @@ class Company(db.Model):
     Contact_Phone = db.Column(db.String(512), nullable=False)
     Contact_Email = db.Column(db.String(512), nullable=False)
     Description = db.Column(db.String(512), nullable=True)
+    # TODO falta el atributo 'nombre de la compañia'
     Verify = db.Column(db.Boolean, default=False)
     Active = db.Column(db.Boolean, default=True)
     

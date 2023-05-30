@@ -144,7 +144,7 @@ def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
 # method for testing purposes
 @app.route('/prueba')
 def prueba():
-    return render_template('t-sign-in-member.html', prueba='holka')
+    return render_template('t-index.html', prueba='holka')
 
 
 # endregion
@@ -247,7 +247,7 @@ def company_add():
     city = "" if not key_in_request_form('city') else data['city']
     province = "" if not key_in_request_form('province') else data['province']
     description = "" if not key_in_request_form('description') else data['description']
-
+    # TODO falta el atributo name en company
     company = Company.Company(Type=data['type'],
                               CIF=data['cif'],
                               Address=address,
@@ -345,9 +345,8 @@ def company_active_update(id):
                     return internal_server_error("An error has occurred processing PUT query")
                 return Response(json.dumps(msg), status=status_code)
 
-            # -------------------------------JOB_CATEGORY--------------------------------------#
 
-
+# -------------------------------JOB_CATEGORY--------------------------------------#
 # READ ALL
 @app.route('/api_v0/job_category-list', methods=['GET'])
 def job_category_list():
@@ -1578,6 +1577,41 @@ def register_member():
         return render_template("t-sign-in-member.html")
     else:
         return bad_request("{} method not supported".format(request.method))
+    
+
+@app.route("/register/company", methods=["GET", "POST"])
+def register_company():
+    if request.method == "POST":
+        data = request.form
+        if data["user-pwd"] == data["user-pwd-2"]:
+            user_data_form = {
+                "email": request.form["user-email"],
+                "passwd": request.form["user-pwd"],
+                "role": 104
+            }
+            company_data_form = {
+                "name": data["company-name"],
+                "type": data["rb-group-company-type"],
+                "cif": data["company-cif"],
+                "address": data["company-address"],
+                "cp": data["company-cp"],
+                "city": data["company-city"],
+                "province": data["company-province"],
+                "contact_name": data["company-contact1-name"],
+                "contact_phone": data["company-contact1-email"],
+                "contact_email": data["company-contact1-tlf"],
+                "description": data["company-desc"]
+            }
+            print(data)
+            # user_created = requests.post('http://localhost:5000/api_v0/user', data=user_data_form)
+            # Check if the user has been created
+            # if user_created.status_code == 200:
+            #     member_data_form["id"] = user_created.json()["NEW user ADDED"].get("id_user")
+            #     member_created = requests.post('http://localhost:5000/api_v0/member', data=member_data_form)
+            #     if member_created.status_code == 200:
+            #         return redirect(url_for("login"))
+    else:
+        return render_template("t-sign-in-company.html")
 
 
 # endregion
