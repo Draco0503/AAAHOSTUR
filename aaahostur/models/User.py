@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from . import db
+# from sqlalchemy.dialects.mysql import
 
 @dataclass()
 class User(db.Model):

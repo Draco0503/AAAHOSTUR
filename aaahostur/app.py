@@ -262,12 +262,12 @@ def company_add():
     try:
         db.session.add(company)
         db.session.commit()
-        msg = {'NEW company ADDED': company.to_json()}
+        msg = {'company_add': company.to_json()}
         status_code = 200
 
     except Exception as ex:
         db.session.rollback()
-        msg = {ERROR_500_DEFAULT_MSG: company.to_json()}
+        msg = {"company_add": ERROR_500_DEFAULT_MSG}
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
@@ -276,66 +276,35 @@ def company_add():
 # UPDATE
 @app.route("/api_v0/company/<id>", methods=["GET", "PUT"])
 def company_verify_update(id):
-    company = Company.Company.query.filter_by(ID_COMPANY=id)
+    company = Company.Company.query.filter_by(ID_COMPANY=id).first()
     # Check if exists
-    if company is None or company.count() == 0:
+    if company is None:
         return not_found()
-    if company.count() > 1:
-        return internal_server_error()
     else:
         if request.method == "GET":
-            msg = {"company": [com.to_json() for com in company]}
+            msg = {"company": company.to_json()}
             return Response(json.dumps(msg), status=200)
         elif request.method == "PUT":
             data = request.form
             # Check that the value given is present
-            if not key_in_request_form('verify'):
+            if not key_in_request_form('verify') and not key_in_request_form('active'):
                 return bad_request()
             else:
                 status_code = 400
                 msg = ERROR_400_DEFAULT_MSG
                 try:
-                    # Anything that is not 'True' is False
-                    verify = True if data['verify'] == 'True' else False
-                    for com in company:  # At this point we now its only one in the list
-                        com.Verify = verify
+                    if key_in_request_form('verify'):
+                        if data["verify"] == 'True':
+                            company.Verify = True
+                        elif data["verify"] == 'False':
+                            company.Verify = False
+                    if key_in_request_form('active'):
+                        if data["active"] == 'True':
+                            company.Verify = True
+                        elif data["active"] == 'False':
+                            company.Verify = False
                     msg = {"company": [com.to_json() for com in company]}
 
-                    db.session.commit()
-                    status_code = 200
-                except Exception as ex:
-                    print(ex)
-                    db.session.rollback()
-                if status_code != 200:
-                    return internal_server_error("An error has occurred processing PUT query")
-                return Response(json.dumps(msg), status=status_code)
-
-
-@app.route("/api_v0/company/<id>", methods=["GET", "PUT"])
-def company_active_update(id):
-    company = Company.Company.query.filter_by(ID_COMPANY=id)
-    # Check if exists
-    if company is None or company.count() == 0:
-        return not_found()
-    if company.count() > 1:
-        return internal_server_error()
-    else:
-        if request.method == "GET":
-            msg = {"company": [comp.to_json() for comp in company]}
-            return Response(json.dumps(msg), status=200)
-        elif request.method == "PUT":
-            data = request.form
-            # Check that the value given is present
-            if not key_in_request_form('active'):
-                return bad_request()
-            else:
-                status_code = 400
-                msg = ERROR_400_DEFAULT_MSG
-                try:
-                    active = False if data['active'] == 'False' else True
-                    for comp in company:  # At this point we now its only one in the list
-                        comp.Active = active
-                    msg = {"company": [comp.to_json() for comp in company]}
                     db.session.commit()
                     status_code = 200
                 except Exception as ex:
@@ -1064,15 +1033,13 @@ def offer_verify_update(id):
 # UPDATE
 @app.route("/api_v0/offer/<id>", methods=["GET", "PUT"])
 def offer_active_update(id):
-    offer = Offer.Offer.query.filter_by(ID_OFFER=id)
+    offer = Offer.Offer.query.filter_by(ID_OFFER=id).first()
     # comprobación de que se almacen un dato
-    if offer is None or offer.count() == 0:
+    if offer is None:
         return not_found()
-    if offer.count() > 1:
-        return internal_server_error()
     else:
         if request.method == "GET":
-            msg = {"offer": [off.to_json() for off in offer]}
+            msg = {"offer": offer.to_json()}
             return Response(json.dumps(msg), status=200)
         elif request.method == "PUT":
             data = request.form
@@ -1538,7 +1505,9 @@ def register_member():
             print(data)
             error = check_member_params(data)
             if error != "":
-                return render_template("t-sign-in-member.html", error=error)
+                if navigator_user_agent():
+                    return render_template("t-sign-in-member.html", error=error)
+                return bad_request(error)
             user_data_form = {
                 "email": data["user-email"],
                 "passwd": data["user-pwd"],
@@ -1568,13 +1537,13 @@ def register_member():
                 "geographical_mobility": True if not key_in_request_form('rb-group-mov') or data["rb-group-mov"] == "y" else False,
                 "disability_grade": 0 if not key_in_request_form("member-handicap") or data["member-handicap"] == "" else int(data["member-handicap"])
             }
-            user_created = requests.post('http://localhost:5000/api_v0/user', data=user_data_form)
+            user_created = requests.post('http://localhost:5000/api_v0/user', data=user_data_form, cookies=request.cookies)
             # Check if the user has been created
             if user_created.status_code == 200:
                 member_data_form["id"] = user_created.json()["user_add"].get("id_user")
-                member_created = requests.post('http://localhost:5000/api_v0/member', data=member_data_form)
+                member_created = requests.post('http://localhost:5000/api_v0/member', data=member_data_form, cookies=request.cookies)
                 if member_created.status_code == 200:
-                    return redirect(url_for("login"))
+                    return redirect(url_for("login"))  # TODO
                 else:
                     error = member_created.json()["member_add"] or member_created.json()["message"]
             else:
@@ -1593,6 +1562,7 @@ def profile():
     role, user_token = user_privileges()
     if type(role) is Response:
         return role
+    payload = sec.decode_jwt(request.cookies.get('auth'))
     user_token = user_token.replace("@", "%40")
     user_info = requests.get("http://localhost:5000/api_v0/user/{}".format(user_token), cookies=request.cookies)
 
@@ -1624,7 +1594,7 @@ def profile():
                 'handicap': member_info.json()['member']['disability_grade']
             }
         print(context)
-        return render_template("t-member-profile.html", context=context)
+        return render_template("t-member-profile.html", context=context, payload=payload)
     return render_template("t-member-profile.html")
 
 

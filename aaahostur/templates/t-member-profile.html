@@ -2,7 +2,7 @@
 
 {% block mainContent %}
 <div class="foreign_container w80 container shadow pad-2rem">
-    <h1 class="">Perfil de miembro</h1>
+    <h1 class="">Perfil</h1>
     <hr class="bg-color-darker-blue mar-bot-3rem">
     {% if context is defined and not none %}
         <h2 class="mar-bot-1rem">Datos de cuenta</h2>
@@ -17,48 +17,48 @@
         <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
         {% if context['member'] is not none %}
             <label class="dis-block font-16pt">Nombre :</label>
-            <p class="">{{ context['member']['name'] }}</p>
+            <p class="mar-bot-2rem">{{ context['member']['name'] }}</p>
             <label class="dis-block font-16pt">Apellidos :</label>
-            <p class="">{{ context['member']['surname'] }}</p>
+            <p class="mar-bot-2rem">{{ context['member']['surname'] }}</p>
             <label class="dis-block font-16pt">Documento de identificación :</label>
-            <p class="">{{ context['member']['dni'] }}</p>
+            <p class="mar-bot-2rem">{{ context['member']['dni'] }}</p>
             <label class="dis-block font-16pt">Sexo :</label>
-            <p class="">{{ context['member']['gender'] }}</p>
+            <p class="mar-bot-2rem">{{ context['member']['gender'] }}</p>
             <label class="dis-block font-16pt" >Foto de perfil :</label>
-            <p class="">{{ context['member']['profilepic'] }}</p>
+            <p class="mar-bot-2rem">{{ context['member']['profilepic'] }}</p>
             <label class="dis-block font-16pt">Fecha de nacimiento :</label>
-            <p class="">{{ context['member']['birthdate'] }}</p>
+            <p class="mar-bot-2rem">{{ context['member']['birthdate'] }}</p>
             <label class="dis-block font-16pt" >Teléfono móvil :</label>
-            <p class="">{{ context['member']['mobile'] }}</p>
+            <p class="mar-bot-2rem">{{ context['member']['mobile'] }}</p>
             <label class="dis-block font-16pt" >Teléfono fijo :</label>
-            <p class="">{{ context['member']['landline'] }}</p>
+            <p class="mar-bot-2rem">{{ context['member']['landline'] }}</p>
 
             <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
             <label class="dis-block font-16pt" >Dirección :</label>
-            <p class="">{{ context['member']['address'] }}</p>
+            <p class="mar-bot-2rem">{{ context['member']['address'] }}</p>
             <label class="dis-block font-16pt" >C.P. :</label>
-            <p class="">{{ context['member']['cp'] }}</p>
+            <p class="mar-bot-2rem">{{ context['member']['cp'] }}</p>
             <label class="dis-block font-16pt" >Ciudad :</label>
-            <p class="">{{ context['member']['city'] }}</p>
+            <p class="mar-bot-2rem">{{ context['member']['city'] }}</p>
             <label class="dis-block font-16pt" >Provincia :</label>
-            <p class="">{{ context['member']['province'] }}</p>
+            <p class="mar-bot-2rem">{{ context['member']['province'] }}</p>
             {% if context['member']['pna'] %}
                 <label class="dis-block font-16pt" >Dirección de notificaciones postales :</label>
-                <p class="">{{ context['member']['pna']['address'] }}</p>
+                <p class="mar-bot-2rem">{{ context['member']['pna']['address'] }}</p>
                 <label class="dis-block font-16pt" >C.P. de notificaciones postales :</label>
-                <p class="">{{ context['member']['pna']['cp'] }}</p>
+                <p class="mar-bot-2rem">{{ context['member']['pna']['cp'] }}</p>
                 <label class="dis-block font-16pt" >Ciudad de notificaciones postales :</label>
-                <p class="">{{ context['member']['pna']['city'] }}</p>
+                <p class="mar-bot-2rem">{{ context['member']['pna']['city'] }}</p>
                 <label class="dis-block font-16pt" >Provincia de notificaciones postales :</label>
-                <p class="">{{ context['member']['pna']['province'] }}</p>
+                <p class="mar-bot-2rem">{{ context['member']['pna']['province'] }}</p>
             {% endif %}
             <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
             <label class="dis-block font-16pt mar-bot-1rem">Vehículo propio :</label>
-            <p class="">{{ context['member']['vehicle'] }}</p>
+            <p class="mar-bot-2rem">{{ context['member']['vehicle'] }}</p>
             <label class="dis-block font-16pt mar-bot-1rem">Disponibilidad geográfica :</label>
-            <p class="">{{ context['member']['mov'] }}</p>
+            <p class="mar-bot-2rem">{{ context['member']['mov'] }}</p>
             <label class="dis-block font-16pt">Grado de discapacidad :</label>
-            <p class="">{{ context['member']['handicap'] }}</p>
+            <p class="mar-bot-2rem">{{ context['member']['handicap'] }}</p>
         {% else %}
             <h2 class="mar-bot-1rem">No se ha podido cargar la información de miembro</h2>
         {% endif %}
