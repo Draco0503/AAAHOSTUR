@@ -1,6 +1,6 @@
-# PARA QUE FUNCIONE LA API SE NECESITA HACER
+# TO RUN APP.PY
 
-pip install python-dotenv passlib mysqlclient Flask SQLAlchemy flask-sqlalchemy SQLAlchemy-Utils bcrypt PyJWT
+pip install python-dotenv passlib mysqlclient Flask SQLAlchemy flask-sqlalchemy SQLAlchemy-Utils bcrypt PyJWT user_agents
 python-dotenv==0.21.0
 mysqlclient==2.1.1
 Flask==2.2.2
@@ -10,6 +10,7 @@ SQLAlchemy-Utils==0.38.3
 pip==23.1.2
 bcrypt==4.0.1
 PyJWT==2.7.0
+user_agents==2.2.0
 
 # conventional names:
 # - hola_soy_un_paquete

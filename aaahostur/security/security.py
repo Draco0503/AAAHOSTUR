@@ -1,5 +1,9 @@
 import bcrypt
 import jwt
+import re
+
+password_regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{6,20}$"
+passwd_pattern = re.compile(password_regex)
 
 
 class Security:
@@ -22,3 +26,6 @@ class Security:
 
     def decode_jwt(self, token: str) -> dict:
         return jwt.decode(token, self._secret, algorithms=[self._algorithm])
+
+    def check_valid_passwd(self, password: str) -> bool or None:
+        return re.search(passwd_pattern, password)

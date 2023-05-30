@@ -17,6 +17,9 @@ BUTTON_REGISTER_MEMBER -->
         <label class="dis-block font-16pt" for="user-passwd">Escribe tu contraseña</label>
         <input class="w100 pad-input font-12pt dis-block mar-bot-3rem" type="password" name="user-passwd" id="user-passwd">
         <input class="w100 pad-o5rem font-16pt" type="submit" value="Iniciar sesión">
+        {% if error %}
+            <p><span>{{ error }}</span></p>
+        {% endif %}
     </form>
 </div>
 {% endblock %}

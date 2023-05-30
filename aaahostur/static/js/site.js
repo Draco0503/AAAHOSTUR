@@ -25,6 +25,7 @@ window.onscroll = function () { hideOnScroll() };
         }
 
         function showPNAData(e) {
+            window.event.stopPropagation();
             doc = document.getElementById("pna_data");
             inputs = document.querySelectorAll("#pna_data input")
             changeCheckboxState(e);
@@ -49,7 +50,7 @@ window.onscroll = function () { hideOnScroll() };
                 doc.classList.remove("dis-none");
                 for(let i = 0; i < inputs.length; i++) {
                     inputs[i].setAttribute("required", "");
-                }           
+                }
             }
             else {
                 doc.classList.add("dis-none");
@@ -69,7 +70,7 @@ window.onscroll = function () { hideOnScroll() };
                 else {
                     radiogroup.item(i).checked = false;
                     radiogroup.item(i).removeAttribute("checked");
-                } 
+                }
             }
         }
 

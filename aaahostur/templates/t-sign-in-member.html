@@ -60,11 +60,11 @@
             <label class="dis-block font-16pt" for="member-province">Provincia <span>*</span></label>
             <input class="w60 pad-input font-14pt mar-bot-1rem" type="text" id="member-province" name="member-province" required>
             <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
-            <label class="font-14pt custom-cr-input mar-bot-2rem" onclick="showPNAData(this)">
+            <div class="font-14pt custom-cr-input mar-bot-2rem" onclick="showPNAData(this)">
                 ¿Recibe el correo en otra dirección?
-                <input type="checkbox" name="pna_cb" id="pna_cb">
+                <input type="checkbox" id="pna_cb">
                 <span class="checkmark"></span>
-            </label>
+            </div>
             <div id="pna_data" class="dis-grid dis-none">
                 <label class="dis-block font-16pt" for="member-pna-address">Dirección a efectos de notificaciones
                     postales <span>*</span></label>
@@ -120,11 +120,11 @@
                 </label>
             </div>
             <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
-            <label class="font-14pt custom-cr-input mar-bot-2rem" onclick="showHandicapData(this)">
+            <div class="font-14pt custom-cr-input mar-bot-2rem" onclick="showHandicapData(this)">
                 ¿Tiene alguna discapacidad?
                 <input type="checkbox" name="handicap_cb" id="handicap_cb">
                 <span class="checkmark"></span>
-            </label>
+            </div>
             <div id="handicap_data" class="dis-grid dis-none">
                 <label class="dis-block font-16pt" for="member-handicap">Indica el grado <span>*</span></label>
                 <input class="w60 pad-input font-14pt mar-bot-2rem" type="number" id="member-handicap" name="member-handicap">
@@ -135,5 +135,8 @@
                 <input class="w20 pad-o5rem font-16pt" type="submit" value="Enviar &rarr;">
             </div>
     </form>
+    {% if error %}
+        <p><span>{{ error }}</span></p>
+    {% endif %}
 </div>
 {% endblock %}

@@ -1,5 +1,5 @@
 from datetime import datetime as dt, timedelta
-
+from user_agents import parse
 import requests
 from flask import Flask, request, session, json, render_template, Response, redirect, url_for, make_response
 from models import db
@@ -10,6 +10,7 @@ from config import config
 from security import security
 
 # region CONSTANTS
+
 ERROR_400_DEFAULT_MSG = "The server cannot or will not process the request."
 ERROR_403_DEFAULT_MSG = "You are not allowed to access to this endpoint."
 ERROR_404_DEFAULT_MSG = "The requested URL was not found on the server. " \
@@ -23,6 +24,7 @@ ERROR_504_DEFAULT_MSG = "The server did not get a response in time."
 # ==================================================================================================================== #
 
 # region app declaration and its first settings
+
 app = Flask(__name__, template_folder='templates')
 conf = config['development']
 sec = security.Security(conf.SECRET_KEY, conf.ALGORITHM)
@@ -31,8 +33,8 @@ sec = security.Security(conf.SECRET_KEY, conf.ALGORITHM)
 # endregion
 # ==================================================================================================================== #
 
-
 # region should be in utils
+
 def not_auth_header() -> bool:
     """True if 'auth' header not found or empty"""
     return request.cookies.get('auth') is None
@@ -77,11 +79,18 @@ def key_in_request_form(key) -> bool:
     return key in request.form and request.form[key] is not None
 
 
+def navigator_user_agent() -> bool:
+    uas = request.user_agent.string
+    user_agent = parse(uas)
+    return user_agent.is_pc or user_agent.is_mobile or user_agent.is_tablet
+
+
 # endregion
 # ==================================================================================================================== #
 
 # ============================================ COMMON ERROR RESPONSES ================================================ #
 # region COMMON ERROR RESPONSES
+
 # 400-Bad Request
 def bad_request(msg: str = ERROR_400_DEFAULT_MSG) -> Response:
     return Response(json.dumps({
@@ -149,7 +158,7 @@ def academic_profile_add():
     # PARA HACER ESTA LLAMADA HAY QUE ASEGURARSE DE QUE EXISTE EL MIEMBRO
     data = request.form
     # NOT NULL fields
-    if data is None or (2 > len(data) > 3):
+    if data is None or len(data) < 2 or len(data) > 3:
         return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data len()]')
     if not key_in_request_form('school'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <school>]')
@@ -765,6 +774,8 @@ def member_add():
     data = request.form
     if data is None or (18 > len(data) > 21):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data len()]')
+    if not key_in_request_form('id'):
+        return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <id>]')
     if not key_in_request_form('name'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <name>')
     if not key_in_request_form('surname'):
@@ -783,8 +794,8 @@ def member_add():
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <gender>')
     if not key_in_request_form('mobile'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <mobile>')
-    if not key_in_request_form('profile_picture'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <profile_picture>')
+    # if not key_in_request_form('profile_picture'):
+    #     return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <profile_picture>')
     if not key_in_request_form('birth_date'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <birth_date>')
     if not key_in_request_form('join_date'):
@@ -792,61 +803,66 @@ def member_add():
     if not key_in_request_form('cancellation_date'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <cancellation_date>')
 
-    pna_address = ""
-    pna_cp = ""
-    pna_city = ""
-    pna_province = ""
+    pna_address = None
+    pna_cp = None
+    pna_city = None
+    pna_province = None
 
     if key_in_request_form('pna_data'):
         if not key_in_request_form('pna_address'):
-            return "[ERROR] - member_add() - insert: pna_address"
+            return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_address")
         if not key_in_request_form('pna_cp'):
-            return "[ERROR] - member_add() - insert: pna_cp"
+            return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_cp")
         if not key_in_request_form('pna_city'):
-            return "[ERROR] - member_add() - insert: pna_city"
+            return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_city")
         if not key_in_request_form('pna_province'):
-            return "[ERROR] - member_add() - insert: pna_province"
+            return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_province")
         pna_address = data['pna_address']
         pna_cp = data['pna_cp']
         pna_city = data['pna_city']
         pna_province = data['pna_province']
 
-    land_line = "" if not key_in_request_form('land_line') else data["land_line"]
-    vehicle = "" if not key_in_request_form('vehicle') else data["vehicle"]
-    geographical_mobility = "" if not key_in_request_form('geographical_mobility') else data["geographical_mobility"]
-    disability_grade = "" if not key_in_request_form('disability_grade') else data["disability_grade"]
-
-    member = Member.Member(Name=data['name'],
-                           Surname=data['surname'],
-                           DNI=data['dni'],
-                           Address=data['address'],
-                           CP=data['cp'],
-                           City=data['city'],
-                           Province=data['province'],
-                           PNA_Address=pna_address,
-                           PNA_CP=pna_cp,
-                           PNA_City=pna_city,
-                           PNA_Province=pna_province,
-                           Gender=data['gender'],
-                           Land_Line=land_line,
-                           Mobile=data['mobile'],
-                           Profile_Picture=data['profile_picture'],
-                           Birth_Date=data['birth_date'],
-                           Vehicle=vehicle,
-                           Geographical_Mobility=geographical_mobility,
-                           Disability_Grade=disability_grade,
-                           Join_Date=data['join_date'],
-                           Cancelation_Date=data['cancellation_date'])
-
     try:
+        land_line = None if not key_in_request_form('land_line') else data["land_line"]
+        vehicle = False if not key_in_request_form('vehicle') or data["vehicle"] else bool(data["vehicle"])
+        geographical_mobility = False if not key_in_request_form('geographical_mobility') or data[
+            "geographical_mobility"] \
+            else bool(data["geographical_mobility"])
+        disability_grade = 0 if not key_in_request_form('disability_grade') or data["disability_grade"] \
+            else int(data["disability_grade"])
+        profile_pic = None if not key_in_request_form('profile_picture') else data["profile_picture"]
+
+        member = Member.Member(ID_MEMBER=data['id'],
+                               Name=data['name'],
+                               Surname=data['surname'],
+                               DNI=data['dni'],
+                               Address=data['address'],
+                               CP=data['cp'],
+                               City=data['city'],
+                               Province=data['province'],
+                               PNA_Address=pna_address,
+                               PNA_CP=pna_cp,
+                               PNA_City=pna_city,
+                               PNA_Province=pna_province,
+                               Gender=data['gender'],
+                               Land_Line=land_line,
+                               Mobile=data['mobile'],
+                               Profile_Picture=profile_pic,
+                               Birth_Date=data['birth_date'],
+                               Vehicle=vehicle,
+                               Geographical_Mobility=geographical_mobility,
+                               Disability_Grade=disability_grade,
+                               Join_Date=data['join_date'],
+                               Cancelation_Date=data['cancellation_date'])
+
         db.session.add(member)
         db.session.commit()
-        msg = {'NEW member ADDED': member.to_json()}
+        msg = {'member_add': member.to_json()}
         status_code = 200
 
     except Exception as ex:
         db.session.rollback()
-        msg = {ERROR_500_DEFAULT_MSG: member.to_json()}
+        msg = {'member_add': ERROR_500_DEFAULT_MSG}
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
@@ -1380,12 +1396,12 @@ def user_add():
         db.session.add(user)
         db.session.commit()
         new_user = User.User.query.filter_by(Email=user.Email).first()
-        msg = {'NEW user ADDED': new_user.to_json()}
+        msg = {'user_add': new_user.to_json()}
         status_code = 200
 
     except Exception as ex:
         db.session.rollback()
-        msg = {ERROR_500_DEFAULT_MSG: user.to_json()}
+        msg = {"user_add": ERROR_500_DEFAULT_MSG}
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
@@ -1398,6 +1414,7 @@ def user_add():
 # LOGIN
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+    error = ""
     # This definition can be called from some methods
     if request.method == 'GET':
         # Check if the user is already logged
@@ -1412,11 +1429,17 @@ def login():
         if key_in_request_form('user-login'):
             username = request.form['user-login']
             if username == "":
-                return bad_request("Username cannot be empty")  # Empty user
+                error = "El nombre de usuario no puede estar vacio"
+                if navigator_user_agent():  # Empty user
+                    return render_template('t-login.html', error=error)
+                return bad_request(error)
             if key_in_request_form('user-passwd'):
                 passwd = request.form['user-passwd']
                 if passwd == "":
-                    return bad_request("Password cannot be empty")  # Empty password
+                    error = "La contraseña no puede estar vacia"
+                    if navigator_user_agent():  # Empty password
+                        return render_template('t-login.html', error=error)
+                    return bad_request(error)
                 # Search for the user
                 user = User.User.query.filter_by(Email=username).first()
                 if user is not None:
@@ -1434,9 +1457,15 @@ def login():
                         resp.set_cookie('auth', token_info)
                         return resp
                     else:
-                        return bad_request("Wrong password")
+                        error = "Contraseña incorrecta"
+                        if navigator_user_agent():  # Empty password
+                            return render_template('t-login.html', error=error)
+                        return bad_request(error)
                 else:
-                    return bad_request("Wrong user")
+                    error = "Usuario incorrecto"
+                    if navigator_user_agent():  # Empty password
+                        return render_template('t-login.html', error=error)
+                    return bad_request(error)
         else:
             return bad_request()
     else:
@@ -1451,14 +1480,60 @@ def index():
     return render_template("t-index.html", payload=payload, code=200)
 
 
+def check_member_params(form) -> str:
+    # USER INFO
+    if 'user-email' not in form or form['user-email'] is None or form['user-email'] == "":
+        return "Email no valido"
+    if 'user-pwd' not in form or form['user-pwd'] is None or sec.check_valid_passwd(form['user-pwd']) is None:
+        return "Contraseña no valida"
+    # MEMBER INFO
+    if 'member-name' not in form or form['member-name'] is None or form['member-name'] == "":
+        return "Nombre no valido"
+    if 'member-surname' not in form or form['member-name'] is None or form['member-name'] == "":
+        return "Apellidos no valido"
+    # TODO Check for valid DNI, at least sth like 8 digits and 1 letter, it can be a NIE...
+    if 'member-dni' not in form or form['member-dni'] is None or form['member-dni'] == "":
+        return "DNI no valido"
+    if 'member-address' not in form or form['member-address'] is None or form['member-address'] == "":
+        return "Direccion no valido"
+    if 'member-cp' not in form or form['member-cp'] is None or form['member-cp'] == "":
+        return "Codigo Postal no valido"
+    if 'member-city' not in form or form['member-city'] is None or form['member-city'] == "":
+        return "Ciudad no valido"
+    if 'member-province' not in form or form['member-province'] is None or form['member-province'] == "":
+        return "Provincia no valida"
+    if 'rb-group-gender' not in form or form['rb-group-gender'] is None or form['rb-group-gender'] == "":
+        return "Genero no valido"
+    if 'member-mobile' not in form or form['member-mobile'] is None or form['member-mobile'] == "":
+        return "Tlf. Movil no valido"
+    if 'member-birthdate' not in form or form['member-birthdate'] is None or form['member-birthdate'] == "":
+        return "F. Nacimiento no valido"
+    if key_in_request_form('pna_cb') and (not key_in_request_form('member-pna-address') or form['member-pna-address']):
+        return "Direccion PNA no valido"
+    if key_in_request_form('pna_cb') and (not key_in_request_form('member-pna-cp') or form['member-pna-cp']):
+        return "Codigo Postal PNA no valido"
+    if key_in_request_form('pna_cb') and (not key_in_request_form('member-pna-city') or form['member-pna-city']):
+        return "Ciudad PNA no valido"
+    if key_in_request_form('pna_cb') and (not key_in_request_form('member-pna-province') or form['member-pna-province']):
+        return "Provincia PNA no valida"
+    if 'member-landline' not in form:
+        return "F. Nacimiento no valido"
+    return ""
+
+
 @app.route("/register/member", methods=["GET", "POST"])
 def register_member():
     if request.method == "POST":
+        error = "Las contraseñas no coinciden"
         data = request.form
         if data["user-pwd"] == data["user-pwd-2"]:
+            print(data)
+            error = check_member_params(data)
+            if error != "":
+                return render_template("t-sign-in-member.html", error=error)
             user_data_form = {
-                "email": request.form["user-email"],
-                "passwd": request.form["user-pwd"],
+                "email": data["user-email"],
+                "passwd": data["user-pwd"],
                 "role": 104
             }
             member_data_form = {
@@ -1471,36 +1546,45 @@ def register_member():
                 "province": data["member-province"],
                 "gender": data["rb-group-gender"],
                 "mobile": data["member-mobile"],
-                "profile_picture": data["member-profilepic"],
+                "profile_picture": None if not key_in_request_form('member-profilepic') or data["member-profilepic"] == "" else data["member-profilepic"],
                 "birth_date": data["member-birthdate"],
                 "join_date": dt.now().strftime("%y-%m-%d %H:%M:%S"),
                 "cancellation_date": "",
-                "pna_data": None if not key_in_request_form('pna_cb') else data["pna_cb"],
+                "pna_data": None if not key_in_request_form('pna_cb') or data['pna_cb'] == "" else data["pna_cb"],
                 "pna_address": data["member-pna-address"],
                 "pna_cp": data["member-pna-cp"],
                 "pna_city": data["member-pna-city"],
                 "pna_province": data["member-pna-province"],
                 "land_line": data["member-landline"],
-                "vehicle": data["rb-group-car"],
-                "geographical_mobility": data["rb-group-mov"],
-                "disability_grade": data["member-handicap"]
+                "vehicle": True if not key_in_request_form('rb-group-car') or data["rb-group-car"] == "y" else False,
+                "geographical_mobility": True if not key_in_request_form('rb-group-mov') or data["rb-group-mov"] == "y" else False,
+                "disability_grade": 0 if not key_in_request_form("member-handicap") or data["member-handicap"] == "" else int(data["member-handicap"])
             }
-            print(data)
-            # user_created = requests.post('http://localhost:5000/api_v0/user', data=user_data_form)
+            user_created = requests.post('http://localhost:5000/api_v0/user', data=user_data_form)
             # Check if the user has been created
-            # if user_created.status_code == 200:
-            #     member_data_form["id"] = user_created.json()["NEW user ADDED"].get("id_user")
-            #     member_created = requests.post('http://localhost:5000/api_v0/member', data=member_data_form)
-            #     if member_created.status_code == 200:
-            #         return redirect(url_for("login"))
-    else:
+            if user_created.status_code == 200:
+                member_data_form["id"] = user_created.json()["user_add"].get("id_user")
+                member_created = requests.post('http://localhost:5000/api_v0/member', data=member_data_form)
+                if member_created.status_code == 200:
+                    return redirect(url_for("login"))
+                else:
+                    error = member_created.json()["member_add"] or member_created.json()["message"]
+            else:
+                error = user_created.json()["user_add"] or user_created.json()["message"]
+        if not_auth_header():
+            return bad_request(error)
+        return render_template("t-sign-in-member.html", error=error)
+    elif request.method == "GET":
         return render_template("t-sign-in-member.html")
+    else:
+        return bad_request("{} method not supported".format(request.method))
 
 
 # endregion
 # ==================================================================================================================== #
 # ========================================================= MAIN ===================================================== #
 # region MAIN
+
 if __name__ == '__main__':
     # Conf contains DB settings
     app.config.from_object(conf)
