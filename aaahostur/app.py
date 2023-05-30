@@ -1604,11 +1604,11 @@ def register_company():
             }
             print(data)
             # user_created = requests.post('http://localhost:5000/api_v0/user', data=user_data_form)
-            # Check if the user has been created
+            # # Check if the user has been created
             # if user_created.status_code == 200:
-            #     member_data_form["id"] = user_created.json()["NEW user ADDED"].get("id_user")
-            #     member_created = requests.post('http://localhost:5000/api_v0/member', data=member_data_form)
-            #     if member_created.status_code == 200:
+            #     company_data_form["id"] = user_created.json()["NEW user ADDED"].get("id_user")
+            #     company_created = requests.post('http://localhost:5000/api_v0/company', data=member_data_form)
+            #     if company_created.status_code == 200:
             #         return redirect(url_for("login"))
     else:
         return render_template("t-sign-in-company.html")

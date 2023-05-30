@@ -1,30 +1,46 @@
 {% extends 't-base.html' %}
 
 {% block mainContent %}
-<h1 class="black-title"> Bienvenidos a la página web de la Asociación Española de Antiguos Alumnos de Escuelas de Hostelería y Turismo</h1>
-<p class="darker-blue-text"> Desde ésta página podrás conocer todas las actividades que llevamos a cabo desde la Asociación así como los intereses que defiende.
-    Podrás unirte a nosotros y comenzar a formar parte de la gran familia que hemos conformado con los mayores profesionales del sector, 
-    contactarnos para gestionar tu puesto de trabajo, tus candidaturas profesionales o para rediseñar tu currículum para adaptarlo a las nuevas necesidades del mercado.</p>
-<div>
-    <h1 class="black-title">Nueva Bolsa De Empleo</h1>  
-    <div class="job">
-        <img src="../static/resources/bolsa_empleo.png" alt="job" width="250" height="250">  
+<div class="container w80 shadow pad-2rem dis-flex pad-top-4rem">
+    <div class="w80 mar-bot-1rem">
+        <h1 class="black-title"> Bienvenidos a la página web de la Asociación Española de Antiguos Alumnos de Escuelas de Hostelería y Turismo</h1>
+        <p class="darker-blue-text"> Desde ésta página podrás conocer todas las actividades que llevamos a cabo desde la Asociación así como los intereses que defiende.
+            Podrás unirte a nosotros y comenzar a formar parte de la gran familia que hemos conformado con los mayores profesionales del sector,
+            contactarnos para gestionar tu puesto de trabajo, tus candidaturas profesionales o para rediseñar tu currículum para adaptarlo a las nuevas necesidades del mercado.</p>
+        <div>
+            <h1 class="black-title">Nueva Bolsa De Empleo</h1>
+            <div class="job">
+                <img src="../static/resources/bolsa_empleo.png" alt="job" width="250" height="250">
+            </div>
+            <p class="darker-blue-text">No dudes en inscribirte en nuestra nueva y mejorada bolsa de empleo para que te ayudemos a encontrar un trabajado adecuado</p>
+        </div>
+        <h1 class="black-title">Donde encontrarnos, no dudes en visitarnos</h1>
+        <p class="darker-blue-text">Una vez Inscrito tendrás que venir a la oficina de la asociación para realizar el pago de inscripción, una vez hecho el pago se aceptará tu solicitud. Al llegar al lugar, pregunta por la oficina de antiguos alumnos o dirigete más entrar a mano izquierda</p>
+        <div class="office">
+            <div class="w40">
+                <iframe src="https://maps.google.com/maps?width=100%25&amp;height=600&amp;hl=en&amp;q=Escuela%20Superior%20de%20Hosteler%C3%ADa%20y%20Turismo+(Location)&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+            <div class="w40">
+                <img id="office" src="{{ url_for('static', filename='resources/aaahostur_oficina.jpg') }}" alt="office">
+                <p class="text-pictureOffice">Imagen: "Asómate a nuestra mirilla"</p>
+                <p class="text-pictureOffice">Oficina de la Asociación en la Escuela Superior de Hostelería.</p>
+            </div>
+        </div>
+        <p class="darker-blue-text">Igualmente podrás disfrutar de una amplia variedad de eventos que desde la Asociación ponemos en marcha para nuestros asociados, con gratuidades y/o precios especiales.
+            Si te dedicas a la hotelería… ¡este es tu sitio!, ¡esta es tu Asociación!</p>
+        <div>{{ payload }}</div>
     </div>
-    <p class="darker-blue-text">No dudes en inscribirte en nuestra nueva y mejorada bolsa de empleo para que te ayudemos a encontrar un trabajado adecuado</p>
+    <aside class="w20 border-lf pad-1rem">
+        <h2 class="black-title mar-bot-2rem">Descubre</h2>
+        <ul  class="font-12pt">
+            {% if news_list is defined and not none %}
+                {% for new in news_list %}
+                    <li><a href="{{ new.url }}">{{ new.title }}</a></li>
+                {% endfor %}
+            {% else %}
+                <li>Nada nuevo...</li>
+            {% endif %}
+        </ul>
+    </aside>
 </div>
-<h1 class="black-title">Donde encontrarnos, no dudes en visitarnos</h1>
-<p class="darker-blue-text">Una vez Inscrito tendrás que venir a la oficina de la asosación para realizar el pago de inscripción a veronica quien tendrá que aceptar tu solicitud, al llegar al lugar pregunta por la oficina de antiguos alumnos o dirigete mas entrar a mano izquierda</p> 
-<diV class="office"> 
-    <div>
-        <iframe class="marigin-3porc" src="https://maps.google.com/maps?width=100%25&amp;height=600&amp;hl=en&amp;q=Escuela%20Superior%20de%20Hosteler%C3%ADa%20y%20Turismo+(Location)&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>  
-    </div>
-    <div>
-        <img class="marigin-3porc" src="../static/resources/aaahostur_oficina.jpg" alt="office" width="460" height="400">  
-        <p class="text-pictureOffice">Imagen: “Asómate a nuestra mirilla”</p>
-        <p class="text-pictureOffice">Oficina de la Asociación en la Escuela Superior de Hostelería.</p>
-    </div>
-<p class="darker-blue-text">Igualmente podrás disfrutar de una amplia variedad de eventos que desde la Asociación ponemos en marcha para nuestros asociados, con gratuidades y/o precios especiales.
-    Si te dedicas a la hotelería… ¡este es tu sitio!, ¡esta es tu Asociación!</p>
-</diV>
-<div>{{ payload }}</div>
 {% endblock %}

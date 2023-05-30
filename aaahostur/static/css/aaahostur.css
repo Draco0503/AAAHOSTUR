@@ -58,17 +58,18 @@
 
 .darker-blue-text {
     color: var(--aaahostur-primary-color-darker-blue);
-    text-align: center;
     padding: 30px;
-    font-size: 18pt;
+    font-size: 14pt;
+}
+
+.text-center {
+    text-align: center;
 }
 
 .darker-blue-text2 {
     color: var(--aaahostur-primary-color-darker-blue);
-    text-align: center;
     padding: 30px;
     font-family: Calibri;
-    font-size: 16pt;
 }
 
 body {
@@ -123,6 +124,14 @@ hr {
 
 .font-12pt {
     font-size: 12pt;
+}
+
+.pad-top-4rem {
+    padding-top: 4rem !important;
+}
+
+.pad-1rem {
+    padding: 1rem;
 }
 
 .pad-2rem {
@@ -314,6 +323,11 @@ input[type="button"]:hover {
     padding: 1vw 0 1vw 7vw;
 }
 
+#office {
+    width: -webkit-fill-available;
+    width: -moz-available;
+}
+
 .logo {
     height: 60px;
 }
@@ -394,7 +408,6 @@ input[type="button"]:hover {
     margin: auto;
     text-align: center;
     font-weight: bold;
-    font-size: 22px;
     font-style: var(--aaahostur-color-black);
 }
 
@@ -463,6 +476,18 @@ span {
 
 .mar-bot-3rem {
     margin-bottom: 3rem;
+}
+
+.mar-top-1rem {
+    margin-top: 1rem;
+}
+
+.mar-top-2rem {
+    margin-top: 2rem;
+}
+
+.mar-top-3rem {
+    margin-top: 3rem;
 }
 
 .dis-grid {
@@ -567,7 +592,7 @@ footer .center {
     font-size: 12pt;
 }
 
-.marigin-3porc{
+.margin-3porc{
     margin-top: 3%;
     margin-left: 3%;
 }
@@ -635,6 +660,10 @@ ul.social-links > li {
 
 .icon:hover {
     background: var(--aaahostur-primary-color-not-that-yellow-hover);
+}
+
+.border-lf {
+    border-left: 3px solid var(--aaahostur-primary-color-not-that-yellow);
 }
 
 /* SCROLLBAR SETTINGS */
