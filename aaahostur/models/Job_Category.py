@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from . import db
 
+
 @dataclass()
 class Job_Category(db.Model):
     __tablename__ = "Job_Category"

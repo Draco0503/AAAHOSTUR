@@ -5,7 +5,7 @@ from . import db
 @dataclass()
 class Member(db.Model):
     __tablename__ = "Member"
-    ID_MEMBER = db.Column(db.Integer, db.ForeignKey("User.ID_USER"), primary_key=True)
+    ID_MEMBER = db.Column(db.String(36), db.ForeignKey("User.ID_USER"), primary_key=True)
     Name = db.Column(db.String(512), nullable=False)
     Surname = db.Column(db.String(512), nullable=False)
     DNI = db.Column(db.String(512), nullable=False, unique=True)
@@ -26,11 +26,11 @@ class Member(db.Model):
     Geographical_Mobility = db.Column(db.Boolean, default=False)
     Disability_Grade = db.Column(db.Integer, default=0)
     Join_Date = db.Column(db.String(256), default=dt.datetime.now(), nullable=False)
-    Cancelation_Date = db.Column(db.String(256), nullable=True)
+    Cancellation_Date = db.Column(db.String(256), nullable=True)
     Active = db.Column(db.Boolean, default=True)
     Verify = db.Column(db.Boolean, default=False)
     
-    Id_User_Verify = db.Column(db.Integer, db.ForeignKey("User.ID_USER"))
+    Id_User_Verify = db.Column(db.String(36), db.ForeignKey("User.ID_USER"))
 
     member_account = db.relationship("Member_Account", backref="Member", lazy=True)
     member_language = db.relationship("Member_Language", backref="Member", lazy=True)
@@ -59,7 +59,7 @@ class Member(db.Model):
                 'disability_grade': self.Disability_Grade,
                 'join_date': self.Join_Date,
                 'active': self.Active,
-                'cancellation_date': self.Cancelation_Date,
+                'cancellation_date': self.Cancellation_Date,
                 'verify': self.Verify,
                 'id_user_verify': self.Id_User_Verify
                 }

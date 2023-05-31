@@ -11,7 +11,7 @@ class ProfessionalProfile(db.Model):
     Join_Date = db.Column(db.String(256), nullable=False)
     Finish_Date = db.Column(db.String(256), default='CURRENT')
 
-    Id_Member = db.Column(db.Integer, db.ForeignKey('Member.ID_MEMBER'), nullable=False)
+    Id_Member = db.Column(db.String(36), db.ForeignKey('Member.ID_MEMBER'), nullable=False)
 
     member = db.relationship('Member', backref='professional_profiles')
 

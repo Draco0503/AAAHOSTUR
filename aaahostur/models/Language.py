@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from . import db
 
+
 @dataclass()
 class Language(db.Model):
     __tablename__ = "Language"

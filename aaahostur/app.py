@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime as dt, timedelta
 from user_agents import parse
 import requests
@@ -71,7 +72,9 @@ def user_privileges() -> tuple[Role.Role or Response, str]:
     user, role = get_user_from_token(request.cookies.get('auth'))
     # Its defined that when user is "" an error has occurred
     if user == "" or type(role) == str:
-        return bad_request(role), "Not found"
+        resp = bad_request(role)
+        resp.delete_cookie('auth')
+        return resp, "Not found"
     return role, user
 
 
@@ -83,6 +86,14 @@ def navigator_user_agent() -> bool:
     uas = request.user_agent.string
     user_agent = parse(uas)
     return user_agent.is_pc or user_agent.is_mobile or user_agent.is_tablet
+
+
+def valid_uuid(value: str) -> bool:
+    try:
+        uuid.UUID(value)
+        return True
+    except ValueError:
+        return False
 
 
 # endregion
@@ -231,6 +242,10 @@ def company_add():
     data = request.form
     if data is None or (5 > len(data) > 10):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data len()]')
+    if not key_in_request_form('id'):
+        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <id>]')
+    if not key_in_request_form('company_name'):
+        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <company_name>]')
     if not key_in_request_form('type'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <type>')
     if not key_in_request_form('cif'):
@@ -247,8 +262,9 @@ def company_add():
     city = "" if not key_in_request_form('city') else data['city']
     province = "" if not key_in_request_form('province') else data['province']
     description = "" if not key_in_request_form('description') else data['description']
-    # TODO falta el atributo name en company
-    company = Company.Company(Type=data['type'],
+    company = Company.Company(ID_COMPANY=data['id'],
+                              Name=data['company_name'],
+                              Type=data['type'],
                               CIF=data['cif'],
                               Address=address,
                               CP=cp,
@@ -303,9 +319,8 @@ def company_verify_update(id):
                             company.Verify = True
                         elif data["active"] == 'False':
                             company.Verify = False
-                    msg = {"company": [com.to_json() for com in company]}
-
                     db.session.commit()
+                    msg = {"company": company.to_json()}
                     status_code = 200
                 except Exception as ex:
                     print(ex)
@@ -722,7 +737,7 @@ def member_list():
 
 # READ BY
 @app.route('/api_v0/member/<id>', methods=['GET'])
-def member_by_id(id: int):
+def member_by_id(id):
     role, _ = user_privileges()
     if type(role) is Response:
         return role
@@ -822,7 +837,7 @@ def member_add():
                                Geographical_Mobility=geographical_mobility,
                                Disability_Grade=disability_grade,
                                Join_Date=data['join_date'],
-                               Cancelation_Date=data['cancellation_date'])
+                               Cancellation_Date=data['cancellation_date'])
 
         db.session.add(member)
         db.session.commit()
@@ -1319,21 +1334,42 @@ def user_list():
 
 
 # READ BY
-@app.route('/api_v0/user/<int:id>', methods=['GET'])
-def user_by_id(id: int):
-    role, _ = user_privileges()
-    if type(role) is Response:
-        return role
-    # Now we can ask for the requirement set
-    if not role.CanSeeApiUser:
-        return forbidden()
-    data_list = [user.to_json() for user in User.User.query.filter_by(ID_USER=id)]
-    if len(data_list) == 0:
-        return not_found()
-    msg = {"user": data_list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
+@app.route('/api_v0/user/<key>', methods=['GET', 'DELETE'])
+def user_by_id(key: str):
+    if request.method == 'GET':
+        role, user_token = user_privileges()
+        if type(role) is Response:
+            return role
+        # Now we can ask for the requirement set
+        if "%40" in key or "@" in key:
+            username = key if "%40" in key else key.replace("%40", "@")
+            if user_token != username:
+                return forbidden()
+            user = User.User.query.filter_by(Email=username).first()
+        elif valid_uuid(key):
+            if not role.CanSeeApiUser:
+                return forbidden()
+            user = User.User.query.filter_by(ID_USER=id).first()
+        else:
+            return bad_request()
+        if user is None:
+            return not_found()
+        msg = {"user": user.to_json()}
+        return Response(json.dumps(msg), status=200)
+    elif request.method == 'DELETE':
+        if not valid_uuid(key):
+            return bad_request()
+        user = User.User.query.filter_by(ID_USER=key).first()
+        if user is None:
+            return not_found()
+        try:
+            db.session.remove(user)
+            db.session.commit()
+            msg = {"user_del": "User {} successfully deleted".format(key)}
+            return Response(json.dumps(msg), status=200)
+        except Exception as ex:
+            db.session.rollback()
+            return internal_server_error()
 
 
 # INSERT
@@ -1368,19 +1404,57 @@ def user_add():
     return Response(json.dumps(msg), status=status_code)
 
 
-@app.route("/api_v0/user/<username>", methods=["GET"])
-def get_user_by_name(username: str):
-    role, user_token = user_privileges()
-    if type(role) is Response:
-        return role
-    if user_token != username:
-        return forbidden()
-    username = username.replace("%40", "@")
-    user = User.User.query.filter_by(Email=username).first()
-    if user is None:
-        return not_found()
-    msg = {"user": user.to_json()}
-    return Response(json.dumps(msg), status=200)
+# @app.route("/api_v0/user/<username>", methods=["GET"])
+# def get_user_by_name(username: str):
+#     role, user_token = user_privileges()
+#     if type(role) is Response:
+#         return role
+#     if user_token != username:
+#         return forbidden()
+#     username = username.replace("%40", "@")
+#     user = User.User.query.filter_by(Email=username).first()
+#     if user is None:
+#         return not_found()
+#     msg = {"user": user.to_json()}
+#     return Response(json.dumps(msg), status=200)
+
+
+@app.route("/api_v0/login", methods=["POST"])
+def api_login():
+    # Check for the length of the form request
+    if len(request.form) != 2:
+        return bad_request()
+    # Check for the 'user-login' field
+    if key_in_request_form('user-login'):
+        username = request.form['user-login']
+        if username == "":
+            error = "El nombre de usuario no puede estar vacio"
+            return bad_request(error)
+        if key_in_request_form('user-passwd'):
+            passwd = request.form['user-passwd']
+            if passwd == "":
+                error = "La contraseña no puede estar vacia"
+                return bad_request(error)
+            # Search for the user
+            user = User.User.query.filter_by(Email=username).first()
+            if user is not None:
+                # As the method says
+                if sec.verify_password(passwd, user.Passwd):
+                    # Generate the auth token
+                    token_info = sec.generate_jwt({
+                        "user": user.Email,
+                        "user-role": user.Id_Role,
+                        "curr_time": dt.now().strftime("%y-%m-%d %H:%M:%S"),
+                        "exp_time": (dt.now() + timedelta(minutes=30)).strftime("%y-%m-%d %H:%M:%S")
+                    })
+                    # Custom response to add the auth cookie
+                    return Response(json.dumps({'auth': token_info}), status=200)
+                else:
+                    error = "Contraseña incorrecta"
+                    return bad_request(error)
+            else:
+                error = "Usuario incorrecto"
+                return bad_request(error)
 
 
 # endregion
@@ -1415,32 +1489,20 @@ def login():
                     if navigator_user_agent():  # Empty password
                         return render_template('t-login.html', error=error)
                     return bad_request(error)
-                # Search for the user
-                user = User.User.query.filter_by(Email=username).first()
-                if user is not None:
-                    # As the method says
-                    if sec.verify_password(passwd, user.Passwd):
-                        # Generate the auth token
-                        token_info = sec.generate_jwt({
-                            "user": user.Email,
-                            "user-role": user.Id_Role,
-                            "curr_time": dt.now().strftime("%y-%m-%d %H:%M:%S"),
-                            "exp_time": (dt.now() + timedelta(minutes=30)).strftime("%y-%m-%d %H:%M:%S")
-                        })
-                        # Custom response to add the auth cookie
-                        resp = make_response(redirect(url_for("index", _method="GET")))
-                        resp.set_cookie('auth', token_info)
-                        return resp
-                    else:
-                        error = "Contraseña incorrecta"
-                        if navigator_user_agent():  # Empty password
-                            return render_template('t-login.html', error=error)
-                        return bad_request(error)
-                else:
-                    error = "Usuario incorrecto"
-                    if navigator_user_agent():  # Empty password
+                login_data = {
+                    'user-login': request.form['user-login'],
+                    'user-passwd': request.form['user-passwd']  # TODO !IMPORTANT SE NECESITA UN CERTIFICADO HTTPS
+                }
+                login_response = requests.post("http://localhost:5000/api_v0/login", data=login_data)
+                if login_response.status_code != 200:
+                    error = login_response.json()['msg']
+                    if navigator_user_agent():
                         return render_template('t-login.html', error=error)
-                    return bad_request(error)
+                    # Custom response to add the auth cookie
+                token_info = login_response.json()['auth']
+                success_resp = make_response(redirect(url_for("index", _method="GET")))
+                success_resp.set_cookie('auth', token_info)
+                return success_resp
         else:
             return bad_request()
     else:
@@ -1489,7 +1551,8 @@ def check_member_params(form) -> str:
         return "Codigo Postal PNA no valido"
     if key_in_request_form('pna_cb') and (not key_in_request_form('member-pna-city') or form['member-pna-city']):
         return "Ciudad PNA no valido"
-    if key_in_request_form('pna_cb') and (not key_in_request_form('member-pna-province') or form['member-pna-province']):
+    if key_in_request_form('pna_cb') and (
+            not key_in_request_form('member-pna-province') or form['member-pna-province']):
         return "Provincia PNA no valida"
     if 'member-landline' not in form:
         return "F. Nacimiento no valido"
@@ -1523,7 +1586,8 @@ def register_member():
                 "province": data["member-province"],
                 "gender": data["rb-group-gender"],
                 "mobile": data["member-mobile"],
-                "profile_picture": None if not key_in_request_form('member-profilepic') or data["member-profilepic"] == "" else data["member-profilepic"],
+                "profile_picture": None if not key_in_request_form('member-profilepic') or data[
+                    "member-profilepic"] == "" else data["member-profilepic"],
                 "birth_date": data["member-birthdate"],
                 "join_date": dt.now().strftime("%y-%m-%d %H:%M:%S"),
                 "cancellation_date": "",
@@ -1534,18 +1598,26 @@ def register_member():
                 "pna_province": data["member-pna-province"],
                 "land_line": data["member-landline"],
                 "vehicle": True if not key_in_request_form('rb-group-car') or data["rb-group-car"] == "y" else False,
-                "geographical_mobility": True if not key_in_request_form('rb-group-mov') or data["rb-group-mov"] == "y" else False,
-                "disability_grade": 0 if not key_in_request_form("member-handicap") or data["member-handicap"] == "" else int(data["member-handicap"])
+                "geographical_mobility": True if not key_in_request_form('rb-group-mov') or data[
+                    "rb-group-mov"] == "y" else False,
+                "disability_grade": 0 if not key_in_request_form("member-handicap") or data[
+                    "member-handicap"] == "" else int(data["member-handicap"])
             }
-            user_created = requests.post('http://localhost:5000/api_v0/user', data=user_data_form, cookies=request.cookies)
+            user_created = requests.post('http://localhost:5000/api_v0/user', data=user_data_form,
+                                         cookies=request.cookies)
             # Check if the user has been created
             if user_created.status_code == 200:
-                member_data_form["id"] = user_created.json()["user_add"].get("id_user")
-                member_created = requests.post('http://localhost:5000/api_v0/member', data=member_data_form, cookies=request.cookies)
+                user_id = user_created.json()["user_add"].get("id_user")
+                member_data_form["id"] = user_id
+                member_created = requests.post('http://localhost:5000/api_v0/member', data=member_data_form,
+                                               cookies=request.cookies)
                 if member_created.status_code == 200:
                     return redirect(url_for("login"))  # TODO
                 else:
+                    user_delete = requests.delete('http://localhost:5000/api_v0/user/{}'.format(user_id))
                     error = member_created.json()["member_add"] or member_created.json()["message"]
+                    if user_delete.status_code != 200:
+                        error = user_delete.json()['user_del']
             else:
                 error = user_created.json()["user_add"] or user_created.json()["message"]
         if not_auth_header():
@@ -1573,15 +1645,20 @@ def profile():
             }
         }
         # print(context)
-        member_info = requests.get("http://localhost:5000/api_v0/member/{}".format(int(user_info.json()['user']['id_user'])), cookies=request.cookies)
+        member_info = requests.get(
+            "http://localhost:5000/api_v0/member/{}".format(user_info.json()['user']['id_user']),
+            cookies=request.cookies)
         if member_info.status_code == 200:
             print(member_info.json())
             context['member'] = {
                 'name': member_info.json()['member']['name'],
                 'surname': member_info.json()['member']['surname'],
                 'dni': member_info.json()['member']['dni'],
-                'gender': member_info.json()['member']['gender'],
-                'profilepic': member_info.json()['member']['profile_picture'],
+                'gender': 'Hombre' if member_info.json()['member']['gender'] == 'H' else (
+                    'Mujer' if member_info.json()['member']['gender'] == 'M' else 'Otro'),
+                'profilepic': "" if member_info.json()['member']['profile_picture'] is None
+                                    or member_info.json()['member']['profile_picture'] == "" else
+                member_info.json()['member']['profile_picture'],
                 'birthdate': member_info.json()['member']['birth_date'],
                 'mobile': member_info.json()['member']['mobile'],
                 'landline': member_info.json()['member']['land_line'],
@@ -1589,8 +1666,10 @@ def profile():
                 'cp': member_info.json()['member']['cp'],
                 'city': member_info.json()['member']['city'],
                 'province': member_info.json()['member']['province'],
-                'vehicle': member_info.json()['member']['vehicle'],
-                'mov': member_info.json()['member']['geographical_mobility'],
+                'vehicle': 'SI' if member_info.json()['member']['vehicle'] or member_info.json()['member'][
+                    'vehicle'] == 'True' else 'NO',
+                'mov': 'SI' if member_info.json()['member']['geographical_mobility'] or
+                               member_info.json()['member']['geographical_mobility'] == 'True' else 'NO',
                 'handicap': member_info.json()['member']['disability_grade']
             }
         print(context)
@@ -1601,15 +1680,16 @@ def profile():
 @app.route("/register/company", methods=["GET", "POST"])
 def register_company():
     if request.method == "POST":
+        error = "Las contraseñas no coinciden"
         data = request.form
         if data["user-pwd"] == data["user-pwd-2"]:
             user_data_form = {
                 "email": request.form["user-email"],
                 "passwd": request.form["user-pwd"],
-                "role": 104
+                "role": 105
             }
             company_data_form = {
-                "name": data["company-name"],
+                "company_name": data["company-name"],
                 "type": data["rb-group-company-type"],
                 "cif": data["company-cif"],
                 "address": data["company-address"],
@@ -1622,15 +1702,40 @@ def register_company():
                 "description": data["company-desc"]
             }
             print(data)
-            # user_created = requests.post('http://localhost:5000/api_v0/user', data=user_data_form)
-            # # Check if the user has been created
-            # if user_created.status_code == 200:
-            #     company_data_form["id"] = user_created.json()["NEW user ADDED"].get("id_user")
-            #     company_created = requests.post('http://localhost:5000/api_v0/company', data=member_data_form)
-            #     if company_created.status_code == 200:
-            #         return redirect(url_for("login"))
-    else:
+            user_created = requests.post('http://localhost:5000/api_v0/user', data=user_data_form,
+                                         cookies=request.cookies)
+            # Check if the user has been created
+            if user_created.status_code == 200:
+                user_id = user_created.json()["user_add"].get("id_user")
+                company_data_form["id"] = user_id
+                company_created = requests.post('http://localhost:5000/api_v0/company', data=company_data_form,
+                                                cookies=request.cookies)
+                if company_created.status_code == 200:
+                    return redirect(url_for("login"))  # TODO
+                else:
+                    user_delete = requests.delete('http://localhost:5000/api_v0/user/{}'.format(user_id))
+                    error = company_created.json()["company_add"] or company_created.json()["message"]
+                    if user_delete.status_code != 200:
+                        error = user_delete.json()['user_del']
+            else:
+                error = user_created.json()["user_add"] or user_created.json()["message"]
+        if not_auth_header():
+            return bad_request(error)
+        return render_template("t-sign-in-company.html", error=error)
+    elif request.method == "GET":
         return render_template("t-sign-in-company.html")
+    else:
+        return bad_request("{} method not supported".format(request.method))
+
+
+@app.route("/privacy")
+def privacy():
+    return "<h1>IN PROGRESS</h1>"
+
+
+@app.route("/legal")
+def legal():
+    return "<h1>IN PROGRESS</h1>"
 
 
 # endregion

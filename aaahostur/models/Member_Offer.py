@@ -7,7 +7,7 @@ class Member_Offer(db.Model):
     ID_MEMBER_Offer = db.Column(db.Integer, primary_key=True, autoincrement=True)
     
     Id_Offer = db.Column(db.Integer, db.ForeignKey("Offer.ID_OFFER"), nullable=False)
-    Id_Member = db.Column(db.Integer, db.ForeignKey("Member.ID_MEMBER"), nullable=False)
+    Id_Member = db.Column(db.String(36), db.ForeignKey("Member.ID_MEMBER"), nullable=False)
 
     def to_json(self):
         return {'id_member_offer': self.ID_MEMBER_Offer,

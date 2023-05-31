@@ -23,16 +23,16 @@
         <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-cif" name="company-cif">
         <label class="dis-block font-16pt mar-bot-1rem" for="company-address">Tipo de empresa según su ámbito geográfico<span>*</span></label>
         <div id="rbgroup-company-type" class="mar-bot-2rem">
-            <label class="font-14pt custom-cr-input" for="" onclick="showTypeData(this, false)">
+            <div class="font-14pt custom-cr-input" onclick="showTypeData(this, false)">
                 Nacional
                 <input class="rbgroup-company-type" type="radio" name="rb-group-company-type" id="rbgroup-company-type-rb1" value="National" checked>
                 <span class="radiomark"></span>
-            </label>                
-            <label class="font-14pt custom-cr-input" for="" onclick="showTypeData(this, true)">
+            </div>
+            <div class="font-14pt custom-cr-input" onclick="showTypeData(this, true)">
                 Internacional
                 <input class="rbgroup-company-type" type="radio" name="rb-group-company-type" id="rbgroup-company-type-rb2" value="Internacional">
                 <span class="radiomark"></span>
-            </label>
+            </div>
         </div>
         <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
         <label class="dis-block font-16pt" for="company-address">Dirección <span>*</span></label>
@@ -51,11 +51,11 @@
         <input class="w60 pad-input font-14pt mar-bot-1rem" type="text" id="company-province" name="company-province" required>
         <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
         <h3 class="mar-bot-1rem">Información de contacto del representante</h3>
-        <label class="dis-block font-16pt" for="company-contact-name">Nombre <span>*</span></label>
+        <label class="dis-block font-16pt" for="company-contact1-name">Nombre <span>*</span></label>
         <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-contact1-name" name="company-contact1-name" required>
-        <label class="dis-block font-16pt" for="company-contact-email">Email <span>*</span></label>
+        <label class="dis-block font-16pt" for="company-contact1-email">Email <span>*</span></label>
         <input class="w60 pad-input font-14pt mar-bot-2rem" type="email" id="company-contact1-email" name="company-contact1-email" required>
-        <label class="dis-block font-16pt" for="company-contact-tlf">Teléfono <span>*</span></label>
+        <label class="dis-block font-16pt" for="company-contact1-tlf">Teléfono <span>*</span></label>
         <input class="w60 pad-input font-14pt mar-bot-2rem" type="number" id="company-contact1-tlf" name="company-contact1-tlf" minlength="9" required>
         <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
         <label class="dis-block font-16pt" for="company-desc">Descripción</label>
@@ -66,6 +66,9 @@
         <div class="w80 dis-flex flex-right">
             <input class="w20 pad-o5rem font-16pt" type="submit" value="Enviar &rarr;">
         </div>
+        {% if error %}
+            <p><span>{{ error }}</span></p>
+        {% endif %}
     </form>
 </div>
 {% endblock %}

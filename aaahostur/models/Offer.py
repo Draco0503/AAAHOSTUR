@@ -16,8 +16,8 @@ class Offer(db.Model):
     Verify = db.Column(db.Boolean, default=False)
     Active = db.Column(db.Boolean, default=True)
 
-    Id_Company = db.Column(db.Integer, db.ForeignKey('Company.ID_COMPANY'))
-    Id_User_Verify = db.Column(db.Integer, db.ForeignKey('User.ID_USER'))
+    Id_Company = db.Column(db.String(36), db.ForeignKey('Company.ID_COMPANY'))
+    Id_User_Verify = db.Column(db.String(36), db.ForeignKey('User.ID_USER'))
 
     def to_json(self):
         return {'id_offer': self.ID_OFFER,

@@ -8,7 +8,9 @@ BUTTON_REGISTER_MEMBER -->
 
 {% block mainContent %}
 <div class="dis-grid container w20 pad-2rem shadow mar-bot-3rem">
-    <img class="how-to-center-a-div w40 mar-bot-3rem" src="{{ url_for('static', filename='resources/logo.png') }}" alt="aaahostur hosteleria turismo">
+    <a class="how-to-center-a-div mar-bot-3rem text-center" href="/">
+        <img class="how-to-center-a-div w60" src="{{ url_for('static', filename='resources/logo.png') }}" alt="aaahostur hosteleria turismo">
+    </a>
     <hr>
     <form class="dis-grid" action="/login" method="POST">
         <label class="dis-block font-16pt" for="user-login">Escribe tu email</label>

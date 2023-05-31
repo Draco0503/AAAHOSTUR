@@ -1,11 +1,12 @@
 from dataclasses import dataclass
 from . import db
-# from sqlalchemy.dialects.mysql import
+import uuid
+
 
 @dataclass()
 class User(db.Model):
     __tablename__ = "User"
-    ID_USER = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    ID_USER = db.Column(db.String(36), primary_key=True, default=uuid.uuid4())
     Passwd = db.Column(db.String(512), nullable=False)
     Email = db.Column(db.String(512), unique=True, nullable=False)
 

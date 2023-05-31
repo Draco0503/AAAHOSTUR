@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from . import db
 
+
 @dataclass()
 class Academic_Profile(db.Model):
     __tablename__ = 'Academic_Profile'
@@ -9,7 +10,7 @@ class Academic_Profile(db.Model):
     Graduation_Date = db.Column(db.String(256), nullable=False)
     Promotion = db.Column(db.String(256), nullable=True)
     
-    Id_Member = db.Column(db.Integer, db.ForeignKey('Member.ID_MEMBER'), nullable=False)
+    Id_Member = db.Column(db.String(36), db.ForeignKey('Member.ID_MEMBER'), nullable=False)
     Id_Qualification = db.Column(db.Integer, db.ForeignKey('Qualification.ID_QUALIFICATION'), nullable=False)
 
     # member = db.relationship('Member', backref='Academic_Profile')

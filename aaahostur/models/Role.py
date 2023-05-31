@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from . import db
 
+
 @dataclass()
 class Role(db.Model):
     __tablename__ = "Role"
@@ -37,6 +38,10 @@ class Role(db.Model):
     CanSeeApiMember = db.Column(db.Boolean, default=False)
     CanSeeApiOffer = db.Column(db.Boolean, default=False)
     CanSeeApiReview = db.Column(db.Boolean, default=False)
+    # CLASSIFICATION
+    IsAAAHOSTUR = db.Column(db.Boolean, default=False)
+    IsMember = db.Column(db.Boolean, default=False)
+    IsCompany = db.Column(db.Boolean, default=False)
 
     User = db.relationship("User", backref="Role", lazy=True)
 
@@ -73,5 +78,9 @@ class Role(db.Model):
                 'canSeeApiCompany': self.CanSeeApiCompany,
                 'canSeeApiMember': self.CanSeeApiMember,
                 'canSeeApiOffer': self.CanSeeApiOffer,
-                'canSeeApiReview': self.CanSeeApiReview
+                'canSeeApiReview': self.CanSeeApiReview,
+                # CLASSIFICATION
+                'IsAAAHOSTUR': self.IsAAAHOSTUR,
+                'IsMember': self.IsMember,
+                'IsCompany': self.IsCompany
                 }

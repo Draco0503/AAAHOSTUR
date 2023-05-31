@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from . import db
 
+
 @dataclass()
 class Company_Account(db.Model):
     __tablename__ = "Company_Account"
@@ -10,8 +11,8 @@ class Company_Account(db.Model):
     SEPA_Form = db.Column(db.Boolean, default=False)
     Active = db.Column(db.Boolean, default=False)
     
-    Id_Member = db.Column(db.Integer, db.ForeignKey("Company.ID_COMPANY"), nullable=False)
-    Id_User_Verify = db.Column(db.Integer, db.ForeignKey("User.ID_USER"), nullable=True)
+    Id_Company = db.Column(db.String(36), db.ForeignKey("Company.ID_COMPANY"), nullable=False)
+    Id_User_Verify = db.Column(db.String(36), db.ForeignKey("User.ID_USER"), nullable=True)
 
     def to_json(self):
         return {'id_member_account': self.ID_MEMBER_ACCOUNT,
@@ -19,6 +20,6 @@ class Company_Account(db.Model):
                 'account_number': self.Account_Number,
                 'sepa_form': self.SEPA_Form,
                 'active': self.Active,
-                'id_member': self.Id_Member,
+                'id_company': self.Id_Company,
                 'id_user_verify': self.Id_User_Verify
                 }

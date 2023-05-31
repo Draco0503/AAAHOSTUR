@@ -14,7 +14,7 @@ class Section(db.Model):
     Price = db.Column(db.String(128), nullable=True)
     Active = db.Column(db.Boolean, default=True)
 
-    Id_User_Creator = db.Column(db.Integer, db.ForeignKey("User.ID_USER"))
+    Id_User_Creator = db.Column(db.String(36), db.ForeignKey("User.ID_USER"))
 
     def to_json(self):
         return {
