@@ -317,9 +317,9 @@ def company_verify_update(id):
                             company.Verify = False
                     if key_in_request_form('active'):
                         if data["active"] == 'True':
-                            company.Verify = True
+                            company.Active = True
                         elif data["active"] == 'False':
-                            company.Verify = False
+                            company.Active = False
                     db.session.commit()
                     msg = {"company": company.to_json()}
                     status_code = 200
@@ -866,20 +866,22 @@ def member_verify_update(id):
         if request.method == "PUT":
             data = request.form
             # Check that the value given is present
-            if not key_in_request_form('verify'):
+            if not key_in_request_form('verify') and not key_in_request_form('active'):
                 return bad_request()
             else:
                 status_code = 400
                 msg = ERROR_400_DEFAULT_MSG
                 try:
-                    # comprobacion de si queremos ponerlo en true o false
-                    verify = True if data['verify'] == 'True' else False
-                    for mem in member:  # sabemos que solo puede haber un item en la lista "section"
-                        mem.Verify = verify
-                    msg = {"member": [mem.to_json() for mem in member]}
-
-                    db.session.commit()
-                    status_code = 200
+                    if key_in_request_form('verify'):
+                        if data["verify"] == 'True':
+                            member.Verify = True
+                        elif data["verify"] == 'False':
+                            member.Verify = False
+                    if key_in_request_form('active'):
+                        if data["active"] == 'True':
+                            member.Active = True
+                        elif data["active"] == 'False':
+                            member.Active = False
                 except Exception as ex:
                     print(ex)
                     db.session.rollback()
@@ -888,37 +890,6 @@ def member_verify_update(id):
                 return Response(json.dumps(msg), status=status_code)
 
 
-# UPDATE
-@app.route("/api_v0/member/<id>", methods=["PUT"])
-def member_active_update(id):
-    member = Member.Member.query.filter_by(ID_MEMBER=id)
-    # comprobación de que se almacen un dato
-    if member is None or member.count() == 0:
-        return not_found()
-    if member.count() > 1:
-        return internal_server_error()
-    else:
-        if request.method == "PUT":
-            data = request.form
-            if not key_in_request_form('active'):
-                return bad_request()
-            else:
-                status_code = 400
-                msg = ERROR_400_DEFAULT_MSG
-                try:
-                    # comprobacion de si queremos ponerlo en true o false
-                    active = False if data['active'] == 'False' else True
-                    for memb in member:  # sabemos que solo puede haber un item en la lista "section"
-                        memb.Active = active
-                    msg = {"member": [memb.to_json() for memb in member]}
-                    db.session.commit()
-                    status_code = 200
-                except Exception as ex:
-                    print(ex)
-                    db.session.rollback()
-                if status_code != 200:
-                    return internal_server_error("An error has occurred processing PUT query")
-                return Response(json.dumps(msg), status=status_code)
 
         # -------------------------------OFFER-------------------------------#
 
@@ -1023,21 +994,22 @@ def offer_verify_update(id):
         elif request.method == "PUT":
             data = request.form
             # comprobacion que se guarde el valor que queremos cambiar
-            if not key_in_request_form('verify'):
-
+            if not key_in_request_form('verify') and not key_in_request_form('active'):
                 return bad_request()
             else:
                 status_code = 400
                 msg = ERROR_400_DEFAULT_MSG
                 try:
-                    # comprobacion de si queremos ponerlo en true o false
-                    verify = True if data['verify'] == 'True' else False
-                    for off in offer:  # sabemos que solo puede haber un item en la lista "section"
-                        off.Verify = verify
-
-                    msg = {"offer": [off.to_json() for off in offer]}
-                    db.session.commit()
-                    status_code = 200
+                    if key_in_request_form('verify'):
+                        if data["verify"] == 'True':
+                            offer.Verify = True
+                        elif data["verify"] == 'False':
+                            offer.Verify = False
+                    if key_in_request_form('active'):
+                        if data["active"] == 'True':
+                            offer.Active = True
+                        elif data["active"] == 'False':
+                            offer.Active = False
                 except Exception as ex:
                     print(ex)
                     db.session.rollback()
@@ -1046,39 +1018,6 @@ def offer_verify_update(id):
                 return Response(json.dumps(msg), status=status_code)
 
 
-# UPDATE
-@app.route("/api_v0/offer/<id>", methods=["GET", "PUT"])
-def offer_active_update(id):
-    offer = Offer.Offer.query.filter_by(ID_OFFER=id).first()
-    # comprobación de que se almacen un dato
-    if offer is None:
-        return not_found()
-    else:
-        if request.method == "GET":
-            msg = {"offer": offer.to_json()}
-            return Response(json.dumps(msg), status=200)
-        elif request.method == "PUT":
-            data = request.form
-            # comprobacion que se guarde el valor que queremos cambiar
-            if not key_in_request_form('active'):
-                return bad_request()
-            else:
-                status_code = 400
-                msg = ERROR_400_DEFAULT_MSG
-                try:
-                    # comprobacion de si queremos ponerlo en true o false
-                    active = False if data['active'] == 'False' else True
-                    for off in offer:  # sabemos que solo puede haber un item en la lista "section"
-                        off.Active = active
-                    msg = {"offer": [off.to_json() for off in offer]}
-                    db.session.commit()
-                    status_code = 200
-                except Exception as ex:
-                    print(ex)
-                    db.session.rollback()
-                if status_code != 200:
-                    return internal_server_error("An error has occurred processing PUT query")
-                return Response(json.dumps(msg), status=status_code)
 
             # -------------------------------PROFESSIONAL_PROFILE-------------------------------#
 
@@ -1299,13 +1238,12 @@ def section_active_update(id):
                 status_code = 400
                 msg = {"default message"}
                 try:
-                    # comprobacion de si queremos ponerlo en true o false
-                    active = False if data['active'] == 'False' else True
-                    for sect in section:  # sabemos que solo puede haber un item en la lista "section"
-                        sect.Active = active
-                    msg = {"section": [sect.to_json() for sect in section]}
-                    db.session.commit()
-                    status_code = 200
+                    if key_in_request_form('active'):
+                        if data["active"] == 'True':
+                            section.Active = True
+                        elif data["active"] == 'False':
+                            section.Active = False
+
                 except Exception as ex:
                     db.session.rollback()
                 if status_code != 200:
