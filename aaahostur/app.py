@@ -9,6 +9,7 @@ from models import Language, Job_Category, Qualification, Role, User, Member, Me
     Job_Demand_Language, Job_Demand_Qualification, Job_Demand_Category, Review
 from config import config
 from security import security
+import utils
 
 # region CONSTANTS
 
@@ -1529,7 +1530,8 @@ def check_member_params(form) -> str:
     if 'member-surname' not in form or form['member-name'] is None or form['member-name'] == "":
         return "Apellidos no valido"
     # TODO Check for valid DNI, at least sth like 8 digits and 1 letter, it can be a NIE...
-    if 'member-dni' not in form or form['member-dni'] is None or form['member-dni'] == "":
+    # deberiamos poner las validaciones de los campos en utils...
+    if 'member-dni' not in form or form['member-dni'] is None or utils.validate_nif(form['member-dni']) == False:
         return "DNI no valido"
     if 'member-address' not in form or form['member-address'] is None or form['member-address'] == "":
         return "Direccion no valido"

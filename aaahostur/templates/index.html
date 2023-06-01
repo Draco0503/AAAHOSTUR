@@ -1,109 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASOCIACIÓN ESPAÑOLA DE ANTIGUOS ALUMNOS DE LA ESCUELA DE HOSTELERÍA Y TURISMO</title>
-    <link rel="stylesheet" href="../assets/css/aaahostur.css">
-    <link rel="shortcut icon" href="../assets/resources/icon.jpg" type="image/x-icon">
-    <link rel="stylesheet" href="../assets/css/font-awesome-4.7.0/css/font-awesome.min.css">
-</head>
-<body>
-    <button onclick="goToTop()" id="up-btn" title="Inicio">
-        <i class="fa fa-arrow-up" aria-hidden="true"></i>
-    </button>
-    <header id="up">
-        <div id="header-decorator" class="nav primary-nav">
-            <a href="index.html"><img id="logo" src="../assets/resources/logo.png" alt="aaahostur hosteleria turismo"></a>
-            <h2 class="main-title">Asociación Española de Antiguos Alumnos de<br> Escuelas de Hostelería y Turismo</h2>
-        </div>
-        <nav id="navbar" class="nav navbar">
-            <div class="left">
-                <a id="navbar-logo" class="navbar-item" href="index.html">
-                    <img class="logo" src="../assets/resources/logo.png" alt="aaahostur hosteleria turismo">
-                    <div class="yellow-title">AAAHOSTUR</div>
-                </a>
-            </div>
-            <div class="center">
-                <a href="#" class="navbar-item">Bolsa de Trabajo</a>
-                <a href="#" class="navbar-item">Actividades</a>
-                <a href="#" class="navbar-item">Cursos</a>
-                <a href="#" class="navbar-item">Revista</a>
-                <a href="#" class="navbar-item">Link a Escuelas</a>
-                <a href="#" class="navbar-item">Contacto y Sugerencias</a>
-            </div>
-            <div class="right">
-                <div class="user-box">
-                    <img class="navbar-item" src="" alt="">
-                    <div class="navbar-item">Iniciar sesión</div>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <main>
-        <div class="w80 container shadow">
-            <p class="black-text">Hola Buenas</p>
-            <p class="darker-blue-text">Hola Buenas</p>
-            <p class="black-text">Bienvenidos a la página web de la Asociación Española de Antiguos Alumnos de Escuelas de Hostelería y Turismo.</p>
-            <p class="black-text2">Desde ésta página podrás conocer todas las actividades que llevamos a cabo desde la Asociación así como los intereses que defiende.
-                Podrás unirte a nosotros y comenzar a formar parte de la gran familia que hemos conformado con los mayores profesionales del sector, 
-                contactarnos para gestionar tu puesto de trabajo, tus candidaturas profesionales o para rediseñar tu currículum para adaptarlo a las nuevas necesidades del mercado.</p>
+{% extends 't-base.html' %}
 
-                
-            <p class="darker-blue-text">Igualmente podrás disfrutar de una amplia variedad de eventos que desde la Asociación ponemos en marcha para nuestros asociados, 
-                con gratuidades y/o precios especiales. Si te dedicas a la hotelería… ¡este es tu sitio!, ¡esta es tu Asociación!</p>
-            <p class="darker-blue-text2">Los dos ultimos textos son en el azul oscuro del logo  y los dos primeros en negro, con los dos del medio con el mismo tamaño de letra y los otros dos de afuera con un tamaño de letra diferente que comparten</p>
+{% block mainContent %}
+<div class="container w80 shadow pad-2rem dis-flex pad-top-4rem">
+    <div class="w80 mar-bot-1rem">
+        <h1 class="black-title"> Bienvenidos a la página web de la Asociación Española de Antiguos Alumnos de Escuelas de Hostelería y Turismo</h1>
+        <p class="darker-blue-text"> Desde ésta página podrás conocer todas las actividades que llevamos a cabo desde la Asociación así como los intereses que defiende.
+            Podrás unirte a nosotros y comenzar a formar parte de la gran familia que hemos conformado con los mayores profesionales del sector,
+            contactarnos para gestionar tu puesto de trabajo, tus candidaturas profesionales o para rediseñar tu currículum para adaptarlo a las nuevas necesidades del mercado.</p>
+        <div>
+            <h1 class="black-title">Nueva Bolsa De Empleo</h1>
+            <div class="job">
+                <img src="../static/resources/bolsa_empleo.png" alt="job" width="250" height="250">
+            </div>
+            <p class="darker-blue-text">No dudes en inscribirte en nuestra nueva y mejorada bolsa de empleo para que te ayudemos a encontrar un trabajado adecuado</p>
         </div>
-    </main>
-    <footer class="nav">
-        <div class="nav center b2-top">
-            <div class="foo-col">
-                <h2 class="yellow-title">Sobre nosotros</h2>
-                <p>Asociación Española de Antiguos Alumnos de las Escuelas de Hostelería y Tursimo</p>
-                <ul class="social-links">
-                    <li class="icon">
-                        <a href="#">
-                            <i class="fa fa-facebook-square" aria-hidden="true"></i>
-                        </a>
-                    </li>
-                    <li class="icon">
-                        <a href="#">
-                            <i class="fa fa-instagram" aria-hidden="true"></i>
-                        </a>
-                    </li>
-                    <li class="icon">
-                        <a href="#">
-                            <i class="fa fa-twitter" aria-hidden="true"></i>
-                        </a>
-                    </li>
-                </ul>
+        <h1 class="black-title">Donde encontrarnos, no dudes en visitarnos</h1>
+        <p class="darker-blue-text">Una vez Inscrito tendrás que venir a la oficina de la asociación para realizar el pago de inscripción, una vez hecho el pago se aceptará tu solicitud. Al llegar al lugar, pregunta por la oficina de antiguos alumnos o dirigete más entrar a mano izquierda</p>
+        <div class="office">
+            <div class="w40">
+                <iframe src="https://maps.google.com/maps?width=100%25&amp;height=600&amp;hl=en&amp;q=Escuela%20Superior%20de%20Hosteler%C3%ADa%20y%20Turismo+(Location)&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
             </div>
-            <div class="foo-col">
-                <h2 class="yellow-title">Links de Interés</h2>
-                <ul class="links">
-                    <li><h4><a href="#">Contáctanos</a></h4></li>
-                    <li><h4><a href="#">Escuelas</a></h4></li>
-                    <li><h4><a href="#">Nuestros Servicios</a></h4></li>
-                </ul>
-            </div>
-            <div class="foo-col">
-                <h2 class="yellow-title">Contactos</h2>
+            <div class="w40">
+                <img id="office" src="{{ url_for('static', filename='resources/aaahostur_oficina.jpg') }}" alt="office">
+                <p class="text-pictureOffice">Imagen: "Asómate a nuestra mirilla"</p>
+                <p class="text-pictureOffice">Oficina de la Asociación en la Escuela Superior de Hostelería.</p>
             </div>
         </div>
-        <div class="nav darker-blue p1-tb b2-top">
-            <ul class="latest-foo">
-                <li>© 2023</li>
-                <li class="yellow-title not-show-on-responsive">&#8212;</li>
-                <li><a href="#">EMPRESA</a></li>
-                <li class="yellow-title not-show-on-responsive">&#8212;</li>
-                <li>Todos los derechos reservados</li>
-                <li class="yellow-title not-show-on-responsive">&#8212;</li>
-                <li><a href="#">Aviso legal</a></li>
-                <li class="yellow-title not-show-on-responsive">&#8212;</li>
-                <li><a href="#">Política de Privacidad</a></li>
-            </ul>
-        </div>
-    </footer>
-    <script src="../assets/js/site.js"></script>
-</body>
-</html>
+        <p class="darker-blue-text">Igualmente podrás disfrutar de una amplia variedad de eventos que desde la Asociación ponemos en marcha para nuestros asociados, con gratuidades y/o precios especiales.
+            Si te dedicas a la hotelería… ¡este es tu sitio!, ¡esta es tu Asociación!</p>
+        <div>{{ payload }}</div>
+    </div>
+    <aside class="w20 border-lf pad-1rem">
+        <h2 class="black-title mar-bot-2rem">Descubre</h2>
+        <ul  class="font-12pt">
+            {% if news_list is defined and not none %}
+                {% for new in news_list %}
+                    <li><a href="{{ new.url }}">{{ new.title }}</a></li>
+                {% endfor %}
+            {% else %}
+                <li>Nada nuevo...</li>
+            {% endif %}
+        </ul>
+    </aside>
+</div>
+{% endblock %}
