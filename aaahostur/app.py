@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime as dt, timedelta
-from user_agents import parse
+#from user_agents import parse
 import requests
 from flask import Flask, request, session, json, render_template, Response, redirect, url_for, make_response
 from models import db
