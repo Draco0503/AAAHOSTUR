@@ -5,8 +5,8 @@ from . import db
 class Offer(db.Model):
     __tablename__ = "Offer"
     ID_OFFER = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    Company_Name = db.Column(db.String(512), nullable=False)
-    Address = db.Column(db.String(512), nullable=False)
+    Workplace_Name = db.Column(db.String(512), nullable=False)
+    Workplace_Address = db.Column(db.String(512), nullable=False)
     Contact_Name = db.Column(db.String(512), nullable=False)
     Contact_Phone = db.Column(db.String(512), nullable=False)
     Contact_Email = db.Column(db.String(512), nullable=False)
@@ -21,8 +21,8 @@ class Offer(db.Model):
 
     def to_json(self):
         return {'id_offer': self.ID_OFFER,
-                'company_name': self.Company_Name,
-                'address': self.Address,
+                'workplace_name': self.Workplace_Name,
+                'workplace_address': self.Workplace_Address,
                 'contact_name': self.Contact_Name,
                 'contact_phone': self.Contact_Phone,
                 'contact_email': self.Contact_Email,

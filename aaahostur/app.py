@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime as dt, timedelta
-from user_agents import parse
+#from user_agents import parse
 import requests
 from flask import Flask, request, session, json, render_template, Response, redirect, url_for, make_response
 from models import db
@@ -156,7 +156,7 @@ def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
 # method for testing purposes
 @app.route('/prueba')
 def prueba():
-    return render_template('t-index.html', prueba='holka')
+    return render_template('login.html', prueba='holka')
 
 
 # endregion
