@@ -22,6 +22,7 @@ class Security:
         return bcrypt.checkpw(pwd_bytes, hsd_pwd)
 
     def generate_jwt(self, payload: dict):
+        # IN LINUX ADD .decode() TO THIS LINE
         return jwt.encode(payload, self._secret, algorithm=self._algorithm)
 
     def decode_jwt(self, token: str) -> dict:

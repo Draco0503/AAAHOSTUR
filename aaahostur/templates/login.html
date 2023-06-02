@@ -17,6 +17,8 @@
         {% if error %}
             <p><span>{{ error }}</span></p>
         {% endif %}
+        <p class="mar-bot-1rem">¿Quieres ser socio? <a class="link-on-white" href="{{ url_for('register_member') }}">Pulsa aquí</a></p>
+        <p>¿Tienes un local y quieres colaborar con nosotros? <a class="link-on-white" href="{{ url_for('register_company') }}">Pulsa aquí</a></p>
     </form>
 </div>
 {% endblock %}

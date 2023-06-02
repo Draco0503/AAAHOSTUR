@@ -40,9 +40,9 @@
                 <div class="user-box">
 <!--                    <img class="navbar-item" src="" alt="">-->
                     {% if payload is defined and not none %}
-                        <a href="/profile" class="navbar-item yellow-hover-text">{{ payload.get("user") }}</a>
+                        <a href="{{ url_for('profile') }}" class="navbar-item yellow-hover-text">{{ payload.get("user") }}</a>
                     {% else %}
-                        <a href="/login" class="navbar-item">Iniciar sesión</a>
+                        <a href="{{ url_for('profile') }}" class="navbar-item">Iniciar sesión</a>
                     {% endif %}
                 </div>
             </div>
@@ -100,9 +100,9 @@
                 <li class="yellow-title not-show-on-responsive">&#8212;</li>
                 <li>Todos los derechos reservados</li>
                 <li class="yellow-title not-show-on-responsive">&#8212;</li>
-                <li><a href="#">Aviso legal</a></li>
+                <li><a href="{{ url_for('legal') }}">Aviso legal</a></li>
                 <li class="yellow-title not-show-on-responsive">&#8212;</li>
-                <li><a href="#">Política de Privacidad</a></li>
+                <li><a href="{{ url_for('privacy') }}">Política de Privacidad</a></li>
             </ul>
         </div>
     </footer>
