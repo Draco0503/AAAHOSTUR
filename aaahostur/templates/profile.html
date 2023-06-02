@@ -1,4 +1,4 @@
-{% extends 't-base.html' %}
+{% extends 'base.html' %}
 
 {% block mainContent %}
 <div class="foreign_container w80 container shadow pad-2rem">
@@ -82,7 +82,7 @@
                 <h2 class="mar-bot-1rem">No se ha podido cargar la información de miembro</h2>
             {% endif %}
         <!-- check if context has the keyvalue 'company' -->
-        {% elif  'company' in context %}
+        {% elif 'company' in context %}
             <h2 class="mar-bot-1rem">Datos empresariales</h2>
             <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
             <!-- check if keyvalue 'company' is empty (no data to display)-->

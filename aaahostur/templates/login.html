@@ -4,7 +4,7 @@ TEXBOX_PASSWORD: PWD
 BUTTON_LOGIN
 BUTTON_REGISTER_COMPANY
 BUTTON_REGISTER_MEMBER -->
-{% extends 't-base-login.html' %}
+{% extends 'baselogin.html' %}
 
 {% block mainContent %}
 <div class="dis-grid container w20 pad-2rem shadow mar-bot-3rem">
@@ -23,6 +23,8 @@ BUTTON_REGISTER_MEMBER -->
         {% if error %}
             <p><span>{{ error }}</span></p>
         {% endif %}
+        <p class="mar-bot-1rem">¿Quieres ser socio? <a class="link-on-white" href="{{ url_for('register_member') }}">Pulsa aquí</a></p>
+        <p>¿Tienes un local y quieres colaborar con nosotros? <a class="link-on-white" href="{{ url_for('register_company') }}">Pulsa aquí</a></p>
     </form>
 </div>
 {% endblock %}

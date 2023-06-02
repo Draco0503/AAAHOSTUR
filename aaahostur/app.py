@@ -156,7 +156,7 @@ def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
 # method for testing purposes
 @app.route('/prueba')
 def prueba():
-    return render_template('t-index.html', prueba='holka')
+    return render_template('index.html', prueba='holka')
 
 
 # endregion
@@ -1574,7 +1574,7 @@ def login():
         # Check if the user is already logged
         if not not_auth_header():
             return redirect(url_for("index", _method="GET"))  # Redirect to index if True
-        return render_template('t-login.html')  # Load login if False
+        return render_template('login.html')  # Load login if False
     elif request.method == 'POST':
         # Check for the length of the form request
         if len(request.form) != 2:
@@ -1585,14 +1585,14 @@ def login():
             if username == "":
                 error = "El nombre de usuario no puede estar vacio"
                 if navigator_user_agent():  # Empty user
-                    return render_template('t-login.html', error=error)
+                    return render_template('login.html', error=error)
                 return bad_request(error)
             if key_in_request_form('user-passwd'):
                 passwd = request.form['user-passwd']
                 if passwd == "":
                     error = "La contraseña no puede estar vacia"
                     if navigator_user_agent():  # Empty password
-                        return render_template('t-login.html', error=error)
+                        return render_template('login.html', error=error)
                     return bad_request(error)
                 login_data = {
                     'user-login': request.form['user-login'],
@@ -1602,7 +1602,7 @@ def login():
                 if login_response.status_code != 200:
                     error = login_response.json()['message']
                     if navigator_user_agent():
-                        return render_template('t-login.html', error=error)
+                        return render_template('login.html', error=error)
                     return bad_request(error)
                     # Custom response to add the auth cookie
                 token_info = login_response.json()['auth']
@@ -1618,9 +1618,9 @@ def login():
 @app.route("/", methods=["GET"])
 def index():
     if not_auth_header():
-        return render_template("t-index.html", code=200)
+        return render_template("index.html", code=200)
     payload = sec.decode_jwt(request.cookies.get('auth'))
-    return render_template("t-index.html", payload=payload, code=200)
+    return render_template("index.html", payload=payload, code=200)
 
 
 def check_member_params(form) -> str:
@@ -1677,7 +1677,7 @@ def register_member():
             error = check_member_params(data)
             if error != "":
                 if navigator_user_agent():
-                    return render_template("t-sign-in-member.html", error=error)
+                    return render_template("signinmember.html", error=error)
                 return bad_request(error)
             user_member_data_form = {
                 "email": data["user-email"],
@@ -1716,9 +1716,9 @@ def register_member():
                 return redirect(url_for("login"))  # TODO redirect to success-register-page
             else:
                 error = user_created.json()["user_add"] or user_created.json()["message"]
-        return render_template("t-sign-in-member.html", error=error)
+        return render_template("signinmember.html", error=error)
     elif request.method == "GET":
-        return render_template("t-sign-in-member.html")
+        return render_template("signinmember.html")
     else:
         return bad_request("{} method not supported".format(request.method))
 
@@ -1767,8 +1767,8 @@ def profile():
                 'handicap': member_info.json()['member']['disability_grade']
             }
         # print(context)
-        return render_template("t-member-profile.html", context=context, payload=payload)
-    return render_template("t-member-profile.html")
+        return render_template("profile.html", context=context, payload=payload)
+    return render_template("profile.html")
 
 
 @app.route("/register/company", methods=["GET", "POST"])
@@ -1801,9 +1801,9 @@ def register_company():
                 return redirect(url_for("login"))  # TODO
             else:
                 error = user_created.json()["message"]
-        return render_template("t-sign-in-company.html", error=error)
+        return render_template("signincompany.html", error=error)
     elif request.method == "GET":
-        return render_template("t-sign-in-company.html")
+        return render_template("signincompany.html")
     else:
         return bad_request("{} method not supported".format(request.method))
 

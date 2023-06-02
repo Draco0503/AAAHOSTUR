@@ -1,5 +1,4 @@
-<!-- TODO revisar ids -->
-{% extends 't-base.html' %}
+{% extends 'base.html' %}
 
 {% block mainContent %}
 <div class="foreign_container w80 container shadow pad-2rem">
@@ -23,12 +22,12 @@
         <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-cif" name="company-cif">
         <label class="dis-block font-16pt mar-bot-1rem" for="company-address">Tipo de empresa según su ámbito geográfico<span>*</span></label>
         <div id="rbgroup-company-type" class="mar-bot-2rem">
-            <div class="font-14pt custom-cr-input" onclick="showTypeData(this, false)">
+            <div class="font-14pt custom-cr-input">
                 Nacional
                 <input class="rbgroup-company-type" type="radio" name="rb-group-company-type" id="rbgroup-company-type-rb1" value="National" checked>
                 <span class="radiomark"></span>
             </div>
-            <div class="font-14pt custom-cr-input" onclick="showTypeData(this, true)">
+            <div class="font-14pt custom-cr-input">
                 Internacional
                 <input class="rbgroup-company-type" type="radio" name="rb-group-company-type" id="rbgroup-company-type-rb2" value="Internacional">
                 <span class="radiomark"></span>
