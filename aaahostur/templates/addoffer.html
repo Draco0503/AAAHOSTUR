@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+<!--TODO revisar ids-->
 {% block mainContent %}
 <div class="foreign_container w80 container shadow pad-2rem">
     <h1 class="">Formulario de registro de oferta</h1>
@@ -20,7 +20,7 @@
         <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="offer-contact-name" name="offer-contact-name" required>
         <label class="dis-block font-16pt" for="offer-contact-phone">Teléfono de contacto <span>*</span></label>
         <input class="w60 pad-input font-14pt mar-bot-2rem" type="tel" id="offer-contact-phone" name="offer-contact-phone" minlength="9" required>
-        <label class="dis-block font-16pt" for="offer-contact-email">Correo de contacto <span>*</span></label>n
+        <label class="dis-block font-16pt" for="offer-contact-email">Correo de contacto <span>*</span></label>
         <input class="w60 pad-input font-14pt mar-bot-2rem" type="email" id="offer-contact-email" name="offer-contact-email" required>
         <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
         <div class="font-14pt custom-cr-input mar-bot-2rem" onclick="showPNAData(this)">
@@ -36,23 +36,121 @@
             <label class="dis-block font-16pt" for="offer-contact-email-2">Correo de contacto secundario <span>*</span></label>n
             <input class="w60 pad-input font-14pt mar-bot-2rem" type="email" id="offer-contact-email-2" name="offer-contact-email-2" required>
         </div>
-
+        <div class="azul" style=background-color:aliceblue;>
         <h3 class="mar-bot-1rem">Datos de demanda de empleo</h3>
         <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
         <label class="dis-block font-16pt" for="offer-contact-name-2">Categoría profesional <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Titulación específica  <span>*</span></label>
+        <!-- combobox de categorías profesionales (cargar categorías en el combo) -->
+        <select class="w60 pad-input font-14pt mar-bot-2rem" name="member-qualification" id="member-qualification" required>
+            <option value="">Categoría 1</option>
+            <option value="">Categoría 2</option>
+            <option value="">Categoría 3</option>
+            <option value="">Categoría 4</option>
+        </select>
+        <label class="dis-block font-16pt" for="offer-contact-name-2">Titulación específica  </label>
+        <!-- combobox de titulaciones (hardcodeados) o (cargar categorías en el combo) -->
+        <select class="w60 pad-input font-14pt mar-bot-2rem" name="member-qualification" id="member-qualification" required>
+            <option value="">Estudio 1</option>
+            <option value="">Estudio 2</option>
+            <option value="">Estudio 3</option>
+            <option value="">Estudio 4</option>
+        </select>
         <label class="dis-block font-16pt" for="offer-contact-name-2">Cantidad de puestos vacantes <span>*</span></label>
+        <!-- textbox (number) -->
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="number" id="offer-contact-name-2" name="offer-contact-name-2" required>
         <label class="dis-block font-16pt" for="offer-contact-name-2">Tipo de jornada <span>*</span></label>
+        <!-- radiogroup (cargar tipos)-->
+        <div id="rbgroup-working-day" class="mar-bot-2rem">
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-working-day', this)">
+                Media
+                <input class="rbgroup-working-day" type="radio" name="rb-group-working-day" id="rbgroup-working-day-rb1" value="H" checked>
+                <span class="radiomark"></span>
+            </label>                
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-working-day', this)">
+                Completa
+                <input class="rbgroup-working-day" type="radio" name="rb-group-working-day" id="rbgroup-working-day-rb2" value="M">
+                <span class="radiomark"></span>
+            </label>
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-working-day', this)">
+                Fines de semana
+                <input class="rbgroup-working-day" type="radio" name="rb-group-working-day" id="rbgroup-working-day-rb3" value="O">
+                <span class="radiomark"></span>
+            </label>
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-working-day', this)">
+                Por horas
+                <input class="rbgroup-working-day" type="radio" name="rb-group-working-day" id="rbgroup-working-day-rb3" value="O">
+                <span class="radiomark"></span>
+            </label>
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-working-day', this)">
+                Extras
+                <input class="rbgroup-working-day" type="radio" name="rb-group-working-day" id="rbgroup-working-day-rb3" value="O">
+                <span class="radiomark"></span>
+            </label>
+        </div>
         <label class="dis-block font-16pt" for="offer-contact-name-2">Turno <span>*</span></label>
+        <!-- radiogroup (cargar tipos)-->
+        <div id="rbgroup-shift" class="mar-bot-2rem">
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-gender', this)">
+                Seguido
+                <input class="rbgroup-gender" type="radio" name="rb-group-gender" id="rbgroup-gender-rb1" value="H" checked>
+                <span class="radiomark"></span>
+            </label>                
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-gender', this)">
+                Partido
+                <input class="rbgroup-gender" type="radio" name="rb-group-gender" id="rbgroup-gender-rb2" value="M">
+                <span class="radiomark"></span>
+            </label>
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-gender', this)">
+                Rotativo
+                <input class="rbgroup-gender" type="radio" name="rb-group-gender" id="rbgroup-gender-rb3" value="O">
+                <span class="radiomark"></span>
+            </label>
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-gender', this)">
+                Mixto
+                <input class="rbgroup-gender" type="radio" name="rb-group-gender" id="rbgroup-gender-rb3" value="O">
+                <span class="radiomark"></span>
+            </label>
+        </div>
         <label class="dis-block font-16pt" for="offer-contact-name-2">Horario <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Salario mensual <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Tipo de contrato <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Vacaciones <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Experiencia <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Idiomas <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Otros <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Nombre de contacto secundario <span>*</span></label>
-        <label class="dis-block font-16pt mar-bot-1rem" for="rbgroup-car">Vehículo propio</label><
+        <!-- radiogroup (cargar tipos)-->
+        <div id="rbgroup-schedule" class="mar-bot-2rem">
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-schedule', this)">
+                Mañana
+                <input class="rbgroup-schedule" type="radio" name="rb-group-schedule" id="rbgroup-schedule-rb1" value="M" checked>
+                <span class="radiomark"></span>
+            </label>                
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-schedule', this)">
+                Tarde
+                <input class="rbgroup-schedule" type="radio" name="rb-group-schedule" id="rbgroup-schedule-rb2" value="A">
+                <span class="radiomark"></span>
+            </label>
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-schedule', this)">
+                Mixto
+                <input class="rbgroup-schedule" type="radio" name="rb-group-schedule" id="rbgroup-schedule-rb3" value="MX">
+                <span class="radiomark"></span>
+            </label>
+        </div>
+        <label class="dis-block font-16pt" for="offer-contact-name-2">Salario mensual </label>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="offer-contact-name-2" name="offer-contact-name-2" required>
+        <label class="dis-block font-16pt" for="offer-contact-name-2">Tipo de contrato </label>
+        <select class="w60 pad-input font-14pt mar-bot-2rem" name="member-qualification" id="member-qualification" required>
+            <option value="">Tipo 1</option>
+            <option value="">Tipo 2</option>
+            <option value="">Tipo 3</option>
+            <option value="">Tipo 4</option>
+        </select>
+        <label class="dis-block font-16pt" for="offer-contact-name-2">Vacaciones </label>
+        <!-- textbox? (number?/text?) -->
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="offer-contact-name-2" name="offer-contact-name-2" required>
+        <label class="dis-block font-16pt" for="offer-contact-name-2">Experiencia previa</label>
+        <!-- textarea  o radiogroup(si/no) -->
+        <textarea class="w60 pad-input font-14pt mar-bot-2rem" id="company-desc" name="company-desc" maxlength="256" rows=3></textarea>
+        <label class="dis-block font-16pt" for="offer-contact-name-2">Idiomas </label>
+        <!-- combobox de idiomas (cargar idiomas en el combo) -->
+        <label class="dis-block font-16pt" for="offer-contact-name-2">Otros </label>
+        <!-- textarea -->
+        <textarea class="w60 pad-input font-14pt mar-bot-2rem" id="company-desc" name="company-desc" maxlength="256" rows=3></textarea>
+        <label class="dis-block font-16pt mar-bot-1rem" for="rbgroup-car">Se requiere vehículo propio</label>
         <div id="rbgroup-car" class="mar-bot-2rem">
             <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-car', this)">
                 No
@@ -65,7 +163,7 @@
                 <span class="radiomark"></span>
             </label>
         </div>
-        <label class="dis-block font-16pt mar-bot-1rem" for="rbgroup-mov">Movilidad geográfica</label>
+        <label class="dis-block font-16pt mar-bot-1rem" for="rbgroup-mov">Se requiere movilidad geográfica</label>
         <div id="rbgroup-mov" class="mar-bot-2rem">
             <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-mov', this)">
                 No
@@ -78,7 +176,7 @@
                 <span class="radiomark"></span>
             </label>
         </div>
-
+        </div>
 
         <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
         <p class="">Los campos con <span class="font-14pt">*</span> son obligatorios</p>
