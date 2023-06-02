@@ -1457,6 +1457,172 @@ def api_login():
                 return bad_request(error)
 
 
+# REGISTER ROUTES
+@app.route("/api_v0/register/member", methods=["POST"])
+def api_register_member():
+    try:
+        data = request.form
+        if data is None or len(data) < 15:
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data len()]')
+        # USER VALIDATIONS
+        if not key_in_request_form('passwd'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <passwd>')
+        if not key_in_request_form('email'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <email>')
+        if not key_in_request_form('role'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <role>]')
+
+        user_id = uuid.uuid4()
+        user = User.User(ID_USER=user_id,
+                         Passwd=sec.hashed_password(data['passwd']),
+                         Email=data['email'],
+                         Id_Role=int(data['role']))
+        # MEMBER VALIDATIONS
+        if not key_in_request_form('name'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <name>')
+        if not key_in_request_form('surname'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <surname>')
+        if not key_in_request_form('dni'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <dni>')
+        if not key_in_request_form('address'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <address>')
+        if not key_in_request_form('cp'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <cp>')
+        if not key_in_request_form('city'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <city>')
+        if not key_in_request_form('province'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <province>')
+        if not key_in_request_form('gender'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <gender>')
+        if not key_in_request_form('mobile'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <mobile>')
+        if not key_in_request_form('birth_date'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <birth_date>')
+        if not key_in_request_form('join_date'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <join_date>')
+        if not key_in_request_form('cancellation_date'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <cancellation_date>')
+        pna_address = None
+        pna_cp = None
+        pna_city = None
+        pna_province = None
+        if key_in_request_form('pna_data'):
+            if not key_in_request_form('pna_address'):
+                return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_address")
+            if not key_in_request_form('pna_cp'):
+                return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_cp")
+            if not key_in_request_form('pna_city'):
+                return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_city")
+            if not key_in_request_form('pna_province'):
+                return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_province")
+            pna_address = data['pna_address']
+            pna_cp = data['pna_cp']
+            pna_city = data['pna_city']
+            pna_province = data['pna_province']
+        land_line = None if not key_in_request_form('land_line') else data["land_line"]
+        vehicle = False if not key_in_request_form('vehicle') or data["vehicle"] else bool(data["vehicle"])
+        geographical_mobility = False if not key_in_request_form('geographical_mobility') or data[
+            "geographical_mobility"] \
+            else bool(data["geographical_mobility"])
+        disability_grade = 0 if not key_in_request_form('disability_grade') or data["disability_grade"] \
+            else int(data["disability_grade"])
+        profile_pic = None if not key_in_request_form('profile_picture') else data["profile_picture"]
+        # BEGINNING OF THE INSERTS
+        db.session.add(user)
+        # TODO MAYBE WE SHOULD DO A SELECT TO VERIFY THAT THE USER HAS BEEN CREATED
+        member = Member.Member(ID_MEMBER=user.ID_USER,
+                               Name=data['name'],
+                               Surname=data['surname'],
+                               DNI=data['dni'],
+                               Address=data['address'],
+                               CP=data['cp'],
+                               City=data['city'],
+                               Province=data['province'],
+                               PNA_Address=pna_address,
+                               PNA_CP=pna_cp,
+                               PNA_City=pna_city,
+                               PNA_Province=pna_province,
+                               Gender=data['gender'],
+                               Land_Line=land_line,
+                               Mobile=data['mobile'],
+                               Profile_Picture=profile_pic,
+                               Birth_Date=data['birth_date'],
+                               Vehicle=vehicle,
+                               Geographical_Mobility=geographical_mobility,
+                               Disability_Grade=disability_grade,
+                               Join_Date=data['join_date'],
+                               Cancellation_Date=data['cancellation_date'])
+        db.session.add(member)
+        db.session.commit()
+        msg = {"register_member": "SUCCESS"}
+        return Response(json.dumps(msg), status=200)
+    except Exception as ex:
+        db.session.rollback()
+        return internal_server_error(ERROR_500_DEFAULT_MSG)
+
+
+@app.route("/api_v0/register/company", methods=["POST"])
+def api_register_company():
+    try:
+        data = request.form
+        if data is None or len(data) < 9:
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data len()]')
+        # USER VALIDATIONS
+        if not key_in_request_form('passwd'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <passwd>')
+        if not key_in_request_form('email'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <email>')
+        if not key_in_request_form('role'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <role>]')
+
+        user_id = uuid.uuid4()
+        user = User.User(ID_USER=user_id,
+                         Passwd=sec.hashed_password(data['passwd']),
+                         Email=data['email'],
+                         Id_Role=int(data['role']))
+        # COMPANY VALIDATIONS
+        if not key_in_request_form('company_name'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <company_name>]')
+        if not key_in_request_form('type'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <type>')
+        if not key_in_request_form('cif'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <cif>]')
+        if not key_in_request_form('contact_name'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <contact_name>]')
+        if not key_in_request_form('contact_phone'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <contact_phone>]')
+        if not key_in_request_form('contact_email'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <contact_email>]')
+
+        address = "" if not key_in_request_form('address') else data['address']
+        cp = "" if not key_in_request_form('cp') else data['cp']
+        city = "" if not key_in_request_form('city') else data['city']
+        province = "" if not key_in_request_form('province') else data['province']
+        description = "" if not key_in_request_form('description') else data['description']
+        # BEGINNING OF INSERTS
+        db.session.add(user)
+        # TODO MAYBE WE SHOULD DO A SELECT TO VERIFY THAT THE USER HAS BEEN CREATED
+        company = Company.Company(ID_COMPANY=user.ID_USER,
+                                  Name=data['company_name'],
+                                  Type=data['type'],
+                                  CIF=data['cif'],
+                                  Address=address,
+                                  CP=cp,
+                                  City=city,
+                                  Province=province,
+                                  Contact_Name=data['contact_name'],
+                                  Contact_Phone=data['contact_phone'],
+                                  Contact_Email=data['contact_email'],
+                                  Description=description)
+        db.session.add(company)
+        db.session.commit()
+        msg = {'register_company': 'SUCCESS'}
+        return Response(json.dumps(msg), status=200)
+    except Exception as ex:
+        db.session.rollback()
+        return internal_server_error(ERROR_500_DEFAULT_MSG)
+
+
 # endregion
 # ==================================================================================================================== #
 # =======================================================   PAGES   ================================================== #
@@ -1495,9 +1661,10 @@ def login():
                 }
                 login_response = requests.post("http://localhost:5000/api_v0/login", data=login_data)
                 if login_response.status_code != 200:
-                    error = login_response.json()['msg']
+                    error = login_response.json()['message']
                     if navigator_user_agent():
                         return render_template('t-login.html', error=error)
+                    return bad_request(error)
                     # Custom response to add the auth cookie
                 token_info = login_response.json()['auth']
                 success_resp = make_response(redirect(url_for("index", _method="GET")))
@@ -1518,6 +1685,7 @@ def index():
 
 
 def check_member_params(form) -> str:
+    """Validations of the member form"""
     # USER INFO
     if 'user-email' not in form or form['user-email'] is None or form['user-email'] == "":
         return "Email no valido"
@@ -1565,18 +1733,16 @@ def register_member():
         error = "Las contraseñas no coinciden"
         data = request.form
         if data["user-pwd"] == data["user-pwd-2"]:
-            print(data)
+            # print(data)
             error = check_member_params(data)
             if error != "":
                 if navigator_user_agent():
                     return render_template("t-sign-in-member.html", error=error)
                 return bad_request(error)
-            user_data_form = {
+            user_member_data_form = {
                 "email": data["user-email"],
                 "passwd": data["user-pwd"],
-                "role": 104
-            }
-            member_data_form = {
+                "role": 104,
                 "name": data["member-name"],
                 "surname": data["member-surname"],
                 "dni": data["member-dni"],
@@ -1603,25 +1769,13 @@ def register_member():
                 "disability_grade": 0 if not key_in_request_form("member-handicap") or data[
                     "member-handicap"] == "" else int(data["member-handicap"])
             }
-            user_created = requests.post('http://localhost:5000/api_v0/user', data=user_data_form,
+            user_created = requests.post('http://localhost:5000/api_v0/register/member', data=user_member_data_form,
                                          cookies=request.cookies)
             # Check if the user has been created
             if user_created.status_code == 200:
-                user_id = user_created.json()["user_add"].get("id_user")
-                member_data_form["id"] = user_id
-                member_created = requests.post('http://localhost:5000/api_v0/member', data=member_data_form,
-                                               cookies=request.cookies)
-                if member_created.status_code == 200:
-                    return redirect(url_for("login"))  # TODO
-                else:
-                    user_delete = requests.delete('http://localhost:5000/api_v0/user/{}'.format(user_id))
-                    error = member_created.json()["member_add"] or member_created.json()["message"]
-                    if user_delete.status_code != 200:
-                        error = user_delete.json()['user_del']
+                return redirect(url_for("login"))  # TODO redirect to success-register-page
             else:
                 error = user_created.json()["user_add"] or user_created.json()["message"]
-        if not_auth_header():
-            return bad_request(error)
         return render_template("t-sign-in-member.html", error=error)
     elif request.method == "GET":
         return render_template("t-sign-in-member.html")
@@ -1672,7 +1826,7 @@ def profile():
                                member_info.json()['member']['geographical_mobility'] == 'True' else 'NO',
                 'handicap': member_info.json()['member']['disability_grade']
             }
-        print(context)
+        # print(context)
         return render_template("t-member-profile.html", context=context, payload=payload)
     return render_template("t-member-profile.html")
 
@@ -1683,12 +1837,10 @@ def register_company():
         error = "Las contraseñas no coinciden"
         data = request.form
         if data["user-pwd"] == data["user-pwd-2"]:
-            user_data_form = {
+            user_company_data_form = {
                 "email": request.form["user-email"],
                 "passwd": request.form["user-pwd"],
-                "role": 105
-            }
-            company_data_form = {
+                "role": 105,
                 "company_name": data["company-name"],
                 "type": data["rb-group-company-type"],
                 "cif": data["company-cif"],
@@ -1701,26 +1853,14 @@ def register_company():
                 "contact_email": data["company-contact1-tlf"],
                 "description": data["company-desc"]
             }
-            print(data)
-            user_created = requests.post('http://localhost:5000/api_v0/user', data=user_data_form,
+            # Check if the user has been created
+            user_created = requests.post('http://localhost:5000/api_v0/register/company', data=user_company_data_form,
                                          cookies=request.cookies)
             # Check if the user has been created
             if user_created.status_code == 200:
-                user_id = user_created.json()["user_add"].get("id_user")
-                company_data_form["id"] = user_id
-                company_created = requests.post('http://localhost:5000/api_v0/company', data=company_data_form,
-                                                cookies=request.cookies)
-                if company_created.status_code == 200:
-                    return redirect(url_for("login"))  # TODO
-                else:
-                    user_delete = requests.delete('http://localhost:5000/api_v0/user/{}'.format(user_id))
-                    error = company_created.json()["company_add"] or company_created.json()["message"]
-                    if user_delete.status_code != 200:
-                        error = user_delete.json()['user_del']
+                return redirect(url_for("login"))  # TODO
             else:
-                error = user_created.json()["user_add"] or user_created.json()["message"]
-        if not_auth_header():
-            return bad_request(error)
+                error = user_created.json()["message"]
         return render_template("t-sign-in-company.html", error=error)
     elif request.method == "GET":
         return render_template("t-sign-in-company.html")

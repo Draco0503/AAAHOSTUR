@@ -636,6 +636,9 @@ footer .center {
     margin-bottom: 1.5rem;
 }
 
+.link-on-white {
+    color: #126de3;
+}
 .foo-col > p {
     padding-right: 5vw;
     margin-bottom: 1rem;
