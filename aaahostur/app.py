@@ -1016,37 +1016,37 @@ def offer_add():
     return Response(json.dumps(msg), status=status_code)
 
 #registerOffer
-@app.route("/register/offer", methods=["GET", "POST"])
-def register_offer():
-        if request.method == "POST":   
-            data = request.form
-            if error != "":
-                if navigator_user_agent():
-                    return render_template("addoffer.html", error=error)
-                return bad_request(error)
-            offer_data_form = {
-                "workplace_name": data["offer-workplace-name"],
-                "workplace_address": data["offer-workplace-address"],
-                "contact_name": data["offer-contact-name"],
-                "contact_phone": data["offer-contact-phone"],
-                "contact_email": data["member-surname"],
-                "extra-data": None if not key_in_request_form('pna_cb') or data['pna_cb'] == "" else data["pna_cb"],
-                "contact_name_2": data["offer-contact-name-2"],
-                "contact_phone_2": data["offer-contact-phone-2"],
-                "contact_email_2": data["offer-contact-email-2"],
-            }
-            offer_created = requests.post('http://localhost:5000/api_v0/register/offer', data=offer_data_form,
-                                         cookies=request.cookies)
-            # Check if the user has been created
-            if offer_created.status_code == 200:
-                return redirect(url_for("login"))  # TODO redirect to success-register-page
-            else:
-                error = offer_created.json()["offer_add"] or offer_created.json()["message"]
-                return render_template("addoffer.html", error=error)
-        elif request.method == "GET":
-                return render_template("addoffer.html")
-        else:
-                return bad_request("{} method not supported".format(request.method))
+# @app.route("/register/offer", methods=["GET", "POST"])
+# def register_offer():
+#         if request.method == "POST":   
+#             data = request.form
+#             if error != "":
+#                 if navigator_user_agent():
+#                     return render_template("addoffer.html", error=error)
+#                 return bad_request(error)
+#             offer_data_form = {
+#                 "workplace_name": data["offer-workplace-name"],
+#                 "workplace_address": data["offer-workplace-address"],
+#                 "contact_name": data["offer-contact-name"],
+#                 "contact_phone": data["offer-contact-phone"],
+#                 "contact_email": data["member-surname"],
+#                 "extra-data": None if not key_in_request_form('pna_cb') or data['pna_cb'] == "" else data["pna_cb"],
+#                 "contact_name_2": data["offer-contact-name-2"],
+#                 "contact_phone_2": data["offer-contact-phone-2"],
+#                 "contact_email_2": data["offer-contact-email-2"],
+#             }
+#             offer_created = requests.post('http://localhost:5000/api_v0/register/offer', data=offer_data_form,
+#                                          cookies=request.cookies)
+#             # Check if the user has been created
+#             if offer_created.status_code == 200:
+#                 return redirect(url_for("login"))  # TODO redirect to success-register-page
+#             else:
+#                 error = offer_created.json()["offer_add"] or offer_created.json()["message"]
+#                 return render_template("addoffer.html", error=error)
+#         elif request.method == "GET":
+#                 return render_template("addoffer.html")
+#         else:
+#                 return bad_request("{} method not supported".format(request.method))
 
 
 # UPDATE
