@@ -11,7 +11,6 @@ CREATE TABLE Job_Demand(
     Experience VARCHAR(512),
     Vehicle BOOLEAN DEFAULT FALSE,
     Geographical_Mobility BOOLEAN DEFAULT FALSE,
-    Disability_Grade INT DEFAULT 0,
     Others VARCHAR(512),
     Id_Offer INT,
     PRIMARY KEY (ID_JOB_DEMAND),
