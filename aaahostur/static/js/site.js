@@ -42,6 +42,11 @@ window.onscroll = function () { hideOnScroll() };
                 }
             }
         }
+
+        function showContactSecundaryData(e){
+
+        }
+        
         function showHandicapData(e) {
             doc = document.getElementById("handicap_data");
             inputs = document.querySelectorAll("#handicap_data input")
