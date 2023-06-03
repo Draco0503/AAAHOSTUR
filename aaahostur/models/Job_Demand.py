@@ -16,7 +16,6 @@ class Job_Demand(db.Model):
     Experience = db.Column(db.String(512), nullable=True)
     Vehicle = db.Column(db.Boolean, default=False)
     Geographical_Mobility = db.Column(db.Boolean, default=False)
-    Disability_Grade = db.Column(db.Integer, default=0)
     Others = db.Column(db.String(512), nullable=True)
     
     Id_Offer = db.Column(db.Integer, db.ForeignKey('Offer.ID_OFFER'))
@@ -33,7 +32,6 @@ class Job_Demand(db.Model):
                 'experience': self.Experience,
                 'vehicle': self.Vehicle,
                 'geographical_mobility': self.Geographical_Mobility,
-                'disability_grade': self.Disability_Grade,
                 'others': self.Others,
                 'id_offer': self.Id_Offer
                 }
