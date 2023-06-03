@@ -20,12 +20,12 @@
         <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="offer-contact-name" name="offer-contact-name" required>
         <label class="dis-block font-16pt" for="offer-contact-phone">Teléfono de contacto <span>*</span></label>
         <input class="w60 pad-input font-14pt mar-bot-2rem" type="tel" id="offer-contact-phone" name="offer-contact-phone" minlength="9" required>
-        <label class="dis-block font-16pt" for="offer-contact-email">Correo de contacto <span>*</span></label>n
+        <label class="dis-block font-16pt" for="offer-contact-email">Correo de contacto <span>*</span></label>
         <input class="w60 pad-input font-14pt mar-bot-2rem" type="email" id="offer-contact-email" name="offer-contact-email" required>
         <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
         <div class="font-14pt custom-cr-input mar-bot-2rem" onclick="showPNAData(this)">
             ¿Desea añadir otro contacto adicional?
-            <input type="checkbox" id="pna_cb">
+            <input type="checkbox" id="extra_cb">
             <span class="checkmark"></span>
         </div>
         <div id="extra-data" class="dis-grid dis-none">
@@ -37,22 +37,124 @@
             <input class="w60 pad-input font-14pt mar-bot-2rem" type="email" id="offer-contact-email-2" name="offer-contact-email-2" required>
         </div>
 
-        <h3 class="mar-bot-1rem">Datos de demanda de empleo</h3>
+        <h2 class="mar-bot-1rem">Datos de demanda de empleo</h2>
         <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Categoría profesional <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Titulación específica  <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Cantidad de puestos vacantes <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Tipo de jornada <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Turno <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Horario <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Salario mensual <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Tipo de contrato <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Vacaciones <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Experiencia <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Idiomas <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Otros <span>*</span></label>
-        <label class="dis-block font-16pt" for="offer-contact-name-2">Nombre de contacto secundario <span>*</span></label>
-        <label class="dis-block font-16pt mar-bot-1rem" for="rbgroup-car">Vehículo propio</label><
+        <!-- TODO job demand -->
+        <div class="azul" style=background-color:aliceblue;padding:2%;border-radius:2px;>
+        <label class="dis-block font-16pt" for="job-category">Categoría profesional <span>*</span></label>
+        <!-- SELECT (cargar JOB_CATEGORIES) -->
+        <select class="w60 pad-input font-14pt mar-bot-2rem" name="job-category" id="job-category" required>
+            <option value="">Categoría 1</option>
+            <option value="">Categoría 2</option>
+            <option value="">Categoría 3</option>
+            <option value="">Categoría 4</option>
+        </select>
+        <label class="dis-block font-16pt" for="qualification">Titulación de preferencia  </label>
+        <!-- SELECT (cargar QUALIFICATIONS) -->
+        <select class="w60 pad-input font-14pt mar-bot-2rem" name="qualification" id="qualification" required>
+            <option value="">Estudio 1</option>
+            <option value="">Estudio 2</option>
+            <option value="">Estudio 3</option>
+            <option value="">Estudio 4</option>
+        </select>
+        <label class="dis-block font-16pt" for="job-demand-vacancies">Cantidad de puestos vacantes <span>*</span></label>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="number" id="job-demand-vacancies" name="job-demand-vacancies" required>
+        <label class="dis-block font-16pt" for="job-demand-working-day">Tipo de jornada <span>*</span></label>
+        <!-- RADIOGROUP (cargar WORKING_DAY) -->
+        <div id="rbgroup-job-demand-working-day" class="mar-bot-2rem">
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
+                Media
+                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb1" value="H" checked>
+                <span class="radiomark"></span>
+            </label>                
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
+                Completa
+                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb2" value="M">
+                <span class="radiomark"></span>
+            </label>
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
+                Fines de semana
+                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb3" value="O">
+                <span class="radiomark"></span>
+            </label>
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
+                Por horas
+                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb4" value="O">
+                <span class="radiomark"></span>
+            </label>
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
+                Extras
+                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb5" value="O">
+                <span class="radiomark"></span>
+            </label>
+        </div>
+        <label class="dis-block font-16pt" for="job-demand-shift">Turno <span>*</span></label>
+        <!-- RADIOGROUP (cargar SHIFT) -->
+        <div id="rbgroup-job-demand-shift" class="mar-bot-2rem">
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-shift', this)">
+                Seguido
+                <input class="rbgroup-job-demand-shift" type="radio" name="rb-group-job-demand-shift" id="rbgroup-job-demand-shift-rb1" value="S" checked>
+                <span class="radiomark"></span>
+            </label>                
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-shift', this)">
+                Partido
+                <input class="rbgroup-job-demand-shift" type="radio" name="rb-group-job-demand-shift" id="rbgroup-job-demand-shift-rb2" value="P">
+                <span class="radiomark"></span>
+            </label>
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-shift', this)">
+                Rotativo
+                <input class="rbgroup-job-demand-shift" type="radio" name="rb-group-job-demand-shift" id="rbgroup-job-demand-shift-rb3" value="R">
+                <span class="radiomark"></span>
+            </label>
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-shift', this)">
+                Mixto
+                <input class="rbgroup-job-demand-shift" type="radio" name="rb-group-job-demand-shift" id="rbgroup-job-demand-shift-rb4" value="MX">
+                <span class="radiomark"></span>
+            </label>
+        </div>
+        <label class="dis-block font-16pt" for="job-demand-schedule">Horario <span>*</span></label>
+        <!-- RADIOGROUP (cargar SCHEDULE) -->
+        <div id="rbgroup-job-demand-schedule" class="mar-bot-2rem">
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-schedule', this)">
+                Mañana
+                <input class="rbgroup-job-demand-schedule" type="radio" name="rb-group-job-demand-schedule" id="rbgroup-job-demand-schedule-rb1" value="M" checked>
+                <span class="radiomark"></span>
+            </label>                
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-schedule', this)">
+                Tarde
+                <input class="rbgroup-job-demand-schedule" type="radio" name="rb-group-job-demand-schedule" id="rbgroup-job-demand-schedule-rb2" value="A">
+                <span class="radiomark"></span>
+            </label>
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-schedule', this)">
+                Mixto
+                <input class="rbgroup-job-demand-schedule" type="radio" name="rb-group-job-demand-schedule" id="rbgroup-job-demand-schedule-rb3" value="MX">
+                <span class="radiomark"></span>
+            </label>
+        </div>
+        <label class="dis-block font-16pt" for="job-demand-monthly-salary">Salario mensual </label>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="job-demand-monthly-salary" name="job-demand-monthly-salary" required>
+        <label class="dis-block font-16pt" for="job-demand-contract-type">Tipo de contrato </label>
+        <select class="w60 pad-input font-14pt mar-bot-2rem" name="job-demand-contract-type" id="job-demand-contract-type" required>
+            <option value="">Tipo 1</option>
+            <option value="">Tipo 2</option>
+            <option value="">Tipo 3</option>
+            <option value="">Tipo 4</option>
+        </select>
+        <label class="dis-block font-16pt" for="job-demand-holidays">Vacaciones </label>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="job-demand-holidays" name="job-demand-holidays" required>
+        <label class="dis-block font-16pt" for="job-demand-experience">Experiencia</label>
+        <textarea class="w60 pad-input font-14pt mar-bot-2rem" id="job-demand-experience" name="job-demand-experience" maxlength="256" rows=3></textarea>
+        <label class="dis-block font-16pt" for="language">Idiomas </label>
+        <!-- SELECT (cargar LANGUAGE) -->
+        <select class="w60 pad-input font-14pt mar-bot-2rem" name="language" id="language" required>
+            <option value="">Inglés</option>
+            <option value="">Francés</option>
+            <option value="">Español</option>
+            <option value="">Ruso</option>
+        </select>
+        <label class="dis-block font-16pt" for="job-demand-others">Otros </label>
+        <textarea class="w60 pad-input font-14pt mar-bot-2rem" id="job-demand-others" name="job-demand-others" maxlength="256" rows=3></textarea>
+        <label class="dis-block font-16pt mar-bot-1rem" for="rbgroup-car">Se requiere de vehículo propio</label>
         <div id="rbgroup-car" class="mar-bot-2rem">
             <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-car', this)">
                 No
@@ -65,7 +167,7 @@
                 <span class="radiomark"></span>
             </label>
         </div>
-        <label class="dis-block font-16pt mar-bot-1rem" for="rbgroup-mov">Movilidad geográfica</label>
+        <label class="dis-block font-16pt mar-bot-1rem" for="rbgroup-mov">Se requiere de movilidad geográfica</label>
         <div id="rbgroup-mov" class="mar-bot-2rem">
             <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-mov', this)">
                 No
@@ -78,7 +180,7 @@
                 <span class="radiomark"></span>
             </label>
         </div>
-
+        </div>
 
         <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
         <p class="">Los campos con <span class="font-14pt">*</span> son obligatorios</p>

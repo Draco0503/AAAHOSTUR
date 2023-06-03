@@ -156,7 +156,7 @@ def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
 # method for testing purposes
 @app.route('/prueba')
 def prueba():
-    return render_template('index.html', prueba='holka')
+    return render_template('login.html', prueba='holka')
 
 
 # endregion
@@ -563,7 +563,6 @@ def job_demand_add():
     experience = "" if not key_in_request_form('experience') else data['experience']
     vehicle = False if not key_in_request_form('vehicle') else data['vehicle']
     geographical_mobility = False if not key_in_request_form('geographical_mobility') else data['geographical_mobility']
-    disability_grade = 0 if not key_in_request_form('disability_grade') else data['disability_grade']
     others = "" if not key_in_request_form('others') else data['others']
 
     job_demand = Job_Demand.Job_Demand(Vacancies=data['vacancies'],
@@ -576,7 +575,6 @@ def job_demand_add():
                                        Experience=experience,
                                        Vehicle=vehicle,
                                        Geographical_Mobility=geographical_mobility,
-                                       Disability_Grade=disability_grade,
                                        Others=others)
 
     try:
@@ -890,10 +888,7 @@ def member_verify_update(id):
                 return Response(json.dumps(msg), status=status_code)
 
 
-
-        # -------------------------------OFFER-------------------------------#
-
-
+# -------------------------------OFFER-------------------------------#
 # READ ALL
 @app.route('/api_v0/offer-list', methods=['GET'])
 def offer_list():
@@ -929,7 +924,7 @@ def offer_by_id(id: int):
 
 
 # INSERT
-@app.route('/api_v0/offer', methods=['POST'])
+@app.route('/api_v0/register/offer', methods=['POST'])
 def offer_add():
     role, _ = user_privileges()
     if type(role) is Response:
@@ -1807,6 +1802,50 @@ def register_company():
     else:
         return bad_request("{} method not supported".format(request.method))
 
+
+@app.route("/register/offer", methods=["GET", "POST"])
+def register_offer_job_demand():
+        if request.method == "POST":   
+            data = request.form
+            if error != "":
+                if navigator_user_agent():
+                    return render_template("addoffer.html", error=error)
+                return bad_request(error)
+            offer_job_demand_data_form = {
+                "workplace_name": data["offer-workplace-name"],
+                "workplace_address": data["offer-workplace-address"],
+                "contact_name": data["offer-contact-name"],
+                "contact_phone": data["offer-contact-phone"],
+                "contact_email": data["member-surname"],
+                "extra-data": None if not key_in_request_form('pna_cb') or data['pna_cb'] == "" else data["pna_cb"],
+                "contact_name_2": data["offer-contact-name-2"],
+                "contact_phone_2": data["offer-contact-phone-2"],
+                "contact_email_2": data["offer-contact-email-2"],
+                "vacancies": data["job-demand-vacancies"],
+                "monthly_salary": data["job-demand-monthly-salary"],
+                "contract_type": data["job-demand-contract-type"],
+                "schedule": data["rb-group-job-demand-schedule"],
+                "working_day": data["rb-group-job-demand-working-day"],
+                "shift": data["rb-group-job-demand-shift"],
+                "holidays": data["job-demand-holidays"],
+                "experience": data["job-demand-experience"],
+                "vehicle": True if not key_in_request_form('rb-group-car') or data["rb-group-car"] == "y" else False,
+                "geographical_mobility": True if not key_in_request_form('rb-group-mov') or data["rb-group-mov"] == "y" else False,
+                "others": data["job-demand-others"]
+            }
+            offer_created = requests.post('http://localhost:5000/api_v0/register/offer', data=offer_job_demand_data_form,
+                                         cookies=request.cookies)
+            # Check if the user has been created
+            if offer_created.status_code == 200:
+                return redirect(url_for("login"))  # TODO redirect to success-register-page
+            else:
+                error = offer_created.json()["offer_add"] or offer_created.json()["message"]
+                return render_template("addoffer.html", error=error)
+        elif request.method == "GET":
+                return render_template("addoffer.html")
+        else:
+                return bad_request("{} method not supported".format(request.method))
+        
 
 @app.route("/privacy")
 def privacy():

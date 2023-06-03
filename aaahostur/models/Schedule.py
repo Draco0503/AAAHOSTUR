@@ -1,7 +1,7 @@
 from enum import Enum
 
 class Schedule(Enum):
-    MORNING = 'Maniana'
+    MORNING = 'Mañana'
     AFTERNOON = 'Tarde'
     MIXED = 'Mixto'
     
