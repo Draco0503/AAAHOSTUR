@@ -599,6 +599,10 @@ footer .center {
     font-size: 12pt;
 }
 
+.w20-non-responsive {
+    width: 20% !important;
+}
+
 .margin-3porc{
     margin-top: 3%;
     margin-left: 3%;

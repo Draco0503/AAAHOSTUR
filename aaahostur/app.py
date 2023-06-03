@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime as dt, timedelta
-#from user_agents import parse
+from user_agents import parse
 import requests
 from flask import Flask, request, session, json, render_template, Response, redirect, url_for, make_response
 from models import db
@@ -1789,8 +1789,8 @@ def register_company():
                 "city": data["company-city"],
                 "province": data["company-province"],
                 "contact_name": data["company-contact1-name"],
-                "contact_phone": data["company-contact1-email"],
-                "contact_email": data["company-contact1-tlf"],
+                "contact_phone": data["company-contact1-tlf"],
+                "contact_email": data["company-contact1-email"],
                 "description": data["company-desc"]
             }
             # Check if the user has been created
