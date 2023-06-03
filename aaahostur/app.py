@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime as dt, timedelta
-#from user_agents import parse
+from user_agents import parse
 import requests
 from flask import Flask, request, session, json, render_template, Response, redirect, url_for, make_response
 from models import db
@@ -156,7 +156,7 @@ def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
 # method for testing purposes
 @app.route('/prueba')
 def prueba():
-    return render_template('addoffer.html', prueba='holka')
+    return render_template('login.html', prueba='holka')
 
 
 # endregion
@@ -591,46 +591,6 @@ def job_demand_add():
     return Response(json.dumps(msg), status=status_code)
 
 
-
-#registerOffer
-@app.route("/register/job_demand", methods=["GET", "POST"])
-def register_offer():
-        if request.method == "POST":   
-            data = request.form
-            if error != "":
-                if navigator_user_agent():
-                    return render_template("addoffer.html", error=error)
-                return bad_request(error)
-            offer_data_form = {
-                "vacancies": data["offer-vacancies"],
-                "monthly_salary": data["offer-monthly_salary"],
-                "contract_type": data["offer-contract_type"],
-                "schedule": data["rb-group-schedule"],
-                "working_day": data["rb-group-working-day"],
-                "shift": data["rb-group-shift"],
-                "holidays": data["offer-holidays"],
-                "experience": data["offer-experience"],
-                "vehicle": True if not key_in_request_form('rb-group-car') or data["rb-group-car"] == "y" else False,
-                "geographical_mobility": True if not key_in_request_form('rb-group-mov') or data[
-                    "rb-group-mov"] == "y" else False,
-                "others": data["offer-others"],
-            }
-            job_deman_created = requests.post('http://localhost:5000/api_v0/job_demand', data=offer_data_form,
-                                         cookies=request.cookies)
-            # Check if the user has been created
-            if job_deman_created.status_code == 200:
-                return redirect(url_for("login"))  # TODO redirect to success-register-page
-            else:
-                error = job_deman_created.json()["offer_add"] or job_deman_created.json()["message"]
-                return render_template("addoffer.html", error=error)
-        elif request.method == "GET":
-                return render_template("addoffer.html")
-        else:
-                return bad_request("{} method not supported".format(request.method))
-
-
-
-
 # -------------------------------LANGUAGE-------------------------------#
 # READ ALL
 @app.route('/api_v0/language-list', methods=['GET'])
@@ -928,10 +888,7 @@ def member_verify_update(id):
                 return Response(json.dumps(msg), status=status_code)
 
 
-
-        # -------------------------------OFFER-------------------------------#
-
-
+# -------------------------------OFFER-------------------------------#
 # READ ALL
 @app.route('/api_v0/offer-list', methods=['GET'])
 def offer_list():
@@ -1014,39 +971,6 @@ def offer_add():
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
-
-#registerOffer
-# @app.route("/register/offer", methods=["GET", "POST"])
-# def register_offer():
-#         if request.method == "POST":   
-#             data = request.form
-#             if error != "":
-#                 if navigator_user_agent():
-#                     return render_template("addoffer.html", error=error)
-#                 return bad_request(error)
-#             offer_data_form = {
-#                 "workplace_name": data["offer-workplace-name"],
-#                 "workplace_address": data["offer-workplace-address"],
-#                 "contact_name": data["offer-contact-name"],
-#                 "contact_phone": data["offer-contact-phone"],
-#                 "contact_email": data["member-surname"],
-#                 "extra-data": None if not key_in_request_form('pna_cb') or data['pna_cb'] == "" else data["pna_cb"],
-#                 "contact_name_2": data["offer-contact-name-2"],
-#                 "contact_phone_2": data["offer-contact-phone-2"],
-#                 "contact_email_2": data["offer-contact-email-2"],
-#             }
-#             offer_created = requests.post('http://localhost:5000/api_v0/register/offer', data=offer_data_form,
-#                                          cookies=request.cookies)
-#             # Check if the user has been created
-#             if offer_created.status_code == 200:
-#                 return redirect(url_for("login"))  # TODO redirect to success-register-page
-#             else:
-#                 error = offer_created.json()["offer_add"] or offer_created.json()["message"]
-#                 return render_template("addoffer.html", error=error)
-#         elif request.method == "GET":
-#                 return render_template("addoffer.html")
-#         else:
-#                 return bad_request("{} method not supported".format(request.method))
 
 
 # UPDATE
@@ -1878,6 +1802,50 @@ def register_company():
     else:
         return bad_request("{} method not supported".format(request.method))
 
+
+@app.route("/register/offer", methods=["GET", "POST"])
+def register_offer_job_demand():
+        if request.method == "POST":   
+            data = request.form
+            if error != "":
+                if navigator_user_agent():
+                    return render_template("addoffer.html", error=error)
+                return bad_request(error)
+            offer_job_demand_data_form = {
+                "workplace_name": data["offer-workplace-name"],
+                "workplace_address": data["offer-workplace-address"],
+                "contact_name": data["offer-contact-name"],
+                "contact_phone": data["offer-contact-phone"],
+                "contact_email": data["member-surname"],
+                "extra-data": None if not key_in_request_form('pna_cb') or data['pna_cb'] == "" else data["pna_cb"],
+                "contact_name_2": data["offer-contact-name-2"],
+                "contact_phone_2": data["offer-contact-phone-2"],
+                "contact_email_2": data["offer-contact-email-2"],
+                "vacancies": data["job-demand-vacancies"],
+                "monthly_salary": data["job-demand-monthly-salary"],
+                "contract_type": data["job-demand-contract-type"],
+                "schedule": data["rb-group-job-demand-schedule"],
+                "working_day": data["rb-group-job-demand-working-day"],
+                "shift": data["rb-group-job-demand-shift"],
+                "holidays": data["job-demand-holidays"],
+                "experience": data["job-demand-experience"],
+                "vehicle": True if not key_in_request_form('rb-group-car') or data["rb-group-car"] == "y" else False,
+                "geographical_mobility": True if not key_in_request_form('rb-group-mov') or data["rb-group-mov"] == "y" else False,
+                "others": data["job-demand-others"]
+            }
+            offer_created = requests.post('http://localhost:5000/api_v0/register/offer', data=offer_job_demand_data_form,
+                                         cookies=request.cookies)
+            # Check if the user has been created
+            if offer_created.status_code == 200:
+                return redirect(url_for("login"))  # TODO redirect to success-register-page
+            else:
+                error = offer_created.json()["offer_add"] or offer_created.json()["message"]
+                return render_template("addoffer.html", error=error)
+        elif request.method == "GET":
+                return render_template("addoffer.html")
+        else:
+                return bad_request("{} method not supported".format(request.method))
+        
 
 @app.route("/privacy")
 def privacy():
