@@ -311,6 +311,10 @@ input[type="button"]:hover {
     background-color: var(--aaahostur-primary-color-darker-blue);
 }
 
+button {
+    cursor: pointer;
+}
+
 .nav {
     width: 100%;
     display: flex;
@@ -511,6 +515,32 @@ span {
     flex-direction: row;
 }
 
+.dis-table {
+    display: table;
+    border-collapse: collapse;
+}
+
+.dis-tb-row {
+    display: table-row;
+    border-bottom: 1px solid;
+    border-color: var(--aaahostur-color-black);
+    border-collapse: collapse;
+}
+
+.dis-tb-row:hover {
+    background-color: var(--aaahostur-color-grey);
+}
+
+.dis-tb-cell {
+    display: table-cell;
+    padding: 15px;
+    border-collapse: collapse;
+}
+
+.dis-tb-cell.header {
+    font-weight: bold;
+}
+
 .flex-right {
     justify-content: flex-end;
 }
@@ -678,6 +708,32 @@ ul.social-links > li {
 
 .border-lf {
     border-left: 3px solid var(--aaahostur-primary-color-not-that-yellow);
+}
+
+.to-verify-btn {
+    color: var(--aaahostur-color-green);
+    font-weight: bold;
+    background-color: #c8ffd5;
+    border: 1px solid var(--aaahostur-color-black);
+    border-radius: 5px;
+    padding: 0.2rem;
+}
+
+.to-verify-btn:hover {
+    background-color: #bde1c6;
+}
+
+.to-not-verify-btn {
+    color: var(--aaahostur-color-red);
+    font-weight: bold;
+    background-color: #ffd1d1;
+    border: 1px solid var(--aaahostur-color-black);
+    border-radius: 5px;
+    padding: 0.2rem;
+}
+
+.to-not-verify-btn:hover {
+    background-color: #d2b5b5;
 }
 
 /* SCROLLBAR SETTINGS */

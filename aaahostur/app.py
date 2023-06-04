@@ -1266,7 +1266,7 @@ def user_list():
 
 
 # READ BY
-@app.route('/api_v0/user/<key>', methods=['GET', 'DELETE'])
+@app.route('/api_v0/user/<key>', methods=['GET'])
 def user_by_id(key: str):
     if request.method == 'GET':
         role, user_token = user_privileges()
@@ -1281,27 +1281,20 @@ def user_by_id(key: str):
         elif valid_uuid(key):
             if not role.CanSeeApiUser:
                 return forbidden()
-            user = User.User.query.filter_by(ID_USER=id).first()
+            user = User.User.query.filter_by(ID_USER=key).first()
         else:
             return bad_request()
         if user is None:
             return not_found()
-        msg = {"user": user.to_json()}
+        json_data = user.to_json()
+        if user.member is not None and len(user.member) > 0:
+            json_data.update(user.member[0].to_json())
+            json_data.pop('id_member')
+        elif user.company is not None and len(user.company) > 0:
+            json_data.update(user.company[0].to_json())
+            json_data.pop('id_company')
+        msg = {"user_get": json_data}
         return Response(json.dumps(msg), status=200)
-    elif request.method == 'DELETE':
-        if not valid_uuid(key):
-            return bad_request()
-        user = User.User.query.filter_by(ID_USER=key).first()
-        if user is None:
-            return not_found()
-        try:
-            db.session.remove(user)
-            db.session.commit()
-            msg = {"user_del": "User {} successfully deleted".format(key)}
-            return Response(json.dumps(msg), status=200)
-        except Exception as ex:
-            db.session.rollback()
-            return internal_server_error()
 
 
 # INSERT
@@ -1334,21 +1327,6 @@ def user_add():
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
-
-
-# @app.route("/api_v0/user/<username>", methods=["GET"])
-# def get_user_by_name(username: str):
-#     role, user_token = user_privileges()
-#     if type(role) is Response:
-#         return role
-#     if user_token != username:
-#         return forbidden()
-#     username = username.replace("%40", "@")
-#     user = User.User.query.filter_by(Email=username).first()
-#     if user is None:
-#         return not_found()
-#     msg = {"user": user.to_json()}
-#     return Response(json.dumps(msg), status=200)
 
 
 @app.route("/api_v0/login", methods=["POST"])
@@ -1573,8 +1551,35 @@ def api_get_member_list():
                 json_data['member_mobile'] = user.member[0].Mobile
                 json_data['member_landline'] = user.member[0].Land_Line
                 json_data['member_verify'] = user.member[0].Verify
+                json_data['member_active'] = user.member[0].Active
                 data_list.append(json_data)
         msg = {'adm_member': data_list}
+        return Response(json.dumps(msg), status=200)
+    else:
+        return forbidden()
+
+
+@app.route("/api_v0/admin/company", methods=["GET"])
+def api_get_company_list():
+    role, _ = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
+    if role.IsAAAHOSTUR and role.CanSeeApiCompany:
+        result_set = User.User.query.all()
+        data_list = []
+        for user in result_set:
+            if user.company is not None and len(user.company) > 0:
+                json_data = user.to_json()
+                json_data['company_name'] = user.company[0].Name
+                json_data['company_contact_name'] = user.company[0].Contact_Name
+                json_data['company_nif'] = user.company[0].CIF
+                json_data['company_contact_email'] = user.company[0].Contact_Email
+                json_data['company_contact_mobile'] = user.company[0].Contact_Phone
+                json_data['company_verify'] = user.company[0].Verify
+                json_data['company_active'] = user.company[0].Active
+                data_list.append(json_data)
+        msg = {'adm_company': data_list}
         return Response(json.dumps(msg), status=200)
     else:
         return forbidden()
@@ -1751,39 +1756,62 @@ def profile():
     user_info = requests.get("http://localhost:5000/api_v0/user/{}".format(user_token), cookies=request.cookies)
 
     if user_info.status_code == 200:
-        context = {
-            'user': {
-                'email': user_info.json()['user']['email']
+        json_data = user_info.json()['user_get']
+        if role.IsMember:
+            context = {
+                'user': {
+                        'email': json_data['email']
+                    },
+                'member': {
+                        'name': json_data['name'],
+                        'surname': json_data['surname'],
+                        'dni': json_data['dni'],
+                        'gender': 'Hombre' if json_data['gender'] == 'H' else (
+                            'Mujer' if json_data['gender'] == 'M' else 'Otro'),
+                        'profilepic': "" if json_data['profile_picture'] is None
+                                            or json_data['profile_picture'] == "" else
+                        json_data['profile_picture'],
+                        'birthdate': json_data['birth_date'],
+                        'mobile': json_data['mobile'],
+                        'landline': json_data['land_line'],
+                        'address': json_data['address'],
+                        'cp': json_data['cp'],
+                        'city': json_data['city'],
+                        'province': json_data['province'],
+                        'vehicle': 'SI' if json_data['vehicle'] or
+                                           json_data['vehicle'] == 'True' else 'NO',
+                        'mov': 'SI' if json_data['geographical_mobility'] or
+                                       json_data['geographical_mobility'] == 'True' else 'NO',
+                        'handicap': json_data['disability_grade']
+                    }
             }
-        }
-        # print(context)
-        member_info = requests.get(
-            "http://localhost:5000/api_v0/member/{}".format(user_info.json()['user']['id_user']),
-            cookies=request.cookies)
-        if member_info.status_code == 200:
-            print(member_info.json())
-            context['member'] = {
-                'name': member_info.json()['member']['name'],
-                'surname': member_info.json()['member']['surname'],
-                'dni': member_info.json()['member']['dni'],
-                'gender': 'Hombre' if member_info.json()['member']['gender'] == 'H' else (
-                    'Mujer' if member_info.json()['member']['gender'] == 'M' else 'Otro'),
-                'profilepic': "" if member_info.json()['member']['profile_picture'] is None
-                                    or member_info.json()['member']['profile_picture'] == "" else
-                member_info.json()['member']['profile_picture'],
-                'birthdate': member_info.json()['member']['birth_date'],
-                'mobile': member_info.json()['member']['mobile'],
-                'landline': member_info.json()['member']['land_line'],
-                'address': member_info.json()['member']['address'],
-                'cp': member_info.json()['member']['cp'],
-                'city': member_info.json()['member']['city'],
-                'province': member_info.json()['member']['province'],
-                'vehicle': 'SI' if member_info.json()['member']['vehicle'] or member_info.json()['member'][
-                    'vehicle'] == 'True' else 'NO',
-                'mov': 'SI' if member_info.json()['member']['geographical_mobility'] or
-                               member_info.json()['member']['geographical_mobility'] == 'True' else 'NO',
-                'handicap': member_info.json()['member']['disability_grade']
+        elif role.IsCompany:
+            context = {
+                'user': {
+                    'email': json_data['email']
+                },
+                'company': {
+                    'company_name': json_data['name'],
+                    'company_type': json_data['type'],
+                    'company_nif': json_data['cif'],
+                    'company_address': "" if json_data['address'] is None else json_data['address'],
+                    'company_cp': "" if json_data['cp'] is None else json_data['cp'],
+                    'company_city': "" if json_data['city'] is None else json_data['city'],
+                    'company_province': "" if json_data['province'] is None else json_data['province'],
+                    'company_contact_name': json_data['contact_name'],
+                    'company_contact_phone': json_data['contact_phone'],
+                    'company_contact_email': json_data['contact_email'],
+                    'company_description': "" if json_data['description'] is None else json_data['description']
+                }
             }
+        elif role.IsAAAHOSTUR:
+            context = {
+                'user': {
+                    'email': json_data['email']
+                }
+            }
+        else:
+            context = {}
         # print(context)
         return render_template("profile.html", context=context, payload=payload)
     return render_template("profile.html")
@@ -1882,15 +1910,122 @@ def admin_member():
     role, _ = user_privileges()
     if type(role) is Response:
         return role
+    payload = sec.decode_jwt(request.cookies.get('auth'))
     # Now we can ask for the requirement set
     if role.IsAAAHOSTUR and role.CanSeeApiMember:
         member_list_request = requests.get("http://localhost:5000/api_v0/admin/member", cookies=request.cookies)
         if member_list_request.status_code == 200:
             context = {'member': member_list_request.json()['adm_member']}
-            return render_template('admin.html', context=context)
+            return render_template('admin.html', context=context, payload=payload)
         else:
             if navigator_user_agent():
-                return render_template('admin.html')
+                return render_template('admin.html', payload=payload)
+            return bad_request()
+    else:
+        return forbidden()
+
+
+@app.route("/admin/member/<uid>", methods=["GET"])
+def admin_single_member(uid: str):
+    role, _ = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
+    payload = sec.decode_jwt(request.cookies.get('auth'))
+    if role.IsAAAHOSTUR and role.CanSeeApiMember:
+        member_get_request = requests.get("http://localhost:5000/api_v0/user/{}".format(uid), cookies=request.cookies)
+        if member_get_request.status_code == 200:
+            json_data = member_get_request.json()['user_get']
+            context = {
+                'user': {
+                    'email': json_data['email']
+                },
+                'member': {
+                    'name': json_data['name'],
+                    'surname': json_data['surname'],
+                    'dni': json_data['dni'],
+                    'gender': 'Hombre' if json_data['gender'] == 'H' else (
+                        'Mujer' if json_data['gender'] == 'M' else 'Otro'),
+                    'profilepic': "" if json_data['profile_picture'] is None
+                                        or json_data['profile_picture'] == "" else
+                    json_data['profile_picture'],
+                    'birthdate': json_data['birth_date'],
+                    'mobile': json_data['mobile'],
+                    'landline': json_data['land_line'],
+                    'address': json_data['address'],
+                    'cp': json_data['cp'],
+                    'city': json_data['city'],
+                    'province': json_data['province'],
+                    'vehicle': 'SI' if json_data['vehicle'] or
+                                       json_data[
+                                           'vehicle'] == 'True' else 'NO',
+                    'mov': 'SI' if json_data['geographical_mobility'] or
+                                   json_data['geographical_mobility'] == 'True' else 'NO',
+                    'handicap': json_data['disability_grade']
+                }
+            }
+            return render_template('profile.html', context=context, payload=payload)
+        else:
+            if navigator_user_agent():
+                return render_template('profile.html')
+            return bad_request()
+    else:
+        return forbidden()
+
+
+@app.route("/admin/company", methods=["GET"])
+def admin_company():
+    role, _ = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
+    payload = sec.decode_jwt(request.cookies.get('auth'))
+    if role.IsAAAHOSTUR and role.CanSeeApiCompany:
+        company_list_request = requests.get("http://localhost:5000/api_v0/admin/company", cookies=request.cookies)
+        if company_list_request.status_code == 200:
+            context = {'company': company_list_request.json()['adm_company']}
+            return render_template('admin.html', context=context, payload=payload)
+        else:
+            if navigator_user_agent():
+                return render_template('admin.html', payload=payload)
+            return bad_request()
+    else:
+        return forbidden()
+
+
+@app.route("/admin/company/<uid>", methods=["GET"])
+def admin_single_company(uid: str):
+    role, _ = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
+    payload = sec.decode_jwt(request.cookies.get('auth'))
+    if role.IsAAAHOSTUR and role.CanSeeApiCompany:
+        company_get_request = requests.get("http://localhost:5000/api_v0/user/{}".format(uid), cookies=request.cookies)
+        if company_get_request.status_code == 200:
+            json_data = company_get_request.json()['user_get']
+            context = {
+                'user': {
+                    'email': json_data['email']
+                },
+                'company': {
+                    'company_name': json_data['name'],
+                    'company_type': json_data['type'],
+                    'company_nif': json_data['cif'],
+                    'company_address': "" if json_data['address'] is None else json_data['address'],
+                    'company_cp': "" if json_data['cp'] is None else json_data['cp'],
+                    'company_city': "" if json_data['city'] is None else json_data['city'],
+                    'company_province': "" if json_data['province'] is None else json_data['province'],
+                    'company_contact_name': json_data['contact_name'],
+                    'company_contact_phone': json_data['contact_phone'],
+                    'company_contact_email': json_data['contact_email'],
+                    'company_description': "" if json_data['description'] is None else json_data['description']
+                }
+            }
+            return render_template('profile.html', context=context, payload=payload)
+        else:
+            if navigator_user_agent():
+                return render_template('profile.html', payload=payload)
             return bad_request()
     else:
         return forbidden()
