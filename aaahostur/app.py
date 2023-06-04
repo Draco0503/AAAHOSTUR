@@ -156,13 +156,14 @@ def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
 # method for testing purposes
 @app.route('/prueba')
 def prueba():
-    return render_template('login.html', prueba='holka')
+    return render_template('addoffer.html', prueba='holka')
 
 
 # endregion
 # ==================================================================================================================== #
 # =========================================================  API  ==================================================== #
 # region API
+
 # -------------------------------ACADEMIC_PROFILE-------------------------------#
 # INSERT
 @app.route('/api_v0/academic_profile', methods=['POST'])
@@ -199,6 +200,7 @@ def academic_profile_add():
 
 # -------------------------------COMPANY_ACCOUNT-------------------------------#
 # TODO not implemented in v.0
+
 
 # -------------------------------COMPANY-------------------------------#
 # READ ALL
@@ -534,61 +536,6 @@ def job_demand_by_id(id: int):
         return not_found()
     msg = {"job_demands": data_list}  # there can be job_demands with the same id_offer
     return Response(json.dumps(msg), status=200)
-
-
-# INSERT
-@app.route('/api_v0/job_demand', methods=['POST'])
-def job_demand_add():
-    role, _ = user_privileges()
-    if type(role) is Response:
-        return role
-    # Now we can ask for the requirement set
-    if not role.CanMakeOffer:
-        return forbidden()
-    data = request.form
-    if data is None or (5 > len(data) > 12):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data len()]')
-    if not key_in_request_form('vacancies'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data <vacancies>')
-    if not key_in_request_form('schedule'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data <schedule>')
-    if not key_in_request_form('working_day'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data <working_day>')
-    if not key_in_request_form('shift'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data <shift>')
-
-    monthly_salary = "" if not key_in_request_form('monthly_salary') else data['monthly_salary']
-    contract_type = "" if not key_in_request_form('contract_type') else data['contract_type']
-    holidays = "" if not key_in_request_form('holidays') else data['holidays']
-    experience = "" if not key_in_request_form('experience') else data['experience']
-    vehicle = False if not key_in_request_form('vehicle') else data['vehicle']
-    geographical_mobility = False if not key_in_request_form('geographical_mobility') else data['geographical_mobility']
-    others = "" if not key_in_request_form('others') else data['others']
-
-    job_demand = Job_Demand.Job_Demand(Vacancies=data['vacancies'],
-                                       Monthly_Salary=monthly_salary,
-                                       Contract_Type=contract_type,
-                                       Schedule=data['schedule'],
-                                       Working_Day=data['working_day'],
-                                       Shift=data['shift'],
-                                       Holidays=holidays,
-                                       Experience=experience,
-                                       Vehicle=vehicle,
-                                       Geographical_Mobility=geographical_mobility,
-                                       Others=others)
-
-    try:
-        db.session.add(job_demand)
-        db.session.commit()
-        msg = {'NEW job_demand ADDED': job_demand.to_json()}
-        status_code = 200
-
-    except Exception as ex:
-        db.session.rollback()
-        msg = {ERROR_500_DEFAULT_MSG: job_demand.to_json()}
-        status_code = 500
-
-    return Response(json.dumps(msg), status=status_code)
 
 
 # -------------------------------LANGUAGE-------------------------------#
@@ -1012,9 +959,8 @@ def offer_verify_update(id):
                     return internal_server_error("An error has occurred processing PUT query")
                 return Response(json.dumps(msg), status=status_code)
 
-            # -------------------------------PROFESSIONAL_PROFILE-------------------------------#
 
-
+# -------------------------------PROFESSIONAL_PROFILE-------------------------------#
 # TODO not implemented in v.0
 
 
@@ -1245,8 +1191,6 @@ def section_active_update(id):
 
 
 # -------------------------------USER------------------------------- #
-
-
 # READ ALL
 @app.route('/api_v0/user-list', methods=['GET'])
 def user_list():
@@ -1465,6 +1409,104 @@ def api_register_member():
         db.session.add(member)
         db.session.commit()
         msg = {"register_member": "SUCCESS"}
+        return Response(json.dumps(msg), status=200)
+    except Exception as ex:
+        db.session.rollback()
+        return internal_server_error(ERROR_500_DEFAULT_MSG)
+
+
+@app.route('/api_v0/register/offer', methods=['POST'])
+def offer_add():
+    try:   
+        role, _ = user_privileges()
+        if type(role) is Response:
+            return role
+        # Now we can ask for the requirement set
+        if not role.CanMakeOffer:
+            return forbidden()
+        data = request.form
+        if data is None or (5 > len(data) > 8):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [qualification_add() - data len()]')
+        if not key_in_request_form('company_name'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <company_name>')
+        if not key_in_request_form('address'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <address>')
+        if not key_in_request_form('contact_name'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <contact_name>')
+        if not key_in_request_form('contact_phone'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <contact_phone>')
+        if not key_in_request_form('contact_email'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <contact_email>')
+
+        contact_name_2 = "" if not key_in_request_form('contact_name_2') else data["contact_name_2"]
+        contact_phone_2 = "" if not key_in_request_form('contact_phone_2') else data["contact_phone_2"]
+        contact_email_2 = "" if not key_in_request_form('contact_email_2') else data["contact_email_2"]
+        
+        offer = Offer.Offer(Company_Name=data['company_name'],
+                            Address=data['address'],
+                            Contact_Name=data['contact_name'],
+                            Contact_Phone=data['contact_phone'],
+                            Contact_Email=data['contact_email'],
+                            Contact_Name_2=contact_name_2,
+                            Contact_Phone_2=contact_phone_2,
+                            Contact_Email_2=contact_email_2)
+
+        #job_demand validation
+        if not key_in_request_form('vacancies'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data <vacancies>')
+        if not key_in_request_form('schedule'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data <schedule>')
+        if not key_in_request_form('working_day'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data <working_day>')
+        if not key_in_request_form('shift'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data <shift>')
+        
+        monthly_salary = "" if not key_in_request_form('monthly_salary') else data['monthly_salary']
+        contract_type = "" if not key_in_request_form('contract_type') else data['contract_type']
+        holidays = "" if not key_in_request_form('holidays') else data['holidays']
+        experience = "" if not key_in_request_form('experience') else data['experience']
+        vehicle = False if not key_in_request_form('vehicle') else data['vehicle']
+        geographical_mobility = False if not key_in_request_form('geographical_mobility') else data['geographical_mobility']
+        others = "" if not key_in_request_form('others') else data['others']
+
+        db.session.add(offer)
+
+        job_demand = Job_Demand.Job_Demand(Vacancies=data['vacancies'],
+                                       Monthly_Salary=monthly_salary,
+                                       Contract_Type=contract_type,
+                                       Schedule=data['schedule'],
+                                       Working_Day=data['working_day'],
+                                       Shift=data['shift'],
+                                       Holidays=holidays,
+                                       Experience=experience,
+                                       Vehicle=vehicle,
+                                       Geographical_Mobility=geographical_mobility,
+                                       Others=others)
+        
+        
+        
+        db.session.add(job_demand)
+
+        # para poder pillar el id de la job-demand que se ha insertado
+        inserted_job_demand = Job_Demand.query.filter_by(Vacancies=data['vacancies'],
+                                                 Schedule=data['schedule'],
+                                                 Shift=data['shift'],
+                                                 Working_Day=data['working_day']).first()
+        job_demand_id = inserted_job_demand.ID_JOB_DEMAND
+        
+
+        #o con esto 
+        # Refrescar job_demand  para obtener el ID actualizado de la base de datos
+        db.session.refresh(job_demand)
+        job_demand_id = job_demand.ID_JOB_DEMAND
+        job_deman_qualification = Job_Demand_Qualification.Job_Demand_Qualification(Id_Qualification=data[''],
+                                                                                   # igualar al id de la  job_demand insertada
+                                                                                    Id_Job_Demand = job_demand_id
+        )
+
+        db.session.add(job_deman_qualification)
+        db.session.commit()
+        msg = {"add_offer": "SUCCESS"}
         return Response(json.dumps(msg), status=200)
     except Exception as ex:
         db.session.rollback()
@@ -1877,7 +1919,7 @@ def register_offer_job_demand():
             "extra-data": None if not key_in_request_form('pna_cb') or data['pna_cb'] == "" else data["pna_cb"],
             "contact_name_2": data["offer-contact-name-2"],
             "contact_phone_2": data["offer-contact-phone-2"],
-            "contact_email_2": data["offer-contact-email-2"],
+            "contact_email_2": data["offer-contact-email-2"],           
             "vacancies": data["job-demand-vacancies"],
             "monthly_salary": data["job-demand-monthly-salary"],
             "contract_type": data["job-demand-contract-type"],
