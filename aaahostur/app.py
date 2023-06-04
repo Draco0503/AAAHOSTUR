@@ -1514,11 +1514,22 @@ def offer_add():
         db.session.add(job_demand)
 
         # para poder pillar el id de la job-demand que se ha insertado
-        new_job_demand = job_demand.ID_JOB_DEMAND
+        inserted_job_demand = Job_Demand.query.filter_by(Vacancies=data['vacancies'],
+                                                 Schedule=data['schedule'],
+                                                 Shift=data['shift'],
+                                                 Working_Day=data['working_day']).first()
+        job_demand_id = inserted_job_demand.ID_JOB_DEMAND
+        
+
+        #o con esto 
+        # Refrescar job_demand  para obtener el ID actualizado de la base de datos
+        db.session.refresh(job_demand)
+        job_demand_id = job_demand.ID_JOB_DEMAND
         job_deman_qualification = Job_Demand_Qualification.Job_Demand_Qualification(Id_Qualification=data[''],
                                                                                    # igualar al id de la  job_demand insertada
-                                                                                    Id_Job_Demand = new_job_demand
+                                                                                    Id_Job_Demand = job_demand_id
         )
+
         db.session.add(job_deman_qualification)
         db.session.commit()
         msg = {"add_offer": "SUCCESS"}
