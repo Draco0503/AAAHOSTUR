@@ -44,7 +44,21 @@ window.onscroll = function () { hideOnScroll() };
         }
 
         function showContactSecundaryData(e){
-
+            doc = document.getElementById("extra-data");
+            inputs = document.querySelectorAll("#extra-data input")
+            changeCheckboxState(e);
+            if (e.childNodes[1].getAttribute("checked") !== null) {
+                doc.classList.remove("dis-none");
+                for(let i = 0; i < inputs.length; i++) {
+                    inputs[i].setAttribute("required", "");
+                }
+            }
+            else {
+                doc.classList.add("dis-none");
+                for(let i = 0; i < inputs.length; i++) {
+                    inputs[i].removeAttribute("required");
+                }
+            }
         }
         
         function showHandicapData(e) {
