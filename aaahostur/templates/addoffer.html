@@ -44,18 +44,24 @@
         <label class="dis-block font-16pt" for="job-category">Categoría profesional <span>*</span></label>
         <!-- SELECT (cargar JOB_CATEGORIES) -->
         <select class="w60 pad-input font-14pt mar-bot-2rem" name="job-category" id="job-category" required>
-            <option value="">Categoría 1</option>
-            <option value="">Categoría 2</option>
-            <option value="">Categoría 3</option>
-            <option value="">Categoría 4</option>
+            {% if TODO is defined and not none %}
+                {% for language in language_list %}
+                    <option value="{{ language['id_laguange'] }}">{{ language['Name'] }}</option>
+                {% endfor %}
+            {% else %}
+                <option>Ha habido un error cargando la lista de lenguajes</option>
+            {% endif %}
         </select>
         <label class="dis-block font-16pt" for="qualification">Titulación de preferencia  </label>
         <!-- SELECT (cargar QUALIFICATIONS) -->
         <select class="w60 pad-input font-14pt mar-bot-2rem" name="qualification" id="qualification" required>
-            <option value="">Estudio 1</option>
-            <option value="">Estudio 2</option>
-            <option value="">Estudio 3</option>
-            <option value="">Estudio 4</option>
+            {% if qualification_list is defined and not none %}
+                {% for qualification in qualification_list %}
+                    <option value="{{ qualification['id_qualification'] }}">{{ qualification['Name'] }}</option>
+                {% endfor %}
+            {% else %}
+                <option>Ha habido un error cargando la lista de lenguajes</option>
+            {% endif %}
         </select>
         <label class="dis-block font-16pt" for="job-demand-vacancies">Cantidad de puestos vacantes <span>*</span></label>
         <input class="w60 pad-input font-14pt mar-bot-2rem" type="number" id="job-demand-vacancies" name="job-demand-vacancies" required>
@@ -64,27 +70,27 @@
         <div id="rbgroup-job-demand-working-day" class="mar-bot-2rem">
             <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
                 Media
-                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb1" value="H" checked>
+                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb1" value="Media" checked>
                 <span class="radiomark"></span>
             </label>                
             <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
                 Completa
-                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb2" value="M">
+                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb2" value="Completa">
                 <span class="radiomark"></span>
             </label>
             <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
                 Fines de semana
-                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb3" value="O">
+                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb3" value="Fines de semana">
                 <span class="radiomark"></span>
             </label>
             <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
                 Por horas
-                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb4" value="O">
+                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb4" value="Por horas">
                 <span class="radiomark"></span>
             </label>
             <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
                 Extras
-                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb5" value="O">
+                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb5" value="Extras">
                 <span class="radiomark"></span>
             </label>
         </div>
@@ -147,10 +153,13 @@
         <label class="dis-block font-16pt" for="language">Idiomas </label>
         <!-- SELECT (cargar LANGUAGE) -->
         <select class="w60 pad-input font-14pt mar-bot-2rem" name="language" id="language" required>
-            <option value="">Inglés</option>
-            <option value="">Francés</option>
-            <option value="">Español</option>
-            <option value="">Ruso</option>
+            {% if language_list is defined and not none %}
+                {% for language in language_list %}
+                    <option value="{{ language['id_laguange'] }}">{{ language['Name'] }}</option>
+                {% endfor %}
+            {% else %}
+                <option>Ha habido un error cargando la lista de lenguajes</option>
+            {% endif %}
         </select>
         <label class="dis-block font-16pt" for="job-demand-others">Otros </label>
         <textarea class="w60 pad-input font-14pt mar-bot-2rem" id="job-demand-others" name="job-demand-others" maxlength="256" rows=3></textarea>
