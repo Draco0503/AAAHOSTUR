@@ -1370,14 +1370,13 @@ def api_register_offer_job_demand():
             language_data_list= Language.Language.query.all() # quicker query than language_list()
             qualification_data_list= Qualification.Qualification.query.all()
             job_category_data_list= Job_Category.Job_Category.query.all()
-            # shift_data_list= list(map(int, Shift))
+            # shift_data_list= [Shift.CONTINUOUS, Shift.SPLIT]
             # schedule_data_list= list(map(int, Schedule))
             # working_day_data_list= list(map(int, Working_Day))
             # print(list(map(int, Shift)))
             # TODO falta el contract type
-            contract_type_data_list= list(map(int, Working_Day))
+            # contract_type_data_list= list(map(int, Working_Day))
             response = {
-                'prueba':'sisi',
                 'offer_add_get': {
                     'language_list': [language.to_json() for language in language_data_list],
                     'qualification_list': [qualification.to_json() for qualification in qualification_data_list],
@@ -1868,7 +1867,6 @@ def check_offer_params() -> str:
 
 @app.route("/register/offer", methods=["GET", "POST"])
 def register_offer_job_demand():
-    print('SI')
     if request.method == "POST":
         data = request.form
         error = check_offer_params()
