@@ -33,40 +33,41 @@
             <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="offer-contact-name-2" name="offer-contact-name-2">
             <label class="dis-block font-16pt" for="offer-contact-phone-2">Teléfono de contacto secundario <span>*</span></label>
             <input class="w60 pad-input font-14pt mar-bot-2rem" type="tel" id="offer-contact-phone-2" name="offer-contact-phone-2" minlength="9">
-            <label class="dis-block font-16pt" for="offer-contact-email-2">Correo de contacto secundario <span>*</span></label>n
+            <label class="dis-block font-16pt" for="offer-contact-email-2">Correo de contacto secundario <span>*</span></label>
             <input class="w60 pad-input font-14pt mar-bot-2rem" type="email" id="offer-contact-email-2" name="offer-contact-email-2">
         </div>
 
         <h2 class="mar-bot-1rem">Datos de demanda de empleo</h2>
         <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
-        <!-- TODO job demand -->
         <div class="azul" style=background-color:aliceblue;padding:2%;border-radius:2px;>
         <label class="dis-block font-16pt" for="job-category">Categoría profesional <span>*</span></label>
-        <!-- SELECT (cargar JOB_CATEGORIES) -->
+        <!-- SELECT (get <JOB_CATEGORY> data) -->
         <select class="w60 pad-input font-14pt mar-bot-2rem" name="job-category" id="job-category" required>
-            {% if TODO is defined and not none %}
-                {% for language in language_list %}
-                    <option value="{{ language['id_laguange'] }}">{{ language['Name'] }}</option>
+            {% if job_category_list is defined and not none %}
+                {% for job_category in job_category_list %}
+                    <option value="{{ job_category['id_job_category'] }}">{{ job_category['name'] }}</option>
                 {% endfor %}
             {% else %}
-                <option>Ha habido un error cargando la lista de lenguajes</option>
+                <option>Ha habido un error cargando la lista de categorias</option>
             {% endif %}
         </select>
         <label class="dis-block font-16pt" for="qualification">Titulación de preferencia  </label>
-        <!-- SELECT (cargar QUALIFICATIONS) -->
+        <!-- SELECT (get <QUALIFICATION> data) -->
         <select class="w60 pad-input font-14pt mar-bot-2rem" name="qualification" id="qualification" required>
             {% if qualification_list is defined and not none %}
+                    <option disabled selected hidden value>Selecciona...</option>
+                    <option value="">Sin preferencia</option>
                 {% for qualification in qualification_list %}
-                    <option value="{{ qualification['id_qualification'] }}">{{ qualification['Name'] }}</option>
+                    <option value="{{ qualification['id_qualification'] }}">{{ qualification['name'] }}</option>
                 {% endfor %}
             {% else %}
-                <option>Ha habido un error cargando la lista de lenguajes</option>
+                <option>Ha habido un error cargando la lista de títulos</option>
             {% endif %}
         </select>
         <label class="dis-block font-16pt" for="job-demand-vacancies">Cantidad de puestos vacantes <span>*</span></label>
         <input class="w60 pad-input font-14pt mar-bot-2rem" type="number" id="job-demand-vacancies" name="job-demand-vacancies" required>
         <label class="dis-block font-16pt" for="job-demand-working-day">Tipo de jornada <span>*</span></label>
-        <!-- RADIOGROUP (cargar WORKING_DAY) -->
+        <!-- RADIOGROUP (get <WORKING_DAY> data) -->
         <div id="rbgroup-job-demand-working-day" class="mar-bot-2rem">
             <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
                 Media
@@ -95,7 +96,7 @@
             </label>
         </div>
         <label class="dis-block font-16pt" for="job-demand-shift">Turno <span>*</span></label>
-        <!-- RADIOGROUP (cargar SHIFT) -->
+        <!-- RADIOGROUP (get <SHIFT> data) -->
         <div id="rbgroup-job-demand-shift" class="mar-bot-2rem">
             <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-shift', this)">
                 Seguido
@@ -119,7 +120,7 @@
             </label>
         </div>
         <label class="dis-block font-16pt" for="job-demand-schedule">Horario <span>*</span></label>
-        <!-- RADIOGROUP (cargar SCHEDULE) -->
+        <!-- RADIOGROUP (get <SCHEDULE> data) -->
         <div id="rbgroup-job-demand-schedule" class="mar-bot-2rem">
             <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-schedule', this)">
                 Mañana
@@ -128,7 +129,7 @@
             </label>                
             <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-schedule', this)">
                 Tarde
-                <input class="rbgroup-job-demand-schedule" type="radio" name="rb-group-job-demand-schedule" id="rbgroup-job-demand-schedule-rb2" value="A">
+                <input class="rbgroup-job-demand-schedule" type="radio" name="rb-group-job-demand-schedule" id="rbgroup-job-demand-schedule-rb2" value="T">
                 <span class="radiomark"></span>
             </label>
             <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-schedule', this)">
@@ -140,22 +141,28 @@
         <label class="dis-block font-16pt" for="job-demand-monthly-salary">Salario mensual </label>
         <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="job-demand-monthly-salary" name="job-demand-monthly-salary" required>
         <label class="dis-block font-16pt" for="job-demand-contract-type">Tipo de contrato </label>
+        <!-- SELECT (get <CONTRACT_TYPE> data) -->
         <select class="w60 pad-input font-14pt mar-bot-2rem" name="job-demand-contract-type" id="job-demand-contract-type" required>
-            <option value="">Tipo 1</option>
-            <option value="">Tipo 2</option>
-            <option value="">Tipo 3</option>
-            <option value="">Tipo 4</option>
+            {% if contract_type_list is defined and not none %}
+                {% for contract_type in contract_type_list %}
+                    <option value="{{ contract_type }}">{{ contract_type }}</option>
+                {% endfor %}
+            {% else %}
+                <option>Ha habido un error cargando la lista de contratos</option>
+            {% endif %}
         </select>
         <label class="dis-block font-16pt" for="job-demand-holidays">Vacaciones </label>
         <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="job-demand-holidays" name="job-demand-holidays" required>
         <label class="dis-block font-16pt" for="job-demand-experience">Experiencia</label>
         <textarea class="w60 pad-input font-14pt mar-bot-2rem" id="job-demand-experience" name="job-demand-experience" maxlength="256" rows=3></textarea>
-        <label class="dis-block font-16pt" for="language">Idiomas </label>
-        <!-- SELECT (cargar LANGUAGE) -->
+        <label class="dis-block font-16pt" for="language">Idioma de preferencia </label>
+        <!-- SELECT (get <LANGUAGE> data) -->
         <select class="w60 pad-input font-14pt mar-bot-2rem" name="language" id="language" required>
             {% if language_list is defined and not none %}
+                <option disabled selected hidden value>Selecciona...</option>
+                <option value="">Sin preferencia</option>
                 {% for language in language_list %}
-                    <option value="{{ language['id_laguange'] }}">{{ language['Name'] }}</option>
+                    <option value="{{ language['id_laguange'] }}">{{ language['name'] }}</option>
                 {% endfor %}
             {% else %}
                 <option>Ha habido un error cargando la lista de lenguajes</option>
