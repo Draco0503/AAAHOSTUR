@@ -148,6 +148,69 @@
             {% else %}
             <h2 class="mar-bot-1rem">No se ha podido cargar la información de empresa</h2>
             {% endif %}
+        {% elif 'offer' in context %}
+            {% if context['offer'] is not none %}
+                <div class="dis-table w100">
+                    <div class="dis-tb-row">
+                        <div class="dis-tb-cell header">Lugar de trabajo</div>
+                        <div class="dis-tb-cell header">Personas de contacto (Principal/Secundario)</div>
+                        <div class="dis-tb-cell header">Correos de contacto (Principal/Secundario)</div>
+                        <div class="dis-tb-cell header">Telefonos de contacto (Principal/Secundario)</div>
+                        <div class="dis-tb-cell header">Verificado</div>
+                        <div class="dis-tb-cell header">Activo</div>
+                        <div class="dis-tb-cell header">Más...</div>
+                    </div>
+                    {% for offer in context['offer'] %}
+                        <div class="dis-tb-row">
+                            <div class="dis-tb-cell">{{ offer['workplace_name'] }}</div>
+                            <div class="dis-tb-cell">{{ offer['contact_name'] }} / {{ offer['contact_name_2'] }}</div>
+                            <div class="dis-tb-cell">{{ offer['contact_email'] }} / {{ offer['contact_email_2'] }}</div>
+                            <div class="dis-tb-cell">{{ offer['contact_phone'] }} / {{ offer['contact_phone_2'] }}</div>
+                            <div class="dis-tb-cell">
+                                <form action="">
+                                    {% if offer['offer_verify'] or offer['offer_verify'] == 'True' %}
+                                        <input class="dis-none" name="verify" type="radio" value="False">
+                                        <button class="to-not-verify-btn" type="submit">
+                                            <i class="fa fa-times" aria-hidden="true"></i>
+                                            Quitar verificación
+                                        </button>
+                                    {% elif not offer['offer_verify'] or offer['offer_verify'] == 'False' %}
+                                        <input class="dis-none" name="verify" type="radio" value="True">
+                                        <button class="to-verify-btn" type="submit">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                            Verificar
+                                        </button>
+                                    {% else %}
+                                        ERROR
+                                    {% endif %}
+                                </form>
+                            </div>
+                            <div class="dis-tb-cell">
+                                <form action="">
+                                    {% if offer['offer_active'] or offer['offer_active'] == 'True' %}
+                                        <input class="dis-none" name="verify" type="radio" value="False">
+                                        <button class="to-not-verify-btn" type="submit">
+                                            <i class="fa fa-times" aria-hidden="true"></i>
+                                            Desactivar
+                                        </button>
+                                    {% elif not offer['offer_active'] or offer['offer_active'] == 'False' %}
+                                        <input class="dis-none" name="verify" type="radio" value="True">
+                                        <button class="to-verify-btn" type="submit">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                            Activar
+                                        </button>
+                                    {% else %}
+                                        ERROR
+                                    {% endif %}
+                                </form>
+                            </div>
+                            <a class="dis-tb-cell link-on-white" href="{{ url_for(request.endpoint) + '/' + offer['id_offer'] }}" target="_blank">
+                                <i class="fa fa-external-link" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
         {% else %}
             <h2 class="mar-bot-1rem">No tiene información adicional</h2>
         {% endif %}

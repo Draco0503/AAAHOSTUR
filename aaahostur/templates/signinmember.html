@@ -8,7 +8,7 @@
     <h2 class="mar-bot-1rem">Datos de cuenta</h2>
     <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
 
-    <form class="dis-grid" action="{{ url_for(request.endpoint) }}" method="POST">
+    <form class="dis-grid" action="{{ url_for(request.endpoint) }}" method="POST" enctype="multipart/form-data">
         <label class="dis-block font-16pt" for="user-email">Correo electrónico <span>*</span></label>
         <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="user-email" name="user-email" required>
         <label class="dis-block font-16pt" for="user-pwd">Contraseña <span>*</span></label>
@@ -90,7 +90,7 @@
             <label class="dis-block font-16pt" for="member-landline">Teléfono fijo</label>
             <input class="w60 pad-input font-14pt mar-bot-2rem" type="number" name="member-landline" id="member-landline" minlength="9">
             <label class="dis-block font-16pt mar-bot-1rem" for="member-profilepic">Foto de perfil</label>
-            <input class="w80 font-14pt mar-bot-2rem" type="file" name="member-profilepic" id="member-profilepic">
+            <input class="w80 font-14pt mar-bot-2rem" type="file" name="member-profilepic" id="member-profilepic" accept="image/png, image/jpg">
             <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
             <label class="dis-block font-16pt mar-bot-1rem" for="rbgroup-car">Vehículo propio</label>
             <div id="rbgroup-car" class="mar-bot-2rem">

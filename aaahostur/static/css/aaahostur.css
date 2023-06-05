@@ -461,6 +461,10 @@ span {
     width: 100%;
 }
 
+.w95 {
+    width: 95%;
+}
+
 .w80 {
     width: 80%;
 }
@@ -734,6 +738,34 @@ ul.social-links > li {
 
 .to-not-verify-btn:hover {
     background-color: #d2b5b5;
+}
+
+.adm-btn {
+    font-size: 14pt;
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+    flex: 0 0 20%;
+    border-radius: 5px;
+    border: 1px solid var(--aaahostur-color-black);
+    background: var(--aaahostur-primary-color-not-that-yellow);
+    color: var(--aaahostur-color-black);
+}
+
+.adm-btn:hover {
+    background: var(--aaahostur-primary-color-not-that-yellow-hover);
+}
+
+.btns {
+    gap: 5%;
+    text-align: center;
+}
+.btns>a:hover {
+    text-decoration: none
+}
+
+.sign-out {
+    color: crimson;
 }
 
 /* SCROLLBAR SETTINGS */

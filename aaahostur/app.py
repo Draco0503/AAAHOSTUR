@@ -1,4 +1,5 @@
 import uuid
+from base64 import b64encode, b64decode
 from datetime import datetime as dt, timedelta
 from user_agents import parse
 import requests
@@ -1328,9 +1329,9 @@ def api_register_member():
         geographical_mobility = False if not key_in_request_form('geographical_mobility') or data[
             "geographical_mobility"] \
             else bool(data["geographical_mobility"])
-        disability_grade = 0 if not key_in_request_form('disability_grade') or data["disability_grade"] \
+        disability_grade = 0 if not key_in_request_form('disability_grade') or data["disability_grade"] != "" \
             else int(data["disability_grade"])
-        profile_pic = None if not key_in_request_form('profile_picture') else data["profile_picture"]
+        profile_pic = None if not key_in_request_form('profile_picture') else b64decode(data["profile_picture"])
         # BEGINNING OF THE INSERTS
         db.session.add(user)
         # TODO MAYBE WE SHOULD DO A SELECT TO VERIFY THAT THE USER HAS BEEN CREATED
@@ -1362,7 +1363,7 @@ def api_register_member():
         return Response(json.dumps(msg), status=200)
     except Exception as ex:
         db.session.rollback()
-        return internal_server_error(ERROR_500_DEFAULT_MSG)
+        return internal_server_error(ERROR_500_DEFAULT_MSG + " :: {}".format(ex))
 
 
 @app.route('/api_v0/register/offer', methods=['GET', 'POST'])
@@ -1461,7 +1462,7 @@ def offer_add():
             # Refrescar job_demand  para obtener el ID actualizado de la base de datos
             job_demand_id = job_demand.ID_JOB_DEMAND
             job_deman_qualification = Job_Demand_Qualification.Job_Demand_Qualification(Id_Qualification=data[''],
-                                                                                       # igualar al id de la  job_demand insertada
+                                                                                        # igualar al id de la  job_demand insertada
                                                                                         Id_Job_Demand = job_demand_id
             )
 
@@ -1641,6 +1642,15 @@ def login():
         return bad_request("{} method not supported".format(request.method))
 
 
+@app.route("/logout", methods=["GET"])
+def logout():
+    if not_auth_header():
+        return redirect(url_for("index", _method="GET"))
+    resp = make_response(redirect(url_for("index", _method="GET")))
+    resp.delete_cookie('auth')
+    return resp
+
+
 @app.route("/", methods=["GET"])
 def index():
     if not_auth_header():
@@ -1654,7 +1664,7 @@ def check_member_params(form) -> str:
     # USER INFO
     if 'user-email' not in form or form['user-email'] is None or form['user-email'] == "":
         return "Email no valido"
-    if 'user-pwd' not in form or form['user-pwd'] is None:  # or sec.check_valid_passwd(form['user-pwd']) is None:
+    if 'user-pwd' not in form or form['user-pwd'] is None or sec.check_valid_passwd(form['user-pwd']) is None:
         return "Contraseña no valida"
     # MEMBER INFO
     if 'member-name' not in form or form['member-name'] is None or form['member-name'] == "":
@@ -1662,7 +1672,7 @@ def check_member_params(form) -> str:
     if 'member-surname' not in form or form['member-name'] is None or form['member-name'] == "":
         return "Apellidos no valido"
     # TODO Check for valid DNI, at least sth like 8 digits and 1 letter, it can be a NIE...
-    if 'member-dni' not in form or form['member-dni'] is None:  # or not utils.validate_nif(form['member-dni']):
+    if 'member-dni' not in form or form['member-dni'] is None or not utils.validate_nif(form['member-dni']):
         return "DNI no valido"
     if 'member-address' not in form or form['member-address'] is None or form['member-address'] == "":
         return "Direccion no valido"
@@ -1697,6 +1707,10 @@ def register_member():
     if request.method == "POST":
         error = "Las contraseñas no coinciden"
         data = request.form
+        try:
+            files = request.files['member-profilepic']
+        except:
+            files = None
         if data["user-pwd"] == data["user-pwd-2"]:
             # print(data)
             error = check_member_params(data)
@@ -1717,8 +1731,7 @@ def register_member():
                 "province": data["member-province"],
                 "gender": data["rb-group-gender"],
                 "mobile": data["member-mobile"],
-                "profile_picture": None if not key_in_request_form('member-profilepic') or data[
-                    "member-profilepic"] == "" else data["member-profilepic"],
+                "profile_picture": None if files is None else b64encode(files.read()),
                 "birth_date": data["member-birthdate"],
                 "join_date": dt.now().strftime("%y-%m-%d %H:%M:%S"),
                 "cancellation_date": "",
@@ -1734,13 +1747,20 @@ def register_member():
                 "disability_grade": 0 if not key_in_request_form("member-handicap") or data[
                     "member-handicap"] == "" else int(data["member-handicap"])
             }
+
+            # print(user_member_data_form)
             user_created = requests.post('http://localhost:5000/api_v0/register/member', data=user_member_data_form,
                                          cookies=request.cookies)
             # Check if the user has been created
             if user_created.status_code == 200:
                 return redirect(url_for("login"))  # TODO redirect to success-register-page
             else:
-                error = user_created.json()["user_add"] or user_created.json()["message"]
+                if 'user_add' in user_created.json():
+                    error = user_created.json()["user_add"]
+                elif 'message' in user_created.json():
+                    error = user_created.json()["message"]
+                else:
+                    error = 'DEFAULT ERROR MESSAGE'
         return render_template("signinmember.html", error=error)
     elif request.method == "GET":
         return render_template("signinmember.html")
@@ -1780,6 +1800,10 @@ def profile():
                         'cp': json_data['cp'],
                         'city': json_data['city'],
                         'province': json_data['province'],
+                        'pna_address': '' if 'pna_address' not in json_data or json_data['pna_address'] == '' else json_data['pna_address'],
+                        'pna_cp': '' if 'pna_cp' not in json_data or json_data['pna_cp'] == '' else json_data['pna_cp'],
+                        'pna_city': '' if 'pna_city' not in json_data or json_data['pna_city'] == '' else json_data['pna_city'],
+                        'pna_province': '' if 'pna_province' not in json_data or json_data['pna_province'] == '' else json_data['pna_province'],
                         'vehicle': 'SI' if json_data['vehicle'] or
                                            json_data['vehicle'] == 'True' else 'NO',
                         'mov': 'SI' if json_data['geographical_mobility'] or
@@ -1812,10 +1836,18 @@ def profile():
                     'email': json_data['email']
                 }
             }
+            if role.CanVerifyMember and role.CanActiveMember:
+                context['admin_member'] = True
+            if role.CanVerifyCompany and role.CanActiveCompany:
+                context['admin_company'] = True
+            if role.CanVerifyOffer and role.CanActiveOffer:
+                context['admin_offer'] = True
+            if role.CanMakeSection and role.CanVerifyOffer and role.CanActiveOffer:
+                context['publisher'] = True
         else:
             context = {}
         # print(context)
-        return render_template("profile.html", context=context, payload=payload)
+        return render_template("profile.html", context=context, payload=payload, profile=True)
     return render_template("profile.html")
 
 
@@ -1954,8 +1986,8 @@ def admin_single_member(uid: str):
                     'gender': 'Hombre' if json_data['gender'] == 'H' else (
                         'Mujer' if json_data['gender'] == 'M' else 'Otro'),
                     'profilepic': "" if json_data['profile_picture'] is None
-                                        or json_data['profile_picture'] == "" else
-                    json_data['profile_picture'],
+                                    or json_data['profile_picture'] == "" else
+                        json_data['profile_picture'],
                     'birthdate': json_data['birth_date'],
                     'mobile': json_data['mobile'],
                     'landline': json_data['land_line'],
@@ -1963,9 +1995,15 @@ def admin_single_member(uid: str):
                     'cp': json_data['cp'],
                     'city': json_data['city'],
                     'province': json_data['province'],
+                    'pna_address': '' if 'pna_address' not in json_data or json_data['pna_address'] == '' else
+                    json_data['pna_address'],
+                    'pna_cp': '' if 'pna_cp' not in json_data or json_data['pna_cp'] == '' else json_data['pna_cp'],
+                    'pna_city': '' if 'pna_city' not in json_data or json_data['pna_city'] == '' else json_data[
+                        'pna_city'],
+                    'pna_province': '' if 'pna_province' not in json_data or json_data['pna_province'] == '' else
+                    json_data['pna_province'],
                     'vehicle': 'SI' if json_data['vehicle'] or
-                                       json_data[
-                                           'vehicle'] == 'True' else 'NO',
+                                       json_data['vehicle'] == 'True' else 'NO',
                     'mov': 'SI' if json_data['geographical_mobility'] or
                                    json_data['geographical_mobility'] == 'True' else 'NO',
                     'handicap': json_data['disability_grade']
@@ -2038,12 +2076,37 @@ def admin_single_company(uid: str):
         return forbidden()
 
 
-@app.route("/privacy")
+@app.route('/admin/offer', methods=['GET'])
+def admin_offer():
+    pass
+
+
+@app.route('/admin/offer/<uid>', methods=['GET'])
+def admin_single_offer(uid):
+    pass
+
+
+@app.route('/admin/section', methods=['GET'])
+def admin_section():
+    pass
+
+
+@app.route('/admin/section/<uid>', methods=['GET'])
+def admin_single_section(uid):
+    pass
+
+
+@app.route('/job', methods=['GET'])
+def job_opportunities():
+    return "<h1> IN PROGRESS :S </h1>"
+
+
+@app.route("/privacy", methods=["GET"])
 def privacy():
     return "<h1>IN PROGRESS</h1>"
 
 
-@app.route("/legal")
+@app.route("/legal", methods=["GET"])
 def legal():
     return "<h1>IN PROGRESS</h1>"
 

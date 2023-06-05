@@ -4,6 +4,14 @@
 <div class="foreign_container w80 container shadow pad-2rem">
     <h1 class="">Perfil</h1>
     <hr class="bg-color-darker-blue mar-bot-3rem">
+    {% if profile %}
+        <div class="w95 dis-flex flex-right">
+            <a href="{{ url_for('logout') }}" class="sign-out font-14pt">
+                Cerrar Sesión
+                <i class="fa fa-sign-out" aria-hidden="true"></i>
+            </a>
+        </div>
+    {% endif %}
     <!-- check if context is defined-->
     {% if context is defined and not none %}
         <h2 class="mar-bot-1rem">Datos de cuenta</h2>
@@ -28,9 +36,13 @@
                 <label class="dis-block font-16pt">Documento de identificación (DNI/NIE) :</label>
                 <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-dni" name="member-dni" value="{{ context['member']['dni'] }}" disabled>
                 <label class="dis-block font-16pt">Sexo :</label>
-                <p class="mar-bot-2rem">{{ context['member']['gender'] }}</p>
+                <p class="pad-input font-14pt mar-bot-2rem">{{ context['member']['gender'] }}</p>
                 <label class="dis-block font-16pt" >Foto de perfil :</label>
-                <p class="mar-bot-2rem">{{ context['member']['profilepic'] }}</p>
+                {% if context['member']['profilepic'] != "" %}
+                    <img class="mar-bot-2rem" src="data:;base64,{{ context['member']['profilepic'] }}">
+                {% else %}
+                    <p class="pad-input font-14pt mar-bot-2rem">No hay imagen</p>
+                {% endif %}
                 <label class="dis-block font-16pt">Fecha de nacimiento :</label>
                 <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-birthdate" name="member-birthdate" value="{{ context['member']['birthdate'] }}" disabled>
                 <label class="dis-block font-16pt" >Teléfono móvil :</label>
@@ -46,21 +58,28 @@
                 <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-city" name="member-city" value="{{ context['member']['city'] }}" disabled>
                 <label class="dis-block font-16pt" >Provincia :</label>
                 <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-province" name="member-province" value="{{ context['member']['province'] }}" disabled>
-                {% if context['member']['pna'] %}
+                {% if context['member']['pna_address'] != "" %}
+                    <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
                     <label class="dis-block font-16pt" >Dirección de notificaciones postales :</label>
-                    <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-pna-address" name="member-pna-address" value="{{ context['member']['pna']['address'] }}" disabled>
+                    <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-pna-address" name="member-pna-address" value="{{ context['member']['pna_address'] }}" disabled>
+                {% endif %}
+                {% if context['member']['pna_cp'] != "" %}
                     <label class="dis-block font-16pt" >C.P. de notificaciones postales :</label>
-                    <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-pna-cp" name="member-pna-cp" value="{{ context['member']['pna']['cp'] }}" disabled>
+                    <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-pna-cp" name="member-pna-cp" value="{{ context['member']['pna_cp'] }}" disabled>
+                {% endif %}
+                {% if context['member']['pna_city'] != "" %}
                     <label class="dis-block font-16pt" >Ciudad de notificaciones postales :</label>
-                    <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-pna-city" name="member-pna-city" value="{{ context['member']['pna']['city'] }}" disabled>
+                    <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-pna-city" name="member-pna-city" value="{{ context['member']['pna_city'] }}" disabled>
+                {% endif %}
+                {% if context['member']['pna_address'] != "" %}
                     <label class="dis-block font-16pt" >Provincia de notificaciones postales :</label>
-                    <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-pna-province" name="member-pna-province" value="{{ context['member']['pna']['province'] }}" disabled>
+                    <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-pna-province" name="member-pna-province" value="{{ context['member']['pna_province'] }}" disabled>
                 {% endif %}
                 <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
                 <label class="dis-block font-16pt mar-bot-1rem">Vehículo propio :</label>
-                <p class="mar-bot-2rem">{{ context['member']['vehicle'] }}</p>
+                <p class="pad-input font-14pt mar-bot-2rem">{{ context['member']['vehicle'] }}</p>
                 <label class="dis-block font-16pt mar-bot-1rem">Disponibilidad geográfica :</label>
-                <p class="mar-bot-2rem">{{ context['member']['mov'] }}</p>
+                <p class="pad-input font-14pt mar-bot-2rem">{{ context['member']['mov'] }}</p>
                 <label class="dis-block font-16pt">Grado de discapacidad :</label>
                 <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-handicap" name="member-handicap" value="{{ context['member']['handicap'] }}" disabled>
             {% else %}
@@ -107,6 +126,32 @@
         {% else %}
             <h2 class="mar-bot-1rem">No tiene información adicional</h2>
         {% endif %}
+        <div class="w60 dis-flex btns">
+            {% if 'admin_member' in context %}
+                <a href="{{ url_for('admin_member') }}" class="adm-btn">
+                    <i class="fa fa-users fa-3x" aria-hidden="true"></i>
+                    Gestionar<br>Miembros
+                </a>
+            {% endif %}
+            {% if 'admin_company' in context %}
+                <a href="{{ url_for('admin_company') }}" class="adm-btn">
+                    <i class="fa fa-building fa-3x" aria-hidden="true"></i>
+                    Gestionar<br>Empresas
+                </a>
+            {% endif %}
+            {% if 'admin_offer' in context %}
+                <a href="{{ url_for('admin_offer') }}" class="adm-btn">
+                    <i class="fa fa-briefcase fa-3x" aria-hidden="true"></i>
+                    Gestionar<br>Ofertas
+                </a>
+            {% endif %}
+            {% if 'publisher' in context %}
+                <a href="{{ url_for('admin_section') }}" class="adm-btn">
+                    <i class="fa fa-newspaper-o fa-3x" aria-hidden="true"></i>
+                    Gestionar<br>Publicaciones
+                </a>
+            {% endif %}
+        </div>
         <!------COMPROBACIOOOONNNNNNNNN DE SUBMARINO ROJIBLANCO FIN------------------------>
     {% else %}
         <h2 class="mar-bot-1rem">No se ha podido cargar la información de usuario</h2>

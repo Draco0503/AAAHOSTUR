@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import datetime as dt
 from . import db
+from base64 import b64encode
 
 @dataclass()
 class Member(db.Model):
@@ -52,7 +53,7 @@ class Member(db.Model):
                 'gender': self.Gender,
                 'land_line': self.Land_Line,
                 'mobile': self.Mobile,
-                'profile_picture': self.Profile_Picture,
+                'profile_picture': "" if self.Profile_Picture is None or self.Profile_Picture == "" else b64encode(self.Profile_Picture).decode(),
                 'birth_date': self.Birth_Date,
                 'vehicle': self.Vehicle,
                 'geographical_mobility': self.Geographical_Mobility,
