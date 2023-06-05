@@ -1370,10 +1370,10 @@ def api_register_offer_job_demand():
             language_data_list= Language.Language.query.all() # quicker query than language_list()
             qualification_data_list= Qualification.Qualification.query.all()
             job_category_data_list= Job_Category.Job_Category.query.all()
-            shift_data_list= list(map(int, Shift))
-            schedule_data_list= list(map(int, Schedule))
-            working_day_data_list= list(map(int, Working_Day))
-            print(list(map(int, Shift)))
+            # shift_data_list= list(map(int, Shift))
+            # schedule_data_list= list(map(int, Schedule))
+            # working_day_data_list= list(map(int, Working_Day))
+            # print(list(map(int, Shift)))
             # TODO falta el contract type
             contract_type_data_list= list(map(int, Working_Day))
             response = {
