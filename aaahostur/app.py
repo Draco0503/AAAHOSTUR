@@ -7,11 +7,15 @@ from flask import Flask, request, session, json, render_template, Response, redi
 from models import db
 from models import Language, Job_Category, Qualification, Role, User, Member, Member_Account, Member_Language, \
     Academic_Profile, Professional_Profile, Section, Company, Company_Account, Offer, Member_Offer, Job_Demand, \
-    Job_Demand_Language, Job_Demand_Qualification, Job_Demand_Category, Review, Shift, Working_Day, Schedule
+    Job_Demand_Language, Job_Demand_Qualification, Job_Demand_Category, Review
 from config import config
 from security import security
 import utils
-from enum import IntEnum
+# import enums correctly important!
+from  models.Shift import Shift
+from  models.Schedule import Schedule
+from  models.Working_Day import Working_Day
+from  models.Contract_Type import Contract_Type
 
 # region CONSTANTS
 
@@ -1361,27 +1365,27 @@ def api_register_member():
         return internal_server_error(ERROR_500_DEFAULT_MSG + " :: {}".format(ex))
 
 
-# method [GET] --> to get object lists for offer form
-# method [POST] --> to get data from form and save an offer
 @app.route('/api_v0/register/offer', methods=['GET', 'POST'])
 def api_register_offer_job_demand():
     if request.method == "GET":
         try:
-            print('api_register_offer_job_demand')
-            language_data_list = Language.Language.query.all()  # quicker query than language_list()
+            language_data_list = Language.Language.query.all()
             qualification_data_list = Qualification.Qualification.query.all()
             job_category_data_list = Job_Category.Job_Category.query.all()
-            # shift_data_list= [Shift.CONTINUOUS, Shift.SPLIT]
-            # schedule_data_list= list(map(int, Schedule))
-            # working_day_data_list= list(map(int, Working_Day))
-            # print(list(map(int, Shift)))
-            # TODO falta el contract type
-            # contract_type_data_list= list(map(int, Working_Day))
+            shift_data_list= [shift.value for shift in Shift]
+            schedule_data_list= [shift.value for shift in Schedule]
+            working_day_data_list= [shift.value for shift in Working_Day]
+            contract_type_data_list= [shift.value for shift in Contract_Type]
+
             response = {
                 'offer_add_get': {
                     'language_list': [language.to_json() for language in language_data_list],
                     'qualification_list': [qualification.to_json() for qualification in qualification_data_list],
-                    'job_category_list': [job_category.to_json() for job_category in job_category_data_list]
+                    'job_category_list': [job_category.to_json() for job_category in job_category_data_list],
+                    'shift_list': shift_data_list,
+                    'schedule_list': schedule_data_list,
+                    'working_day_list': working_day_data_list,
+                    'contract_type_list': contract_type_data_list
                 }
             }
             return Response(json.dumps(response), status=200)
@@ -1963,7 +1967,11 @@ def register_offer_job_demand():
             return render_template("addoffer.html",
                                    language_list=offer_data_request.json()['offer_add_get']['language_list'],
                                    qualification_list=offer_data_request.json()['offer_add_get']['qualification_list'],
-                                   job_category_list=offer_data_request.json()['offer_add_get']['job_category_list'])
+                                   job_category_list=offer_data_request.json()['offer_add_get']['job_category_list'], 
+                                   shift_list=offer_data_request.json()['offer_add_get']['shift_list'], 
+                                   schedule_list=offer_data_request.json()['offer_add_get']['schedule_list'], 
+                                   working_day_list=offer_data_request.json()['offer_add_get']['working_day_list'], 
+                                   contract_type_list=offer_data_request.json()['offer_add_get']['contract_type_list'])
 
         error = offer_data_request.json()['message']
         return render_template("addoffer.html", error=error)
