@@ -22,7 +22,7 @@ CREATE TABLE Member (
     Disability_Grade INT DEFAULT 0,
     Join_Date VARCHAR(256) NOT NULL,
     Active BOOLEAN DEFAULT TRUE,
-    Cancelation_Date VARCHAR(256),
+    Cancellation_Date VARCHAR(256),
     Verify BOOLEAN DEFAULT FALSE,
     Id_User_Verify INT,
     PRIMARY KEY (ID_MEMBER),
