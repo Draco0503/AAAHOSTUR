@@ -15,7 +15,7 @@
     </button>
     <header id="up">
         <div id="header-decorator" class="nav primary-nav">
-            <a href="/">
+            <a href="{{ url_for('index') }}">
                 <img id="logo" src="{{ url_for('static', filename='resources/logo.png') }}"
                     alt="aaahostur hosteleria turismo"/>
             </a>
@@ -23,7 +23,7 @@
         </div>
         <nav id="navbar" class="nav navbar">
             <div class="left">
-                <a id="navbar-logo" class="navbar-item" href="index.html">
+                <a id="navbar-logo" class="navbar-item" href="{{ url_for('index') }}">
                     <img class="logo" src="{{ url_for('static', filename='resources/logo.png') }}" alt="aaahostur hosteleria turismo">
                     <div class="yellow-title">AAAHOSTUR</div>
                 </a>

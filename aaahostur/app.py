@@ -7,11 +7,15 @@ from flask import Flask, request, session, json, render_template, Response, redi
 from models import db
 from models import Language, Job_Category, Qualification, Role, User, Member, Member_Account, Member_Language, \
     Academic_Profile, Professional_Profile, Section, Company, Company_Account, Offer, Member_Offer, Job_Demand, \
-    Job_Demand_Language, Job_Demand_Qualification, Job_Demand_Category, Review, Shift, Working_Day, Schedule
+    Job_Demand_Language, Job_Demand_Qualification, Job_Demand_Category, Review
 from config import config
 from security import security
 import utils
-from enum import IntEnum
+# import enums correctly important!
+from  models.Shift import Shift
+from  models.Schedule import Schedule
+from  models.Working_Day import Working_Day
+from  models.Contract_Type import Contract_Type
 
 # region CONSTANTS
 
@@ -1361,27 +1365,27 @@ def api_register_member():
         return internal_server_error(ERROR_500_DEFAULT_MSG + " :: {}".format(ex))
 
 
-# method [GET] --> to get object lists for offer form
-# method [POST] --> to get data from form and save an offer
 @app.route('/api_v0/register/offer', methods=['GET', 'POST'])
 def api_register_offer_job_demand():
     if request.method == "GET":
         try:
-            print('api_register_offer_job_demand')
-            language_data_list= Language.Language.query.all() # quicker query than language_list()
-            qualification_data_list= Qualification.Qualification.query.all()
-            job_category_data_list= Job_Category.Job_Category.query.all()
-            # shift_data_list= [Shift.CONTINUOUS, Shift.SPLIT]
-            # schedule_data_list= list(map(int, Schedule))
-            # working_day_data_list= list(map(int, Working_Day))
-            # print(list(map(int, Shift)))
-            # TODO falta el contract type
-            # contract_type_data_list= list(map(int, Working_Day))
+            language_data_list = Language.Language.query.all()
+            qualification_data_list = Qualification.Qualification.query.all()
+            job_category_data_list = Job_Category.Job_Category.query.all()
+            shift_data_list= [shift.value for shift in Shift]
+            schedule_data_list= [shift.value for shift in Schedule]
+            working_day_data_list= [shift.value for shift in Working_Day]
+            contract_type_data_list= [shift.value for shift in Contract_Type]
+
             response = {
                 'offer_add_get': {
                     'language_list': [language.to_json() for language in language_data_list],
                     'qualification_list': [qualification.to_json() for qualification in qualification_data_list],
-                    'job_category_list': [job_category.to_json() for job_category in job_category_data_list]
+                    'job_category_list': [job_category.to_json() for job_category in job_category_data_list],
+                    'shift_list': shift_data_list,
+                    'schedule_list': schedule_data_list,
+                    'working_day_list': working_day_data_list,
+                    'contract_type_list': contract_type_data_list
                 }
             }
             return Response(json.dumps(response), status=200)
@@ -1437,7 +1441,8 @@ def api_register_offer_job_demand():
             holidays = "" if not key_in_request_form('holidays') else data['holidays']
             experience = "" if not key_in_request_form('experience') else data['experience']
             vehicle = False if not key_in_request_form('vehicle') else data['vehicle']
-            geographical_mobility = False if not key_in_request_form('geographical_mobility') else data['geographical_mobility']
+            geographical_mobility = False if not key_in_request_form('geographical_mobility') else data[
+                'geographical_mobility']
             others = "" if not key_in_request_form('others') else data['others']
 
             db.session.add(offer)
@@ -1456,6 +1461,22 @@ def api_register_offer_job_demand():
 
             db.session.add(job_demand)
             db.session.refresh(job_demand)
+
+
+            # para poder pillar el id de la job-demand que se ha insertado
+            inserted_job_demand = Job_Demand.Job_Demand.query.filter_by(Vacancies=data['vacancies'],
+                                                                        Schedule=data['schedule'],
+                                                                        Shift=data['shift'],
+                                                                        Working_Day=data['working_day']).first()
+            job_demand_id = inserted_job_demand.ID_JOB_DEMAND
+            # o con esto
+            # Refrescar job_demand  para obtener el ID actualizado de la base de datos
+            job_demand_id = job_demand.ID_JOB_DEMAND
+            job_deman_qualification = Job_Demand_Qualification.Job_Demand_Qualification(Id_Qualification=data[''],
+                                                                                        # igualar al id de la  job_demand insertada
+                                                                                        Id_Job_Demand=job_demand_id
+                                                                                        )
+
 
             db.session.commit()
             msg = {"add_offer": "SUCCESS"}
@@ -1774,34 +1795,37 @@ def profile():
         if role.IsMember:
             context = {
                 'user': {
-                        'email': json_data['email']
-                    },
+                    'email': json_data['email']
+                },
                 'member': {
-                        'name': json_data['name'],
-                        'surname': json_data['surname'],
-                        'dni': json_data['dni'],
-                        'gender': 'Hombre' if json_data['gender'] == 'H' else (
-                            'Mujer' if json_data['gender'] == 'M' else 'Otro'),
-                        'profilepic': "" if json_data['profile_picture'] is None
-                                            or json_data['profile_picture'] == "" else
-                        json_data['profile_picture'],
-                        'birthdate': json_data['birth_date'],
-                        'mobile': json_data['mobile'],
-                        'landline': json_data['land_line'],
-                        'address': json_data['address'],
-                        'cp': json_data['cp'],
-                        'city': json_data['city'],
-                        'province': json_data['province'],
-                        'pna_address': '' if 'pna_address' not in json_data or json_data['pna_address'] == '' else json_data['pna_address'],
-                        'pna_cp': '' if 'pna_cp' not in json_data or json_data['pna_cp'] == '' else json_data['pna_cp'],
-                        'pna_city': '' if 'pna_city' not in json_data or json_data['pna_city'] == '' else json_data['pna_city'],
-                        'pna_province': '' if 'pna_province' not in json_data or json_data['pna_province'] == '' else json_data['pna_province'],
-                        'vehicle': 'SI' if json_data['vehicle'] or
-                                           json_data['vehicle'] == 'True' else 'NO',
-                        'mov': 'SI' if json_data['geographical_mobility'] or
-                                       json_data['geographical_mobility'] == 'True' else 'NO',
-                        'handicap': json_data['disability_grade']
-                    }
+                    'name': json_data['name'],
+                    'surname': json_data['surname'],
+                    'dni': json_data['dni'],
+                    'gender': 'Hombre' if json_data['gender'] == 'H' else (
+                        'Mujer' if json_data['gender'] == 'M' else 'Otro'),
+                    'profilepic': "" if json_data['profile_picture'] is None
+                                        or json_data['profile_picture'] == "" else
+                    json_data['profile_picture'],
+                    'birthdate': json_data['birth_date'],
+                    'mobile': json_data['mobile'],
+                    'landline': json_data['land_line'],
+                    'address': json_data['address'],
+                    'cp': json_data['cp'],
+                    'city': json_data['city'],
+                    'province': json_data['province'],
+                    'pna_address': '' if 'pna_address' not in json_data or json_data['pna_address'] == '' else
+                    json_data['pna_address'],
+                    'pna_cp': '' if 'pna_cp' not in json_data or json_data['pna_cp'] == '' else json_data['pna_cp'],
+                    'pna_city': '' if 'pna_city' not in json_data or json_data['pna_city'] == '' else json_data[
+                        'pna_city'],
+                    'pna_province': '' if 'pna_province' not in json_data or json_data['pna_province'] == '' else
+                    json_data['pna_province'],
+                    'vehicle': 'SI' if json_data['vehicle'] or
+                                       json_data['vehicle'] == 'True' else 'NO',
+                    'mov': 'SI' if json_data['geographical_mobility'] or
+                                   json_data['geographical_mobility'] == 'True' else 'NO',
+                    'handicap': json_data['disability_grade']
+                }
             }
         elif role.IsCompany:
             context = {
@@ -1834,7 +1858,7 @@ def profile():
                 context['admin_company'] = True
             if role.CanVerifyOffer and role.CanActiveOffer:
                 context['admin_offer'] = True
-            if role.CanMakeSection and role.CanVerifyOffer and role.CanActiveOffer:
+            if role.CanMakeSection:
                 context['publisher'] = True
         else:
             context = {}
@@ -1843,12 +1867,21 @@ def profile():
     return render_template("profile.html")
 
 
+def check_company_params() -> str:
+    return ""
+
+
 @app.route("/register/company", methods=["GET", "POST"])
 def register_company():
     if request.method == "POST":
         error = "Las contraseñas no coinciden"
         data = request.form
         if data["user-pwd"] == data["user-pwd-2"]:
+            error = check_company_params()
+            if error != "":
+                if navigator_user_agent():
+                    return render_template("signincompany.html", error=error)
+                return bad_request(error)
             user_company_data_form = {
                 "email": request.form["user-email"],
                 "passwd": request.form["user-pwd"],
@@ -1878,8 +1911,7 @@ def register_company():
                     error = user_created.json()["message"]
                 else:
                     error = 'DEFAULT ERROR MESSAGE'
-                print(user_created.json())
-                error = user_created.json()["message"]
+
         return render_template("signincompany.html", error=error)
     elif request.method == "GET":
         return render_template("signincompany.html")
@@ -1889,7 +1921,7 @@ def register_company():
 
 # TODO
 def check_offer_params() -> str:
-    pass
+    return ""
 
 
 @app.route("/register/offer", methods=["GET", "POST"])
@@ -1906,18 +1938,19 @@ def register_offer_job_demand():
             "workplace_address": data["offer-workplace-address"],
             "contact_name": data["offer-contact-name"],
             "contact_phone": data["offer-contact-phone"],
-            "contact_email": data["member-surname"],
-            "extra-data": None if not key_in_request_form('pna_cb') or data['pna_cb'] == "" else data["pna_cb"],
+            "contact_email": data["offer-contact-email"],
             "contact_name_2": data["offer-contact-name-2"],
             "contact_phone_2": data["offer-contact-phone-2"],
-            "contact_email_2": data["offer-contact-email-2"],           
+            "contact_email_2": data["offer-contact-email-2"],
             "vacancies": data["job-demand-vacancies"],
+            "qualification": data["qualification"],
             "monthly_salary": data["job-demand-monthly-salary"],
             "contract_type": data["job-demand-contract-type"],
             "schedule": data["rb-group-job-demand-schedule"],
             "working_day": data["rb-group-job-demand-working-day"],
             "shift": data["rb-group-job-demand-shift"],
             "holidays": data["job-demand-holidays"],
+            "language": data["language"],
             "experience": data["job-demand-experience"],
             "vehicle": True if not key_in_request_form('rb-group-car') or data["rb-group-car"] == "y" else False,
             "geographical_mobility": True if not key_in_request_form('rb-group-mov') or data[
@@ -1934,14 +1967,18 @@ def register_offer_job_demand():
             error = offer_created.json()["offer_add"] or offer_created.json()["message"]
             return render_template("addoffer.html", error=error)
     elif request.method == "GET":
-        offer_data_request = requests.get("http://localhost:5000/api_v0/register/offer", 
+        offer_data_request = requests.get("http://localhost:5000/api_v0/register/offer",
                                           cookies=request.cookies)
         if offer_data_request.status_code == 200:
-            return render_template("addoffer.html", 
-                                   language_list= offer_data_request.json()['offer_add_get']['language_list'],
-                                   qualification_list= offer_data_request.json()['offer_add_get']['qualification_list'],
-                                   job_category_list= offer_data_request.json()['offer_add_get']['job_category_list'])
-        
+            return render_template("addoffer.html",
+                                   language_list=offer_data_request.json()['offer_add_get']['language_list'],
+                                   qualification_list=offer_data_request.json()['offer_add_get']['qualification_list'],
+                                   job_category_list=offer_data_request.json()['offer_add_get']['job_category_list'], 
+                                   shift_list=offer_data_request.json()['offer_add_get']['shift_list'], 
+                                   schedule_list=offer_data_request.json()['offer_add_get']['schedule_list'], 
+                                   working_day_list=offer_data_request.json()['offer_add_get']['working_day_list'], 
+                                   contract_type_list=offer_data_request.json()['offer_add_get']['contract_type_list'])
+
         error = offer_data_request.json()['message']
         return render_template("addoffer.html", error=error)
     else:
@@ -1990,8 +2027,8 @@ def admin_single_member(uid: str):
                     'gender': 'Hombre' if json_data['gender'] == 'H' else (
                         'Mujer' if json_data['gender'] == 'M' else 'Otro'),
                     'profilepic': "" if json_data['profile_picture'] is None
-                                    or json_data['profile_picture'] == "" else
-                        json_data['profile_picture'],
+                                        or json_data['profile_picture'] == "" else
+                    json_data['profile_picture'],
                     'birthdate': json_data['birth_date'],
                     'mobile': json_data['mobile'],
                     'landline': json_data['land_line'],

@@ -44,6 +44,7 @@
         <!-- SELECT (get <JOB_CATEGORY> data) -->
         <select class="w60 pad-input font-14pt mar-bot-2rem" name="job-category" id="job-category" required>
             {% if job_category_list is defined and not none %}
+                <option disabled selected hidden value>Selecciona...</option>
                 {% for job_category in job_category_list %}
                     <option value="{{ job_category['id_job_category'] }}">{{ job_category['name'] }}</option>
                 {% endfor %}
@@ -53,7 +54,7 @@
         </select>
         <label class="dis-block font-16pt" for="qualification">Titulación de preferencia  </label>
         <!-- SELECT (get <QUALIFICATION> data) -->
-        <select class="w60 pad-input font-14pt mar-bot-2rem" name="qualification" id="qualification" required>
+        <select class="w60 pad-input font-14pt mar-bot-2rem" name="qualification" id="qualification">
             {% if qualification_list is defined and not none %}
                     <option disabled selected hidden value>Selecciona...</option>
                     <option value="">Sin preferencia</option>
@@ -65,78 +66,75 @@
             {% endif %}
         </select>
         <label class="dis-block font-16pt" for="job-demand-vacancies">Cantidad de puestos vacantes <span>*</span></label>
-        <input class="w60 pad-input font-14pt mar-bot-2rem" type="number" id="job-demand-vacancies" name="job-demand-vacancies" required>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="number" min="1" step="1" id="job-demand-vacancies" name="job-demand-vacancies" required>
         <label class="dis-block font-16pt" for="job-demand-working-day">Tipo de jornada <span>*</span></label>
         <!-- RADIOGROUP (get <WORKING_DAY> data) -->
         <div id="rbgroup-job-demand-working-day" class="mar-bot-2rem">
-            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
-                Media
-                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb1" value="Media" checked>
-                <span class="radiomark"></span>
-            </label>                
-            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
-                Completa
-                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb2" value="Completa">
-                <span class="radiomark"></span>
-            </label>
-            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
-                Fines de semana
-                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb3" value="Fines de semana">
-                <span class="radiomark"></span>
-            </label>
-            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
-                Por horas
-                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb4" value="Por horas">
-                <span class="radiomark"></span>
-            </label>
-            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
-                Extras
-                <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-rb5" value="Extras">
-                <span class="radiomark"></span>
-            </label>
+            {% if working_day_list is defined and not none %}
+                {% for working_day in working_day_list %}
+                    {% if working_day == 'Media' %}
+                        <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
+                            {{ working_day }}
+                            <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-{{ working_day }}" value="{{ working_day }}" checked>
+                            <span class="radiomark"></span>
+                        </label>  
+                    {% else %}
+                    <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
+                        {{ working_day }}
+                        <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-{{ working_day }}" value="{{ working_day }}">
+                        <span class="radiomark"></span>
+                    </label>  
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+            <p>Ha habido un error cargando la lista de jornadas</p>
+            {% endif %}
         </div>
         <label class="dis-block font-16pt" for="job-demand-shift">Turno <span>*</span></label>
         <!-- RADIOGROUP (get <SHIFT> data) -->
         <div id="rbgroup-job-demand-shift" class="mar-bot-2rem">
-            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-shift', this)">
-                Seguido
-                <input class="rbgroup-job-demand-shift" type="radio" name="rb-group-job-demand-shift" id="rbgroup-job-demand-shift-rb1" value="S" checked>
-                <span class="radiomark"></span>
-            </label>                
-            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-shift', this)">
-                Partido
-                <input class="rbgroup-job-demand-shift" type="radio" name="rb-group-job-demand-shift" id="rbgroup-job-demand-shift-rb2" value="P">
-                <span class="radiomark"></span>
-            </label>
-            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-shift', this)">
-                Rotativo
-                <input class="rbgroup-job-demand-shift" type="radio" name="rb-group-job-demand-shift" id="rbgroup-job-demand-shift-rb3" value="R">
-                <span class="radiomark"></span>
-            </label>
-            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-shift', this)">
-                Mixto
-                <input class="rbgroup-job-demand-shift" type="radio" name="rb-group-job-demand-shift" id="rbgroup-job-demand-shift-rb4" value="MX">
-                <span class="radiomark"></span>
-            </label>
+            {% if shift_list is defined and not none %}
+                {% for shift in shift_list %}
+                    {% if shift == 'Seguido' %}
+                        <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-shift', this)">
+                            {{ shift }}
+                            <input class="rbgroup-job-demand-shift" type="radio" name="rb-group-job-demand-shift" id="rbgroup-job-demand-shift-{{ shift }}" value="{{ shift }}" checked>
+                            <span class="radiomark"></span>
+                        </label>
+                    {% else %}
+                        <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-shift', this)">
+                            {{ shift }}
+                            <input class="rbgroup-job-demand-shift" type="radio" name="rb-group-job-demand-shift" id="rbgroup-job-demand-shift-{{ shift }}" value="{{ shift }}">
+                            <span class="radiomark"></span>
+                        </label>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+            <p>Ha habido un error cargando la lista de turnos</p>
+            {% endif %}
         </div>
         <label class="dis-block font-16pt" for="job-demand-schedule">Horario <span>*</span></label>
         <!-- RADIOGROUP (get <SCHEDULE> data) -->
         <div id="rbgroup-job-demand-schedule" class="mar-bot-2rem">
-            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-schedule', this)">
-                Mañana
-                <input class="rbgroup-job-demand-schedule" type="radio" name="rb-group-job-demand-schedule" id="rbgroup-job-demand-schedule-rb1" value="M" checked>
-                <span class="radiomark"></span>
-            </label>                
-            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-schedule', this)">
-                Tarde
-                <input class="rbgroup-job-demand-schedule" type="radio" name="rb-group-job-demand-schedule" id="rbgroup-job-demand-schedule-rb2" value="T">
-                <span class="radiomark"></span>
-            </label>
-            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-schedule', this)">
-                Mixto
-                <input class="rbgroup-job-demand-schedule" type="radio" name="rb-group-job-demand-schedule" id="rbgroup-job-demand-schedule-rb3" value="MX">
-                <span class="radiomark"></span>
-            </label>
+            {% if schedule_list is defined and not none %}
+                {% for schedule in schedule_list %}
+                    {% if schedule == 'Mañana' %}
+                        <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-schedule', this)">
+                            {{ schedule }}
+                            <input class="rbgroup-job-demand-schedule" type="radio" name="rb-group-job-demand-schedule" id="rbgroup-job-demand-schedule-{{ schedule }}" value="{{ schedule }}" checked>
+                            <span class="radiomark"></span>
+                        </label>    
+                    {% else %}
+                        <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-schedule', this)">
+                            {{ schedule }}
+                            <input class="rbgroup-job-demand-schedule" type="radio" name="rb-group-job-demand-schedule" id="rbgroup-job-demand-schedule-{{ schedule }}" value="{{ schedule }}">
+                            <span class="radiomark"></span>
+                        </label> 
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+            <p>Ha habido un error cargando la lista de turnos</p>
+            {% endif %}
         </div>
         <label class="dis-block font-16pt" for="job-demand-monthly-salary">Salario mensual </label>
         <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="job-demand-monthly-salary" name="job-demand-monthly-salary" required>
@@ -144,6 +142,8 @@
         <!-- SELECT (get <CONTRACT_TYPE> data) -->
         <select class="w60 pad-input font-14pt mar-bot-2rem" name="job-demand-contract-type" id="job-demand-contract-type" required>
             {% if contract_type_list is defined and not none %}
+                <option disabled selected hidden value>Selecciona...</option>
+                <option value="">Sin especificar</option>
                 {% for contract_type in contract_type_list %}
                     <option value="{{ contract_type }}">{{ contract_type }}</option>
                 {% endfor %}
