@@ -1456,21 +1456,7 @@ def api_register_offer_job_demand():
 
             db.session.add(job_demand)
             db.session.refresh(job_demand)
-            # para poder pillar el id de la job-demand que se ha insertado
-            inserted_job_demand = Job_Demand.Job_Demand.query.filter_by(Vacancies=data['vacancies'],
-                                                     Schedule=data['schedule'],
-                                                     Shift=data['shift'],
-                                                     Working_Day=data['working_day']).first()
-            job_demand_id = inserted_job_demand.ID_JOB_DEMAND
-            # o con esto
-            # Refrescar job_demand  para obtener el ID actualizado de la base de datos
-            job_demand_id = job_demand.ID_JOB_DEMAND
-            job_deman_qualification = Job_Demand_Qualification.Job_Demand_Qualification(Id_Qualification=data[''],
-                                                                                        # igualar al id de la  job_demand insertada
-                                                                                        Id_Job_Demand = job_demand_id
-            )
 
-            db.session.add(job_deman_qualification)
             db.session.commit()
             msg = {"add_offer": "SUCCESS"}
             return Response(json.dumps(msg), status=200)
@@ -1532,13 +1518,15 @@ def api_register_company():
                                   Contact_Phone=data['contact_phone'],
                                   Contact_Email=data['contact_email'],
                                   Description=description)
+        print(company)
         db.session.add(company)
         db.session.commit()
         msg = {'register_company': 'SUCCESS'}
         return Response(json.dumps(msg), status=200)
+        
     except Exception as ex:
         db.session.rollback()
-        return internal_server_error(ERROR_500_DEFAULT_MSG)
+        return internal_server_error(ERROR_500_DEFAULT_MSG + " " + ex)
 
 
 @app.route("/api_v0/admin/member", methods=["GET"])
@@ -1884,6 +1872,13 @@ def register_company():
             if user_created.status_code == 200:
                 return redirect(url_for("login"))  # TODO
             else:
+                if 'user_add' in user_created.json():
+                    error = user_created.json()["user_add"]
+                elif 'message' in user_created.json():
+                    error = user_created.json()["message"]
+                else:
+                    error = 'DEFAULT ERROR MESSAGE'
+                print(user_created.json())
                 error = user_created.json()["message"]
         return render_template("signincompany.html", error=error)
     elif request.method == "GET":
@@ -1929,6 +1924,7 @@ def register_offer_job_demand():
                 "rb-group-mov"] == "y" else False,
             "others": data["job-demand-others"]
         }
+        print(offer_job_demand_data_form)
         offer_created = requests.post('http://localhost:5000/api_v0/register/offer', data=offer_job_demand_data_form,
                                       cookies=request.cookies)
         # Check if the user has been created
