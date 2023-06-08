@@ -1,8 +1,8 @@
 DROP TABLE IF EXISTS Offer;
 CREATE TABLE Offer(
     ID_OFFER INT NOT NULL AUTO_INCREMENT,
-    Company_Name VARCHAR(512) NOT NULL,
-    Address VARCHAR(512) NOT NULL,
+    Workplace_Name VARCHAR(512) NOT NULL,
+    Workplace_Address VARCHAR(512) NOT NULL,
     Contact_Name VARCHAR(512) NOT NULL,
     Contact_Phone VARCHAR(512) NOT NULL,
     Contact_Email VARCHAR(512) NOT NULL,

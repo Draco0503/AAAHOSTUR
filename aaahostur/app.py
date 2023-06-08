@@ -1264,6 +1264,7 @@ def api_login():
 @app.route("/api_v0/register/member", methods=["POST"])
 def api_register_member():
     try:
+        print("INSERTANDO MIEMBRO")
         data = request.form
         if data is None or len(data) < 15:
             return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data len()]')
@@ -1353,6 +1354,7 @@ def api_register_member():
                                Disability_Grade=disability_grade,
                                Join_Date=data['join_date'],
                                Cancellation_Date=data['cancellation_date'])
+        print(member)
         db.session.add(member)
         db.session.commit()
         msg = {"register_member": "SUCCESS"}
@@ -1364,6 +1366,7 @@ def api_register_member():
 
 @app.route('/api_v0/register/offer', methods=['GET', 'POST'])
 def api_register_offer_job_demand():
+    print("ufghuiauf")
     if request.method == "GET":
         try:
             language_data_list = Language.Language.query.all()
@@ -1389,40 +1392,48 @@ def api_register_offer_job_demand():
         except Exception as ex:
             return internal_server_error()
     elif request.method == "POST":
-        try:
-            role, _ = user_privileges()
-            if type(role) is Response:
-                return role
-            # Now we can ask for the requirement set
-            if not role.CanMakeOffer:
-                return forbidden()
+        try:           
+            #role, _ = user_privileges()
+            #if type(role) is Response:
+                #return role
+            # Now we can ask for the requirement set         
+           # if not role.CanMakeOffer:          
+            #    return forbidden()
             data = request.form
-            if data is None or (5 > len(data) > 8):
+            print(data)
+            if data is None or (5 > len(data) > 9):
+                print("error de lengh")
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [qualification_add() - data len()]')
-            if not key_in_request_form('company_name'):
+            if not key_in_request_form('workplace_name'):
+                print("companyu")
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <company_name>')
-            if not key_in_request_form('address'):
+            if not key_in_request_form('workplace_address'):
+                print("addres")
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <address>')
             if not key_in_request_form('contact_name'):
+                print("contact")
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <contact_name>')
             if not key_in_request_form('contact_phone'):
+                print("contac_phone")
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <contact_phone>')
             if not key_in_request_form('contact_email'):
+                print("contact_email")
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <contact_email>')
-
+            print("antes d los if d contacto")
             contact_name_2 = "" if not key_in_request_form('contact_name_2') else data["contact_name_2"]
             contact_phone_2 = "" if not key_in_request_form('contact_phone_2') else data["contact_phone_2"]
             contact_email_2 = "" if not key_in_request_form('contact_email_2') else data["contact_email_2"]
 
-            offer = Offer.Offer(Company_Name=data['company_name'],
-                                Address=data['address'],
+           
+            offer = Offer.Offer(Workplace_Name=data['workplace_name'],
+                                Workplace_Address=data['workplace_address'],
                                 Contact_Name=data['contact_name'],
                                 Contact_Phone=data['contact_phone'],
                                 Contact_Email=data['contact_email'],
                                 Contact_Name_2=contact_name_2,
                                 Contact_Phone_2=contact_phone_2,
                                 Contact_Email_2=contact_email_2)
-
+           
             # job_demand validation
             if not key_in_request_form('vacancies'):
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data <vacancies>')
@@ -1433,17 +1444,27 @@ def api_register_offer_job_demand():
             if not key_in_request_form('shift'):
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data <shift>')
 
+  
             monthly_salary = "" if not key_in_request_form('monthly_salary') else data['monthly_salary']
             contract_type = "" if not key_in_request_form('contract_type') else data['contract_type']
             holidays = "" if not key_in_request_form('holidays') else data['holidays']
             experience = "" if not key_in_request_form('experience') else data['experience']
-            vehicle = False if not key_in_request_form('vehicle') else data['vehicle']
-            geographical_mobility = False if not key_in_request_form('geographical_mobility') else data[
-                'geographical_mobility']
+            vehicle = False if not key_in_request_form('vehicle') or data["vehicle"] else bool(data["vehicle"])
+            geographical_mobility = False if not key_in_request_form('geographical_mobility') or data[
+            "geographical_mobility"] \
+            else bool(data["geographical_mobility"])
             others = "" if not key_in_request_form('others') else data['others']
 
             db.session.add(offer)
 
+
+            inserted_offer = Offer.Offer.query.filter_by(Workplace_Name=data['workplace_name'],
+                                                                    Workplace_Address=data['workplace_address'],
+                                                                    Contact_Phone=data['contact_phone'],
+                                                                       Contact_Email=data['contact_email']).first()
+            
+            offer_id = inserted_offer.ID_OFFER
+            print(offer_id)
             job_demand = Job_Demand.Job_Demand(Vacancies=data['vacancies'],
                                                Monthly_Salary=monthly_salary,
                                                Contract_Type=contract_type,
@@ -1454,34 +1475,57 @@ def api_register_offer_job_demand():
                                                Experience=experience,
                                                Vehicle=vehicle,
                                                Geographical_Mobility=geographical_mobility,
-                                               Others=others)
-
+                                               Others=others,
+                                               Id_Offer = offer_id)
+           
             db.session.add(job_demand)
-            db.session.refresh(job_demand)
-            # para poder pillar el id de la job-demand que se ha insertado
-            inserted_job_demand = Job_Demand.Job_Demand.query.filter_by(Vacancies=data['vacancies'],
-                                                                        Schedule=data['schedule'],
-                                                                        Shift=data['shift'],
-                                                                        Working_Day=data['working_day']).first()
-            job_demand_id = inserted_job_demand.ID_JOB_DEMAND
-            # o con esto
+
             # Refrescar job_demand  para obtener el ID actualizado de la base de datos
-            job_demand_id = job_demand.ID_JOB_DEMAND
-            job_deman_qualification = Job_Demand_Qualification.Job_Demand_Qualification(Id_Qualification=data[''],
+            # db.session.refresh(job_demand)
+            #job_demand_id = job_demand.ID_JOB_DEMAND
+            #print(job_demand_id)
+            # o con esto
+            # para poder pillar el id de la job-demand que se ha insertado
+
+            inserted_job_demand = Job_Demand.Job_Demand.query.filter_by(Vacancies=data['vacancies'],
+                                                                    Schedule=data['schedule'],
+                                                                       Shift=data['shift'],
+                                                                        Working_Day=data['working_day']).first()
+            
+            job_demand_id = inserted_job_demand.ID_JOB_DEMAND
+            
+           
+
+            job_deman_qualification = Job_Demand_Qualification.Job_Demand_Qualification(Id_Qualification=data['qualification'],
                                                                                         # igualar al id de la  job_demand insertada
                                                                                         Id_Job_Demand=job_demand_id
                                                                                         )
+            job_demand_category = Job_Demand_Category.Job_Demand_Category(Id_Job_Category=data['job-category'],
+                                                                          Id_Job_Demand=job_demand_id
+                                                                          )
+            
+            job_demand_language = Job_Demand_Language.Job_Demand_Language(Id_Language=data['language'],
+                                                                          Id_Job_Demand=job_demand_id
+                                                                          )
+
+
             db.session.add(job_deman_qualification)
+            db.session.add(job_demand_category)
+            db.session.add(job_demand_language)
+
+
             db.session.commit()
             msg = {"add_offer": "SUCCESS"}
             return Response(json.dumps(msg), status=200)
         except Exception as ex:
             db.session.rollback()
+            print("Error:" + ex)
             return internal_server_error(ERROR_500_DEFAULT_MSG)
 
 
 @app.route("/api_v0/register/company", methods=["POST"])
 def api_register_company():
+    print("JIJIJAJA")
     try:
         data = request.form
         if data is None or len(data) < 9:
@@ -1531,13 +1575,15 @@ def api_register_company():
                                   Contact_Phone=data['contact_phone'],
                                   Contact_Email=data['contact_email'],
                                   Description=description)
+       
         db.session.add(company)
         db.session.commit()
         msg = {'register_company': 'SUCCESS'}
         return Response(json.dumps(msg), status=200)
+        
     except Exception as ex:
         db.session.rollback()
-        return internal_server_error(ERROR_500_DEFAULT_MSG)
+        return internal_server_error(ERROR_500_DEFAULT_MSG + " " + ex)
 
 
 @app.route("/api_v0/admin/member", methods=["GET"])
@@ -1887,12 +1933,15 @@ def register_company():
                 "contact_email": data["company-contact1-email"],
                 "description": data["company-desc"]
             }
+            print(user_company_data_form)
             # Check if the user has been created
             user_created = requests.post('http://localhost:5000/api_v0/register/company', data=user_company_data_form,
                                          cookies=request.cookies)
+            print(user_created)
             # Check if the user has been created
             if user_created.status_code == 200:
-                return redirect(url_for("login"))  # TODO
+                print("OK")
+                return redirect(url_for("login"))  # TODO       
             else:
                 if 'user_add' in user_created.json():
                     error = user_created.json()["user_add"]
@@ -1900,6 +1949,7 @@ def register_company():
                     error = user_created.json()["message"]
                 else:
                     error = 'DEFAULT ERROR MESSAGE'
+
         return render_template("signincompany.html", error=error)
     elif request.method == "GET":
         return render_template("signincompany.html")
@@ -1939,20 +1989,27 @@ def register_offer_job_demand():
             "shift": data["rb-group-job-demand-shift"],
             "holidays": data["job-demand-holidays"],
             "language": data["language"],
+            "job-category":data["job-category"],
             "experience": data["job-demand-experience"],
             "vehicle": True if not key_in_request_form('rb-group-car') or data["rb-group-car"] == "y" else False,
             "geographical_mobility": True if not key_in_request_form('rb-group-mov') or data[
-                "rb-group-mov"] == "y" else False,
+                    "rb-group-mov"] == "y" else False,
             "others": data["job-demand-others"]
         }
         offer_created = requests.post('http://localhost:5000/api_v0/register/offer', data=offer_job_demand_data_form,
                                       cookies=request.cookies)
         # Check if the user has been created
         if offer_created.status_code == 200:
+            print("OK")
             return redirect(url_for("login"))  # TODO redirect to success-register-page
         else:
-            error = offer_created.json()["offer_add"] or offer_created.json()["message"]
-            return render_template("addoffer.html", error=error)
+                if 'offer_add' in offer_created.json():
+                    error = offer_created.json()["offer_add"]
+                elif 'message' in offer_created.json():
+                    error = offer_created.json()["message"]
+                else:
+                    error = 'DEFAULT ERROR MESSAGE'
+        return render_template("signinmember.html", error=error)
     elif request.method == "GET":
         offer_data_request = requests.get("http://localhost:5000/api_v0/register/offer",
                                           cookies=request.cookies)

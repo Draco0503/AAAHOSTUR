@@ -162,7 +162,7 @@
                 <option disabled selected hidden value>Selecciona...</option>
                 <option value="">Sin preferencia</option>
                 {% for language in language_list %}
-                    <option value="{{ language['id_laguange'] }}">{{ language['name'] }}</option>
+                    <option value="{{ language['id_language'] }}">{{ language['name'] }}</option>                  
                 {% endfor %}
             {% else %}
                 <option>Ha habido un error cargando la lista de lenguajes</option>
