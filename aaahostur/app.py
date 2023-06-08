@@ -7,15 +7,14 @@ from flask import Flask, request, session, json, render_template, Response, redi
 from models import db
 from models import Language, Job_Category, Qualification, Role, User, Member, Member_Account, Member_Language, \
     Academic_Profile, Professional_Profile, Section, Company, Company_Account, Offer, Member_Offer, Job_Demand, \
-    Job_Demand_Language, Job_Demand_Qualification, Job_Demand_Category, Review
+    Job_Demand_Language, Job_Demand_Qualification, Job_Demand_Category, Review, Shift, Schedule, Working_Day, \
+    Contract_Type
 from config import config
 from security import security
 import utils
+
 # import enums correctly important!
-from  models.Shift import Shift
-from  models.Schedule import Schedule
-from  models.Working_Day import Working_Day
-from  models.Contract_Type import Contract_Type
+
 
 # region CONSTANTS
 
@@ -1273,14 +1272,12 @@ def api_register_member():
             return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <passwd>')
         if not key_in_request_form('email'):
             return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <email>')
-        if not key_in_request_form('role'):
-            return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <role>]')
 
         user_id = uuid.uuid4()
         user = User.User(ID_USER=user_id,
                          Passwd=sec.hashed_password(data['passwd']),
                          Email=data['email'],
-                         Id_Role=int(data['role']))
+                         Id_Role=104)
         # MEMBER VALIDATIONS
         if not key_in_request_form('name'):
             return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <name>')
@@ -1372,10 +1369,10 @@ def api_register_offer_job_demand():
             language_data_list = Language.Language.query.all()
             qualification_data_list = Qualification.Qualification.query.all()
             job_category_data_list = Job_Category.Job_Category.query.all()
-            shift_data_list= [shift.value for shift in Shift]
-            schedule_data_list= [shift.value for shift in Schedule]
-            working_day_data_list= [shift.value for shift in Working_Day]
-            contract_type_data_list= [shift.value for shift in Contract_Type]
+            shift_data_list = [shift.value for shift in Shift.Shift]
+            schedule_data_list = [schedule.value for schedule in Schedule.Schedule]
+            working_day_data_list = [working_day.value for working_day in Working_Day.Working_Day]
+            contract_type_data_list = [contract_type.value for contract_type in Contract_Type.Contract_Type]
 
             response = {
                 'offer_add_get': {
@@ -1474,7 +1471,6 @@ def api_register_offer_job_demand():
                                                                                         # igualar al id de la  job_demand insertada
                                                                                         Id_Job_Demand=job_demand_id
                                                                                         )
-
             db.session.add(job_deman_qualification)
             db.session.commit()
             msg = {"add_offer": "SUCCESS"}
@@ -1495,14 +1491,12 @@ def api_register_company():
             return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <passwd>')
         if not key_in_request_form('email'):
             return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <email>')
-        if not key_in_request_form('role'):
-            return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <role>]')
 
         user_id = uuid.uuid4()
         user = User.User(ID_USER=user_id,
                          Passwd=sec.hashed_password(data['passwd']),
                          Email=data['email'],
-                         Id_Role=int(data['role']))
+                         Id_Role=103)
         # COMPANY VALIDATIONS
         if not key_in_request_form('company_name'):
             return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <company_name>]')
@@ -1730,7 +1724,6 @@ def register_member():
             user_member_data_form = {
                 "email": data["user-email"],
                 "passwd": data["user-pwd"],
-                "role": 104,
                 "name": data["member-name"],
                 "surname": data["member-surname"],
                 "dni": data["member-dni"],
@@ -1967,10 +1960,10 @@ def register_offer_job_demand():
             return render_template("addoffer.html",
                                    language_list=offer_data_request.json()['offer_add_get']['language_list'],
                                    qualification_list=offer_data_request.json()['offer_add_get']['qualification_list'],
-                                   job_category_list=offer_data_request.json()['offer_add_get']['job_category_list'], 
-                                   shift_list=offer_data_request.json()['offer_add_get']['shift_list'], 
-                                   schedule_list=offer_data_request.json()['offer_add_get']['schedule_list'], 
-                                   working_day_list=offer_data_request.json()['offer_add_get']['working_day_list'], 
+                                   job_category_list=offer_data_request.json()['offer_add_get']['job_category_list'],
+                                   shift_list=offer_data_request.json()['offer_add_get']['shift_list'],
+                                   schedule_list=offer_data_request.json()['offer_add_get']['schedule_list'],
+                                   working_day_list=offer_data_request.json()['offer_add_get']['working_day_list'],
                                    contract_type_list=offer_data_request.json()['offer_add_get']['contract_type_list'])
 
         error = offer_data_request.json()['message']
