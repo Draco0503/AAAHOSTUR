@@ -35,15 +35,15 @@
                                 <form action="">
                                     {% if member['member_verify'] or member['member_verify'] == 'True' %}
                                         <input class="dis-none" name="verify" type="radio" value="False">
-                                        <button class="to-not-verify-btn" type="submit">
-                                            <i class="fa fa-times" aria-hidden="true"></i>
-                                            Quitar verificación
+                                        <button class="to-verify-btn" type="submit">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                            Verificado
                                         </button>
                                     {% elif not member['member_verify'] or member['member_verify'] == 'False' %}
                                         <input class="dis-none" name="verify" type="radio" value="True">
-                                        <button class="to-verify-btn" type="submit">
-                                            <i class="fa fa-check" aria-hidden="true"></i>
-                                            Verificar
+                                        <button class="to-not-verify-btn" type="submit">
+                                            <i class="fa fa-times" aria-hidden="true"></i>
+                                            No verificado
                                         </button>
                                     {% else %}
                                         ERROR
@@ -54,15 +54,15 @@
                                 <form action="">
                                     {% if member['member_active'] or member['member_active'] == 'True' %}
                                         <input class="dis-none" name="verify" type="radio" value="False">
-                                        <button class="to-not-verify-btn" type="submit">
-                                            <i class="fa fa-times" aria-hidden="true"></i>
-                                            Desactivar
+                                        <button class="to-verify-btn" type="submit">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                            Activo
                                         </button>
                                     {% elif not member['member_active'] or member['member_active'] == 'False' %}
                                         <input class="dis-none" name="verify" type="radio" value="True">
-                                        <button class="to-verify-btn" type="submit">
-                                            <i class="fa fa-check" aria-hidden="true"></i>
-                                            Activar
+                                        <button class="to-not-verify-btn" type="submit">
+                                            <i class="fa fa-times" aria-hidden="true"></i>
+                                            Inactivo
                                         </button>
                                     {% else %}
                                         ERROR
@@ -89,8 +89,14 @@
                         <div class="dis-tb-cell header">Correo de contacto</div>
                         <div class="dis-tb-cell header">Nombre de contacto</div>
                         <div class="dis-tb-cell header">Teléfono de contacto</div>
-                        <div class="dis-tb-cell header">Verificado</div>
-                        <div class="dis-tb-cell header">Activo</div>
+                        <div class="dis-tb-cell header">
+                            Verificado
+                            <i class="fa fa-info-circle link-on-white" aria-hidden="true" title="Los usuarios verificados podrán interactuar con la bolsa de empleo"></i>
+                        </div>
+                        <div class="dis-tb-cell header">
+                            Activo
+                            <i class="fa fa-info-circle link-on-white" aria-hidden="true" title="Los usuarios no activos serán borrados tras un tiempo"></i>
+                        </div>
                         <div class="dis-tb-cell header">Más...</div>
                     </div>
                     {% for company in context['company'] %}
@@ -105,15 +111,15 @@
                                 <form action="">
                                     {% if company['company_verify'] or company['company_verify'] == 'True' %}
                                         <input class="dis-none" name="verify" type="radio" value="False">
-                                        <button class="to-not-verify-btn" type="submit">
-                                            <i class="fa fa-times" aria-hidden="true"></i>
-                                            Quitar verificación
+                                        <button class="to-verify-btn" type="submit">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                            Verificado
                                         </button>
                                     {% elif not company['company_verify'] or company['company_verify'] == 'False' %}
                                         <input class="dis-none" name="verify" type="radio" value="True">
-                                        <button class="to-verify-btn" type="submit">
-                                            <i class="fa fa-check" aria-hidden="true"></i>
-                                            Verificar
+                                        <button class="to-not-verify-btn" type="submit">
+                                            <i class="fa fa-times" aria-hidden="true"></i>
+                                            No verificado
                                         </button>
                                     {% else %}
                                         ERROR
@@ -124,15 +130,15 @@
                                 <form action="">
                                     {% if company['company_active'] or company['company_active'] == 'True' %}
                                         <input class="dis-none" name="verify" type="radio" value="False">
-                                        <button class="to-not-verify-btn" type="submit">
-                                            <i class="fa fa-times" aria-hidden="true"></i>
-                                            Desactivar
+                                        <button class="to-verify-btn" type="submit">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                            Activo
                                         </button>
                                     {% elif not company['company_active'] or company['company_active'] == 'False' %}
                                         <input class="dis-none" name="verify" type="radio" value="True">
-                                        <button class="to-verify-btn" type="submit">
-                                            <i class="fa fa-check" aria-hidden="true"></i>
-                                            Activar
+                                        <button class="to-not-verify-btn" type="submit">
+                                            <i class="fa fa-times" aria-hidden="true"></i>
+                                            Inactivo
                                         </button>
                                     {% else %}
                                         ERROR
@@ -170,15 +176,15 @@
                                 <form action="">
                                     {% if offer['offer_verify'] or offer['offer_verify'] == 'True' %}
                                         <input class="dis-none" name="verify" type="radio" value="False">
-                                        <button class="to-not-verify-btn" type="submit">
-                                            <i class="fa fa-times" aria-hidden="true"></i>
-                                            Quitar verificación
+                                        <button class="to-verify-btn" type="submit">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                            Verificado
                                         </button>
                                     {% elif not offer['offer_verify'] or offer['offer_verify'] == 'False' %}
                                         <input class="dis-none" name="verify" type="radio" value="True">
-                                        <button class="to-verify-btn" type="submit">
-                                            <i class="fa fa-check" aria-hidden="true"></i>
-                                            Verificar
+                                        <button class="to-not-verify-btn" type="submit">
+                                            <i class="fa fa-times" aria-hidden="true"></i>
+                                            No verificado
                                         </button>
                                     {% else %}
                                         ERROR
@@ -189,15 +195,15 @@
                                 <form action="">
                                     {% if offer['offer_active'] or offer['offer_active'] == 'True' %}
                                         <input class="dis-none" name="verify" type="radio" value="False">
-                                        <button class="to-not-verify-btn" type="submit">
-                                            <i class="fa fa-times" aria-hidden="true"></i>
-                                            Desactivar
+                                        <button class="to-verify-btn" type="submit">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                            Activo
                                         </button>
                                     {% elif not offer['offer_active'] or offer['offer_active'] == 'False' %}
                                         <input class="dis-none" name="verify" type="radio" value="True">
-                                        <button class="to-verify-btn" type="submit">
-                                            <i class="fa fa-check" aria-hidden="true"></i>
-                                            Activar
+                                        <button class="to-not-verify-btn" type="submit">
+                                            <i class="fa fa-times" aria-hidden="true"></i>
+                                            Inactivo
                                         </button>
                                     {% else %}
                                         ERROR
