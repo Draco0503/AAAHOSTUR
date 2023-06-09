@@ -20,7 +20,7 @@ class Company(db.Model):
     Active = db.Column(db.Boolean, default=True)
     
     Id_Company_Parent = db.Column(db.String(36), db.ForeignKey("Company.ID_COMPANY"), nullable=True)
-    Id_User_Creator = db.Column(db.String(36), db.ForeignKey("User.ID_USER"), nullable=True)
+    Id_User_Verify = db.Column(db.String(36), db.ForeignKey("User.ID_USER"), nullable=True)
 
     company_account = db.relationship("Company_Account", backref="Company", lazy=True)
 
@@ -40,5 +40,5 @@ class Company(db.Model):
                 'verify': self.Verify,
                 'active': self.Active,
                 'id_company_parent': self.Id_Company_Parent,
-                'Id_User_Creator': self.Id_User_Creator
+                'Id_User_Verify': self.Id_User_Verify
                 }
