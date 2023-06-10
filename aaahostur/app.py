@@ -7,15 +7,14 @@ from flask import Flask, request, session, json, render_template, Response, redi
 from models import db
 from models import Language, Job_Category, Qualification, Role, User, Member, Member_Account, Member_Language, \
     Academic_Profile, Professional_Profile, Section, Company, Company_Account, Offer, Member_Offer, Job_Demand, \
-    Job_Demand_Language, Job_Demand_Qualification, Job_Demand_Category, Review
+    Job_Demand_Language, Job_Demand_Qualification, Job_Demand_Category, Review, Shift, Schedule, Working_Day, \
+    Contract_Type
 from config import config
 from security import security
 import utils
+
 # import enums correctly important!
-from  models.Shift import Shift
-from  models.Schedule import Schedule
-from  models.Working_Day import Working_Day
-from  models.Contract_Type import Contract_Type
+
 
 # region CONSTANTS
 
@@ -174,31 +173,37 @@ def prueba():
 # INSERT
 @app.route('/api_v0/academic_profile', methods=['POST'])
 def academic_profile_add():
-    # PARA HACER ESTA LLAMADA HAY QUE ASEGURARSE DE QUE EXISTE EL MIEMBRO
-    data = request.form
-    # NOT NULL fields
-    if data is None or len(data) < 2 or len(data) > 3:
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data len()]')
-    if not key_in_request_form('school'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <school>]')
-    if not key_in_request_form('graduation_date'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <graduation_date>]')
-
-    # NULL fields
-    promotion = '' if not key_in_request_form('promotion') else data['promotion']
-
-    academic_profile = Academic_Profile.Academic_Profile(School=data['school'],
-                                                         Graduation_Date=data['graduation_date'],
-                                                         Promotion=promotion)
     try:
+        role, _ = user_privileges()
+        if type(role) is Response:
+            return role
+        # Now we can ask for the requirement set
+        if not role.CanSeeApiMember:
+            return forbidden()
+        data = request.form
+        # NOT NULL fields
+        if data is None or len(data) < 2 or len(data) > 3:
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data len()]')
+        if not key_in_request_form('school'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <school>]')
+        if not key_in_request_form('graduation_date'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <graduation_date>]')
+
+        # NULL fields
+        promotion = '' if not key_in_request_form('promotion') else data['promotion']
+
+        academic_profile = Academic_Profile.Academic_Profile(School=data['school'],
+                                                             Graduation_Date=data['graduation_date'],
+                                                             Promotion=promotion)
+
         db.session.add(academic_profile)
         db.session.commit()
-        msg = {'NEW academic_profile ADDED': academic_profile.to_json()}
+        msg = {'academic_profile_add': academic_profile.to_json()}
         status_code = 200
 
     except Exception as ex:
         db.session.rollback()
-        msg = {ERROR_500_DEFAULT_MSG: academic_profile.to_json()}
+        msg = {'academic_profile_add': ERROR_500_DEFAULT_MSG}
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
@@ -221,7 +226,7 @@ def company_list():
     data_list = [company.to_json() for company in Company.Company.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"company": data_list}
+    msg = {"company_list": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -236,9 +241,10 @@ def company_by_id(id: int):
     # Now we can ask for the requirement set
     if not role.CanSeeApiCompany:
         return forbidden()
-    data_list = [company.to_json() for company in Company.Company.query.filter_by(ID_COMPANY=id)]
-    if len(data_list) == 0:
+    company = Company.Company.query.filter_by(ID_COMPANY=id).first()
+    if company is None:
         return not_found()
+    data_list = company.to_json()
     msg = {"company": data_list}
     return Response(json.dumps(
         msg,
@@ -248,43 +254,43 @@ def company_by_id(id: int):
 # INSERT
 @app.route('/api_v0/company', methods=['POST'])
 def company_add():
-    data = request.form
-    if data is None or (5 > len(data) > 10):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data len()]')
-    if not key_in_request_form('id'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <id>]')
-    if not key_in_request_form('company_name'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <company_name>]')
-    if not key_in_request_form('type'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <type>')
-    if not key_in_request_form('cif'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <cif>]')
-    if not key_in_request_form('contact_name'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <contact_name>]')
-    if not key_in_request_form('contact_phone'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <contact_phone>]')
-    if not key_in_request_form('contact_email'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <contact_email>]')
-
-    address = "" if not key_in_request_form('address') else data['address']
-    cp = "" if not key_in_request_form('cp') else data['cp']
-    city = "" if not key_in_request_form('city') else data['city']
-    province = "" if not key_in_request_form('province') else data['province']
-    description = "" if not key_in_request_form('description') else data['description']
-    company = Company.Company(ID_COMPANY=data['id'],
-                              Name=data['company_name'],
-                              Type=data['type'],
-                              CIF=data['cif'],
-                              Address=address,
-                              CP=cp,
-                              City=city,
-                              Province=province,
-                              Contact_Name=data['contact_name'],
-                              Contact_Phone=data['contact_phone'],
-                              Contact_Email=data['contact_email'],
-                              Description=description)
-
     try:
+        data = request.form
+        if data is None or (5 > len(data) > 10):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data len()]')
+        if not key_in_request_form('id'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <id>]')
+        if not key_in_request_form('company_name'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <company_name>]')
+        if not key_in_request_form('type'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <type>')
+        if not key_in_request_form('cif'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <cif>]')
+        if not key_in_request_form('contact_name'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <contact_name>]')
+        if not key_in_request_form('contact_phone'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <contact_phone>]')
+        if not key_in_request_form('contact_email'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <contact_email>]')
+
+        address = "" if not key_in_request_form('address') else data['address']
+        cp = "" if not key_in_request_form('cp') else data['cp']
+        city = "" if not key_in_request_form('city') else data['city']
+        province = "" if not key_in_request_form('province') else data['province']
+        description = "" if not key_in_request_form('description') else data['description']
+        company = Company.Company(ID_COMPANY=data['id'],
+                                  Name=data['company_name'],
+                                  Type=data['type'],
+                                  CIF=data['cif'],
+                                  Address=address,
+                                  CP=cp,
+                                  City=city,
+                                  Province=province,
+                                  Contact_Name=data['contact_name'],
+                                  Contact_Phone=data['contact_phone'],
+                                  Contact_Email=data['contact_email'],
+                                  Description=description)
+
         db.session.add(company)
         db.session.commit()
         msg = {'company_add': company.to_json()}
@@ -299,60 +305,56 @@ def company_add():
 
 
 # UPDATE
-@app.route("/api_v0/company/<id>", methods=["GET", "PUT"])
+@app.route("/api_v0/company/<id>", methods=["PUT"])
 def company_verify_update(id):
+    role, _ = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
+    if not role.CanSeeApiCompany or not role.CanVerifyCompany or not role.CanActiveCompany:
+        return forbidden()
     company = Company.Company.query.filter_by(ID_COMPANY=id).first()
     # Check if exists
     if company is None:
         return not_found()
-    else:
-        if request.method == "GET":
-            msg = {"company": company.to_json()}
-            return Response(json.dumps(msg), status=200)
-        elif request.method == "PUT":
-            data = request.form
-            # Check that the value given is present
-            if not key_in_request_form('verify') and not key_in_request_form('active'):
-                return bad_request()
-            else:
-                status_code = 400
-                msg = ERROR_400_DEFAULT_MSG
-                try:
-                    if key_in_request_form('verify'):
-                        if data["verify"] == 'True':
-                            company.Verify = True
-                        elif data["verify"] == 'False':
-                            company.Verify = False
-                    if key_in_request_form('active'):
-                        if data["active"] == 'True':
-                            company.Active = True
-                        elif data["active"] == 'False':
-                            company.Active = False
-                    db.session.commit()
-                    msg = {"company": company.to_json()}
-                    status_code = 200
-                except Exception as ex:
-                    print(ex)
-                    db.session.rollback()
-                if status_code != 200:
-                    return internal_server_error("An error has occurred processing PUT query")
-                return Response(json.dumps(msg), status=status_code)
+    if request.method == "PUT":
+        data = request.form
+        # Check that the value given is present
+        if not key_in_request_form('verify') and not key_in_request_form('active'):
+            return bad_request()
+        else:
+            status_code = 400
+            msg = ERROR_400_DEFAULT_MSG
+            try:
+                if key_in_request_form('verify'):
+                    if data["verify"] == 'True':
+                        company.Verify = True
+                    elif data["verify"] == 'False':
+                        company.Verify = False
+                if key_in_request_form('active'):
+                    if data["active"] == 'True':
+                        company.Active = True
+                    elif data["active"] == 'False':
+                        company.Active = False
+                db.session.commit()
+                msg = {"company_upd": company.to_json()}
+                status_code = 200
+            except Exception as ex:
+                print(ex)
+                db.session.rollback()
+            if status_code != 200:
+                return internal_server_error("An error has occurred processing PUT query")
+            return Response(json.dumps(msg), status=status_code)
 
 
 # -------------------------------JOB_CATEGORY--------------------------------------#
 # READ ALL
 @app.route('/api_v0/job_category-list', methods=['GET'])
 def job_category_list():
-    role, _ = user_privileges()
-    if type(role) is Response:
-        return role
-    # Now we can ask for the requirement set
-    if not role.CanSeeApiJobCategory:
-        return forbidden()
     data_list = [job_Category.to_json() for job_Category in Job_Category.Job_Category.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"job_Category": data_list}
+    msg = {"job_category_list": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -361,17 +363,11 @@ def job_category_list():
 # READ BY
 @app.route('/api_v0/job_category/<id>', methods=['GET'])
 def job_category_by_id(id: int):
-    role, _ = user_privileges()
-    if type(role) is Response:
-        return role
-    # Now we can ask for the requirement set
-    if not role.CanSeeApiJobCategory:
-        return forbidden()
-    data_list = [job_Category.to_json() for job_Category in
-                 Job_Category.Job_Category.query.filter_by(ID_JOB_CATEGORY=id)]
-    if len(data_list) == 0:
+    job_category = Job_Category.Job_Category.query.filter_by(ID_JOB_CATEGORY=id).first()
+    if job_category is None:
         return not_found()
-    msg = {"job_Category": data_list}
+    data_list = job_category.to_json()
+    msg = {"job_category": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -380,27 +376,32 @@ def job_category_by_id(id: int):
 # INSERT
 @app.route('/api_v0/job_category', methods=['POST'])
 def job_category_add():
-    data = request.form
-    if data is None or (2 > len(data) > 2):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [job_category_add() - data len()]')
-    if not key_in_request_form('name'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [job_category_add() - data <name>')
-    if not key_in_request_form('description'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [job_category_add() - data <description>]')
-
-    job_category = Job_Category.Job_Category(Name=data['name'],
-                                             Description=data['description'])
-
     try:
-        # TODO check role
+        role, _ = user_privileges()
+        if type(role) is Response:
+            return role
+        # Now we can ask for the requirement set
+        if not role.CanSeeApiJobCategory:
+            return forbidden()
+        data = request.form
+        if data is None or (2 > len(data) > 2):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [job_category_add() - data len()]')
+        if not key_in_request_form('name'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [job_category_add() - data <name>')
+        if not key_in_request_form('description'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [job_category_add() - data <description>]')
+
+        job_category = Job_Category.Job_Category(Name=data['name'],
+                                                 Description=data['description'])
+
         db.session.add(job_category)
         db.session.commit()
-        msg = {'NEW job_category ADDED': job_category.to_json()}
+        msg = {'job_category_add': job_category.to_json()}
         status_code = 200
 
     except Exception as ex:
         db.session.rollback()
-        msg = {ERROR_500_DEFAULT_MSG: job_category.to_json()}
+        msg = {'job_category_add': ERROR_500_DEFAULT_MSG}
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
@@ -420,7 +421,7 @@ def job_demand_category_list():
                  Job_Demand_Category.Job_Demand_Category.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"job_demand_categories": list}
+    msg = {"job_demand_category_list": list}
     return Response(json.dumps(msg), status=200)
 
 
@@ -433,11 +434,11 @@ def job_demand_category_by_id(id: int):
     # Now we can ask for the requirement set
     if not role.CanSeeApiOffer:
         return forbidden()
-    data_list = [job_demand_category.to_json() for job_demand_category in
-                 Job_Demand_Category.Job_Demand_Category.query.filter_by(Id_Job_Demand=id)]
-    if len(data_list) == 0:
+    job_demand_category = Job_Demand_Category.Job_Demand_Category.query.filter_by(Id_Job_Demand=id).first()
+    if job_demand_category is None:
         return not_found()
-    msg = {"job_demand_categories": data_list}  # there can be job_demand_categories with the same id_job_demand
+    data_list = job_demand_category.to_json()
+    msg = {"job_demand_category": data_list}  # there can be job_demand_categories with the same id_job_demand
     return Response(json.dumps(msg), status=200)
 
 
@@ -455,7 +456,7 @@ def job_demand_language_list():
                  Job_Demand_Language.Job_Demand_Language.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"job_demand_languages": data_list}
+    msg = {"job_demand_language_list": data_list}
     return Response(json.dumps(msg), status=200)
 
 
@@ -468,11 +469,11 @@ def job_demand_language_by_id(id: int):
     # Now we can ask for the requirement set
     if not role.CanSeeApiOffer:
         return forbidden()
-    data_list = [job_demand_language.to_json() for job_demand_language in
-                 Job_Demand_Language.Job_Demand_Language.query.filter_by(Id_Job_Demand=id)]
-    if len(data_list) == 0:
+    job_demand_language = Job_Demand_Language.Job_Demand_Language.query.filter_by(Id_Job_Demand=id).first()
+    if job_demand_language is None:
         return not_found()
-    msg = {"job_demand_languages": data_list}  # there can be job_demand_languages with the same id_job_demand
+    data_list = job_demand_language.to_json()
+    msg = {"job_demand_language": data_list}  # there can be job_demand_languages with the same id_job_demand
     return Response(json.dumps(msg), status=200)
 
 
@@ -490,7 +491,7 @@ def job_demand_qualification_list():
                  Job_Demand_Qualification.Job_Demand_Qualification.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"job_demand_qualifications": data_list}
+    msg = {"job_demand_qualification_list": data_list}
     return Response(json.dumps(msg), status=200)
 
 
@@ -503,11 +504,12 @@ def job_demand_qualification_by_id(id: int):
     # Now we can ask for the requirement set
     if not role.CanSeeApiOffer:
         return forbidden()
-    data_list = [job_demand_qualification.to_json() for job_demand_qualification in
-                 Job_Demand_Qualification.Job_Demand_Qualification.query.filter_by(Id_Job_Demand=id)]
-    if len(data_list) == 0:
+    job_demand_qualification = Job_Demand_Qualification.Job_Demand_Qualification.query.filter_by(
+        Id_Job_Demand=id).first()
+    if job_demand_qualification is None:
         return not_found()
-    msg = {"job_demand_qualifications": data_list}  # there can be job_demand_qualifications with the same id_job_demand
+    data_list = job_demand_qualification.to_json()
+    msg = {"job_demand_qualification": data_list}  # there can be job_demand_qualifications with the same id_job_demand
     return Response(json.dumps(msg), status=200)
 
 
@@ -524,7 +526,7 @@ def job_demand_list():
     data_list = [job_demand.to_json() for job_demand in Job_Demand.Job_Demand.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"job_demands": data_list}
+    msg = {"job_demand_list": data_list}
     return Response(json.dumps(msg), status=200)
 
 
@@ -537,10 +539,11 @@ def job_demand_by_id(id: int):
     # Now we can ask for the requirement set
     if not role.CanSeeApiOffer:
         return forbidden()
-    data_list = [job_demand.to_json() for job_demand in Job_Demand.Job_Demand.query.filter_by(Id_Offer=id)]
-    if len(data_list) == 0:
+    job_demand = Job_Demand.Job_Demand.query.filter_by(Id_Offer=id).first()
+    if job_demand is None:
         return not_found()
-    msg = {"job_demands": data_list}  # there can be job_demands with the same id_offer
+    data_list = job_demand.to_json()
+    msg = {"job_demand": data_list}  # there can be job_demands with the same id_offer
     return Response(json.dumps(msg), status=200)
 
 
@@ -557,7 +560,7 @@ def language_list():
     data_list = [language.to_json() for language in Language.Language.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"languages": data_list}
+    msg = {"language_list": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -572,27 +575,11 @@ def language_by_id(id: int):
     # Now we can ask for the requirement set
     if not role.CanSeeApiLanguage:
         return forbidden()
-    data_list = [language.to_json() for language in Language.Language.query.filter_by(ID_LANGUAGE=id)]
-    if len(data_list) == 0:
+    language = Language.Language.query.filter_by(ID_LANGUAGE=id).first()
+    if language is None:
         return not_found()
-    msg = {"languages": data_list}
-    return Response(json.dumps(
-        msg,
-    ), status=200)
-
-
-@app.route('/api_v0/language/<name>', methods=['GET'])
-def language_by_name(name):
-    role, _ = user_privileges()
-    if type(role) is Response:
-        return role
-    # Now we can ask for the requirement set
-    if not role.CanSeeApiLanguage:
-        return forbidden()
-    data_list = [language.to_json() for language in Language.Language.query.filter_by(Name=name)]
-    if len(data_list) == 0:
-        return not_found()
-    msg = {"languages": data_list}
+    data_list = language.to_json()
+    msg = {"language": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -603,7 +590,7 @@ def language_by_name(name):
 def language_add():
     # TODO check roles
     data = request.form
-    if data is None or (3 > len(data) > 3):
+    if data is None or len(data) != 1:
         return bad_request(ERROR_400_DEFAULT_MSG + ' [language_add() - data len()]')
     if not key_in_request_form('name'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [language_add() - data <name>')
@@ -613,12 +600,12 @@ def language_add():
     try:
         db.session.add(language)
         db.session.commit()
-        msg = {'NEW language ADDED': language.to_json()}
+        msg = {'language_add': language.to_json()}
         status_code = 200
 
     except Exception as ex:
         db.session.rollback()
-        msg = {ERROR_500_DEFAULT_MSG: language.to_json()}
+        msg = {'language_add': ERROR_500_DEFAULT_MSG}
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
@@ -644,7 +631,7 @@ def member_offer_list():
     data_list = [member_offer.to_json() for member_offer in Member_Offer.Member_Offer.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"member_offers": data_list}
+    msg = {"member_offer_list": data_list}
     return Response(json.dumps(msg), status=200)
 
 
@@ -657,10 +644,11 @@ def member_offer_by_id(id: int):
     # Now we can ask for the requirement set
     if not role.CanSeeApiMember:
         return forbidden()
-    data_list = [member_offer.to_json() for member_offer in Member_Offer.Member_Offer.query.filter_by(Id_Member=id)]
-    if len(data_list) == 0:
+    member_offer = Member_Offer.Member_Offer.query.filter_by(Id_Member=id).first()
+    if member_offer is None:
         return not_found()
-    msg = {"member_offers": data_list}  # there can be member_offers with the same id_member
+    data_list = member_offer.to_json()
+    msg = {"member_offer": data_list}  # there can be member_offers with the same id_member
     return Response(json.dumps(msg), status=200)
 
 
@@ -701,58 +689,56 @@ def member_by_id(id):
 # INSERT
 @app.route('/api_v0/member', methods=['POST'])
 def member_add():
-    data = request.form
-    if data is None or (18 > len(data) > 21):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data len()]')
-    if not key_in_request_form('id'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <id>]')
-    if not key_in_request_form('name'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <name>')
-    if not key_in_request_form('surname'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <surname>')
-    if not key_in_request_form('dni'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <dni>')
-    if not key_in_request_form('address'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <address>')
-    if not key_in_request_form('cp'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <cp>')
-    if not key_in_request_form('city'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <city>')
-    if not key_in_request_form('province'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <province>')
-    if not key_in_request_form('gender'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <gender>')
-    if not key_in_request_form('mobile'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <mobile>')
-    # if not key_in_request_form('profile_picture'):
-    #     return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <profile_picture>')
-    if not key_in_request_form('birth_date'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <birth_date>')
-    if not key_in_request_form('join_date'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <join_date>')
-    if not key_in_request_form('cancellation_date'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <cancellation_date>')
-
-    pna_address = None
-    pna_cp = None
-    pna_city = None
-    pna_province = None
-
-    if key_in_request_form('pna_data'):
-        if not key_in_request_form('pna_address'):
-            return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_address")
-        if not key_in_request_form('pna_cp'):
-            return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_cp")
-        if not key_in_request_form('pna_city'):
-            return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_city")
-        if not key_in_request_form('pna_province'):
-            return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_province")
-        pna_address = data['pna_address']
-        pna_cp = data['pna_cp']
-        pna_city = data['pna_city']
-        pna_province = data['pna_province']
-
     try:
+        data = request.form
+        if data is None or (18 > len(data) > 21):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data len()]')
+        if not key_in_request_form('id'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <id>]')
+        if not key_in_request_form('name'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <name>')
+        if not key_in_request_form('surname'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <surname>')
+        if not key_in_request_form('dni'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <dni>')
+        if not key_in_request_form('address'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <address>')
+        if not key_in_request_form('cp'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <cp>')
+        if not key_in_request_form('city'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <city>')
+        if not key_in_request_form('province'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <province>')
+        if not key_in_request_form('gender'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <gender>')
+        if not key_in_request_form('mobile'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <mobile>')
+        if not key_in_request_form('birth_date'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <birth_date>')
+        if not key_in_request_form('join_date'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <join_date>')
+        if not key_in_request_form('cancellation_date'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <cancellation_date>')
+
+        pna_address = None
+        pna_cp = None
+        pna_city = None
+        pna_province = None
+
+        if key_in_request_form('pna_data'):
+            if not key_in_request_form('pna_address'):
+                return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_address")
+            if not key_in_request_form('pna_cp'):
+                return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_cp")
+            if not key_in_request_form('pna_city'):
+                return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_city")
+            if not key_in_request_form('pna_province'):
+                return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_province")
+            pna_address = data['pna_address']
+            pna_cp = data['pna_cp']
+            pna_city = data['pna_city']
+            pna_province = data['pna_province']
+
         land_line = None if not key_in_request_form('land_line') else data["land_line"]
         vehicle = False if not key_in_request_form('vehicle') or data["vehicle"] else bool(data["vehicle"])
         geographical_mobility = False if not key_in_request_form('geographical_mobility') or data[
@@ -801,38 +787,37 @@ def member_add():
 # UPDATE
 @app.route("/api_v0/member/<id>", methods=["PUT"])
 def member_verify_update(id):
-    member = Member.Member.query.filter_by(ID_MEMBER=id)
+    member = Member.Member.query.filter_by(ID_MEMBER=id).first()
     # Check if exists
-    if member is None or member.count() == 0:
+    if member is None:
         return not_found()
-    if member.count() > 1:
-        return internal_server_error()
-    else:
-        if request.method == "PUT":
-            data = request.form
-            # Check that the value given is present
-            if not key_in_request_form('verify') and not key_in_request_form('active'):
-                return bad_request()
-            else:
-                status_code = 400
-                msg = ERROR_400_DEFAULT_MSG
-                try:
-                    if key_in_request_form('verify'):
-                        if data["verify"] == 'True':
-                            member.Verify = True
-                        elif data["verify"] == 'False':
-                            member.Verify = False
-                    if key_in_request_form('active'):
-                        if data["active"] == 'True':
-                            member.Active = True
-                        elif data["active"] == 'False':
-                            member.Active = False
-                except Exception as ex:
-                    print(ex)
-                    db.session.rollback()
-                if status_code != 200:
-                    return internal_server_error("An error has occurred processing PUT query")
-                return Response(json.dumps(msg), status=status_code)
+    if request.method == "PUT":
+        data = request.form
+        # Check that the value given is present
+        if not key_in_request_form('verify') and not key_in_request_form('active'):
+            return bad_request()
+        else:
+            status_code = 400
+            msg = ERROR_400_DEFAULT_MSG
+            try:
+                if key_in_request_form('verify'):
+                    if data["verify"] == 'True':
+                        member.Verify = True
+                    elif data["verify"] == 'False':
+                        member.Verify = False
+                if key_in_request_form('active'):
+                    if data["active"] == 'True':
+                        member.Active = True
+                    elif data["active"] == 'False':
+                        member.Active = False
+            except Exception as ex:
+                print(ex)
+                db.session.rollback()
+                msg = {"member_upd": member.to_json()}
+                status_code = 200
+            if status_code != 200:
+                return internal_server_error("An error has occurred processing PUT query")
+            return Response(json.dumps(msg), status=status_code)
 
 
 # -------------------------------OFFER-------------------------------#
@@ -848,7 +833,7 @@ def offer_list():
     data_list = [offer.to_json() for offer in Offer.Offer.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"offers": data_list}
+    msg = {"offer_list": data_list}
     return Response(json.dumps(msg), status=200)
 
 
@@ -861,53 +846,46 @@ def offer_by_id(id: int):
     # Now we can ask for the requirement set
     if not role.CanSeeApiOffer:
         return forbidden()
-    data_list = [offer.to_json() for offer in Offer.Offer.query.filter_by(ID_OFFER=id)]
-    if len(data_list) == 0:
+    offer = Offer.Offer.query.filter_by(ID_OFFER=id).first()
+    if offer is None:
         return not_found()
-    elif len(data_list) > 1:
-        return internal_server_error()  # there can't be offers with the same id
-    msg = {"offers": data_list}
+    data_list = offer.to_json()
+    msg = {"offer": data_list}
     return Response(json.dumps(msg), status=200)
 
 
 # UPDATE
-@app.route("/api_v0/offer/<id>", methods=["GET", "PUT"])
+@app.route("/api_v0/offer/<id>", methods=["PUT"])
 def offer_verify_update(id):
-    offer = Offer.Offer.query.filter_by(ID_OFFER=id)
+    offer = Offer.Offer.query.filter_by(ID_OFFER=id).first()
     # comprobación de que se almacen un dato
-    if offer is None or offer.count() == 0:
+    if offer is None:
         return not_found()
-    if offer.count() > 1:
-        return internal_server_error()
-    else:
-        if request.method == "GET":
-            msg = {"offer": [off.to_json() for off in offer]}
-            return Response(json.dumps(msg), status=200)
-        elif request.method == "PUT":
-            data = request.form
-            # comprobacion que se guarde el valor que queremos cambiar
-            if not key_in_request_form('verify') and not key_in_request_form('active'):
-                return bad_request()
-            else:
-                status_code = 400
-                msg = ERROR_400_DEFAULT_MSG
-                try:
-                    if key_in_request_form('verify'):
-                        if data["verify"] == 'True':
-                            offer.Verify = True
-                        elif data["verify"] == 'False':
-                            offer.Verify = False
-                    if key_in_request_form('active'):
-                        if data["active"] == 'True':
-                            offer.Active = True
-                        elif data["active"] == 'False':
-                            offer.Active = False
-                except Exception as ex:
-                    print(ex)
-                    db.session.rollback()
-                if status_code != 200:
-                    return internal_server_error("An error has occurred processing PUT query")
-                return Response(json.dumps(msg), status=status_code)
+    if request.method == "PUT":
+        data = request.form
+        # comprobacion que se guarde el valor que queremos cambiar
+        if not key_in_request_form('verify') and not key_in_request_form('active'):
+            return bad_request()
+        else:
+            status_code = 400
+            msg = ERROR_400_DEFAULT_MSG
+            try:
+                if key_in_request_form('verify'):
+                    if data["verify"] == 'True':
+                        offer.Verify = True
+                    elif data["verify"] == 'False':
+                        offer.Verify = False
+                if key_in_request_form('active'):
+                    if data["active"] == 'True':
+                        offer.Active = True
+                    elif data["active"] == 'False':
+                        offer.Active = False
+            except Exception as ex:
+                print(ex)
+                db.session.rollback()
+            if status_code != 200:
+                return internal_server_error("An error has occurred processing PUT query")
+            return Response(json.dumps(msg), status=status_code)
 
 
 # -------------------------------PROFESSIONAL_PROFILE-------------------------------#
@@ -918,16 +896,10 @@ def offer_verify_update(id):
 # READ ALL
 @app.route('/api_v0/qualification-list', methods=['GET'])
 def qualification_list():
-    role, _ = user_privileges()
-    if type(role) is Response:
-        return role
-    # Now we can ask for the requirement set
-    if not role.CanSeeApiQualification:
-        return forbidden()
     data_list = [qualification.to_json() for qualification in Qualification.Qualification.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"qualification": data_list}
+    msg = {"qualification_list": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -936,16 +908,10 @@ def qualification_list():
 # READ BY
 @app.route('/api_v0/qualification/<id>', methods=['GET'])
 def job_qualification_by_id(id: int):
-    role, _ = user_privileges()
-    if type(role) is Response:
-        return role
-    # Now we can ask for the requirement set
-    if not role.CanSeeApiQualification:
-        return forbidden()
-    data_list = [qualification.to_json() for qualification in
-                 Qualification.Qualification.query.filter_by(ID_QUALIFICATION=id)]
-    if len(data_list) == 0:
+    qualification = Qualification.Qualification.query.filter_by(ID_QUALIFICATION=id).first()
+    if qualification is None:
         return not_found()
+    data_list = qualification.to_json()
     msg = {"qualification": data_list}
     return Response(json.dumps(
         msg,
@@ -955,27 +921,32 @@ def job_qualification_by_id(id: int):
 # INSERT
 @app.route('/api_v0/qualification', methods=['POST'])
 def qualification_add():
-    # TODO check roles
-    data = request.form
-    if data is None or (2 > len(data) > 2):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [qualification_add() - data len()]')
-    if not key_in_request_form('name'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [qualification_add() - data <name>')
-    if not key_in_request_form('description'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [qualification_add() - data <description>')
-
-    qualification = Qualification.Qualification(Name=data['name'],
-                                                Description=data['description'])
-
     try:
+        role, _ = user_privileges()
+        if type(role) is Response:
+            return role
+        # Now we can ask for the requirement set
+        if not role.CanSeeApiQualification:
+            return forbidden()
+        data = request.form
+        if data is None or (2 > len(data) > 2):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [qualification_add() - data len()]')
+        if not key_in_request_form('name'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [qualification_add() - data <name>')
+        if not key_in_request_form('description'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [qualification_add() - data <description>')
+
+        qualification = Qualification.Qualification(Name=data['name'],
+                                                    Description=data['description'])
+
         db.session.add(qualification)
         db.session.commit()
-        msg = {'NEW qualification ADDED': qualification.to_json()}
+        msg = {'qualification_add': qualification.to_json()}
         status_code = 200
 
     except Exception as ex:
         db.session.rollback()
-        msg = {ERROR_500_DEFAULT_MSG: qualification.to_json()}
+        msg = {'qualification_add': ERROR_500_DEFAULT_MSG}
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
@@ -998,7 +969,7 @@ def role_list():
     data_list = [role.to_json() for role in Role.Role.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"roles": data_list}
+    msg = {"role_list": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -1013,10 +984,11 @@ def role_by_id(id: int):
     # Now we can ask for the requirement set
     if not role.CanSeeApiRole:
         return forbidden()
-    data_list = [role.to_json() for role in Role.Role.query.filter_by(ID_ROLE=id)]
-    if len(data_list) == 0:
+    role_get = Role.Role.query.filter_by(ID_ROLE=id).first()
+    if role_get is None:
         return not_found()
-    msg = {"roles": data_list}
+    data_list = role_get.to_json()
+    msg = {"role": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -1035,7 +1007,7 @@ def section_list():
     data_list = [section.to_json() for section in Section.Section.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"section": data_list}
+    msg = {"section_list": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -1050,9 +1022,10 @@ def section_by_category(category):
     # Now we can ask for the requirement set
     if not role.CanSeeApiSection:
         return forbidden()
-    data_list = [section.to_json() for section in Section.Section.query.filter_by(Description=category)]
-    if len(data_list) == 0:
+    section = Section.Section.query.filter_by(Description=category).first()
+    if section is None:
         return not_found()
+    data_list = section.to_json()
     msg = {"section": data_list}
     return Response(json.dumps(
         msg,
@@ -1062,82 +1035,82 @@ def section_by_category(category):
 # INSERT
 @app.route('/api_v0/section', methods=['POST'])
 def section_add():
-    role, _ = user_privileges()
-    if type(role) is Response:
-        return role
-    # Now we can ask for the requirement set
-    if not role.CanMakeSection:
-        return forbidden()
-    data = request.form
-    if data is None or (6 > len(data) > 6):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data len()]')
-    if not key_in_request_form('category'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <category>')
-    if not key_in_request_form('description'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <description>')
-    if not key_in_request_form('publication_date'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <publication_date>')
-    if not key_in_request_form('schedule'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <schedule>')
-    if not key_in_request_form('img_resource'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <img_resource>')
-    if not key_in_request_form('price'):
-        return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <price>')
-
-    section = Section.Section(Category=data['category'],
-                              Description=data['description'],
-                              Publication_Date=data['publication_date'],
-                              Schedule=data['schedule'],
-                              Img_Resource=data['img_resource'],
-                              Price=data['price'])
-
     try:
+        role, _ = user_privileges()
+        if type(role) is Response:
+            return role
+        # Now we can ask for the requirement set
+        if not role.CanMakeSection:
+            return forbidden()
+        data = request.form
+        if data is None or len(data) != 6:
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data len()]')
+        if not key_in_request_form('category'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <category>')
+        if not key_in_request_form('description'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <description>')
+        if not key_in_request_form('publication_date'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <publication_date>')
+        if not key_in_request_form('schedule'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <schedule>')
+        if not key_in_request_form('img_resource'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <img_resource>')
+        if not key_in_request_form('price'):
+            return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <price>')
+
+        section = Section.Section(Category=data['category'],
+                                  Description=data['description'],
+                                  Publication_Date=data['publication_date'],
+                                  Schedule=data['schedule'],
+                                  Img_Resource=data['img_resource'],
+                                  Price=data['price'])
+
         db.session.add(section)
         db.session.commit()
-        msg = {'NEW section ADDED': section.to_json()}
+        msg = {'section_add': section.to_json()}
         status_code = 200
 
     except Exception as ex:
         db.session.rollback()
-        msg = {ERROR_500_DEFAULT_MSG: section.to_json()}
+        msg = {'section_add': ERROR_500_DEFAULT_MSG}
         status_code = 500
 
     return Response(json.dumps(msg), status=status_code)
 
 
 # UPDATE
-@app.route("/api_v0/section/<id>", methods=["GET", "PUT"])
+@app.route("/api_v0/section/<id>", methods=["PUT"])
 def section_active_update(id):
-    section = Section.Section.query.filter_by(ID_SECTION=id)
+    role, _ = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
+    if not role.CanSeeApiSection or not role.CanActiveSection:
+        return forbidden()
+    section = Section.Section.query.filter_by(ID_SECTION=id).first()
     # comprobación de que se almacen un dato
-    if section is None or section.count() == 0:
+    if section is None:
         return not_found()
-    if section.count() > 1:
-        return internal_server_error()
-    else:
-        if request.method == "GET":
-            msg = {"section": [sect.to_json() for sect in section]}
-            return Response(json.dumps(msg), status=200)
-        elif request.method == "PUT":
-            data = request.form
-            # comprobacion que se guarde el valor que queremos cambiar
-            if not key_in_request_form('active'):
-                return bad_request()
-            else:
-                status_code = 400
-                msg = {"default message"}
-                try:
-                    if key_in_request_form('active'):
-                        if data["active"] == 'True':
-                            section.Active = True
-                        elif data["active"] == 'False':
-                            section.Active = False
+    if request.method == "PUT":
+        data = request.form
+        # comprobacion que se guarde el valor que queremos cambiar
+        if not key_in_request_form('active'):
+            return bad_request()
+        else:
+            status_code = 400
+            msg = {"default message"}
+            try:
+                if key_in_request_form('active'):
+                    if data["active"] == 'True':
+                        section.Active = True
+                    elif data["active"] == 'False':
+                        section.Active = False
 
-                except Exception as ex:
-                    db.session.rollback()
-                if status_code != 200:
-                    return internal_server_error("An error has occurred processing PUT query")
-                return Response(json.dumps(msg), status=status_code)
+            except Exception as ex:
+                db.session.rollback()
+            if status_code != 200:
+                return internal_server_error("An error has occurred processing PUT query")
+            return Response(json.dumps(msg), status=status_code)
 
 
 # -------------------------------USER------------------------------- #
@@ -1153,7 +1126,7 @@ def user_list():
     data_list = [user.to_json() for user in User.User.query.all()]
     if len(data_list) == 0:
         return not_found()
-    msg = {"user": data_list}
+    msg = {"user_list": data_list}
     return Response(json.dumps(
         msg,
     ), status=200)
@@ -1187,7 +1160,7 @@ def user_by_id(key: str):
         elif user.company is not None and len(user.company) > 0:
             json_data.update(user.company[0].to_json())
             json_data.pop('id_company')
-        msg = {"user_get": json_data}
+        msg = {"user": json_data}
         return Response(json.dumps(msg), status=200)
 
 
@@ -1274,14 +1247,12 @@ def api_register_member():
             return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <passwd>')
         if not key_in_request_form('email'):
             return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <email>')
-        if not key_in_request_form('role'):
-            return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <role>]')
 
         user_id = uuid.uuid4()
         user = User.User(ID_USER=user_id,
                          Passwd=sec.hashed_password(data['passwd']),
                          Email=data['email'],
-                         Id_Role=int(data['role']))
+                         Id_Role=104)
         # MEMBER VALIDATIONS
         if not key_in_request_form('name'):
             return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <name>')
@@ -1364,24 +1335,23 @@ def api_register_member():
         return Response(json.dumps(msg), status=200)
     except Exception as ex:
         db.session.rollback()
-        return internal_server_error(ERROR_500_DEFAULT_MSG + " :: {}".format(ex))
+        return internal_server_error()
 
 
 @app.route('/api_v0/register/offer', methods=['GET', 'POST'])
 def api_register_offer_job_demand():
-    print("ufghuiauf")
     if request.method == "GET":
         try:
             language_data_list = Language.Language.query.all()
             qualification_data_list = Qualification.Qualification.query.all()
             job_category_data_list = Job_Category.Job_Category.query.all()
-            shift_data_list= [shift.value for shift in Shift]
-            schedule_data_list= [shift.value for shift in Schedule]
-            working_day_data_list= [shift.value for shift in Working_Day]
-            contract_type_data_list= [shift.value for shift in Contract_Type]
+            shift_data_list = [shift.value for shift in Shift.Shift]
+            schedule_data_list = [schedule.value for schedule in Schedule.Schedule]
+            working_day_data_list = [working_day.value for working_day in Working_Day.Working_Day]
+            contract_type_data_list = [contract_type.value for contract_type in Contract_Type.Contract_Type]
 
             response = {
-                'offer_add_get': {
+                'offer_data': {
                     'language_list': [language.to_json() for language in language_data_list],
                     'qualification_list': [qualification.to_json() for qualification in qualification_data_list],
                     'job_category_list': [job_category.to_json() for job_category in job_category_data_list],
@@ -1395,17 +1365,17 @@ def api_register_offer_job_demand():
         except Exception as ex:
             return internal_server_error()
     elif request.method == "POST":
-        try:           
-            #role, _ = user_privileges()
-            #if type(role) is Response:
-                #return role
-            # Now we can ask for the requirement set         
-           # if not role.CanMakeOffer:          
-            #    return forbidden()
+        try:
+            role, _ = user_privileges()
+            if type(role) is Response:
+                return role
+            # Now we can ask for the requirement set
+            if not role.CanMakeOffer:
+                return forbidden()
             data = request.form
             print(data)
             if data is None or (5 > len(data) > 9):
-                print("error de lengh")
+                print("error de lenght")
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [qualification_add() - data len()]')
             if not key_in_request_form('workplace_name'):
                 print("companyu")
@@ -1427,7 +1397,6 @@ def api_register_offer_job_demand():
             contact_phone_2 = "" if not key_in_request_form('contact_phone_2') else data["contact_phone_2"]
             contact_email_2 = "" if not key_in_request_form('contact_email_2') else data["contact_email_2"]
 
-           
             offer = Offer.Offer(Workplace_Name=data['workplace_name'],
                                 Workplace_Address=data['workplace_address'],
                                 Contact_Name=data['contact_name'],
@@ -1436,7 +1405,7 @@ def api_register_offer_job_demand():
                                 Contact_Name_2=contact_name_2,
                                 Contact_Phone_2=contact_phone_2,
                                 Contact_Email_2=contact_email_2)
-           
+
             # job_demand validation
             if not key_in_request_form('vacancies'):
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data <vacancies>')
@@ -1447,25 +1416,23 @@ def api_register_offer_job_demand():
             if not key_in_request_form('shift'):
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [job_demand_add() - data <shift>')
 
-  
             monthly_salary = "" if not key_in_request_form('monthly_salary') else data['monthly_salary']
             contract_type = "" if not key_in_request_form('contract_type') else data['contract_type']
             holidays = "" if not key_in_request_form('holidays') else data['holidays']
             experience = "" if not key_in_request_form('experience') else data['experience']
             vehicle = False if not key_in_request_form('vehicle') or data["vehicle"] else bool(data["vehicle"])
             geographical_mobility = False if not key_in_request_form('geographical_mobility') or data[
-            "geographical_mobility"] \
-            else bool(data["geographical_mobility"])
+                "geographical_mobility"] \
+                else bool(data["geographical_mobility"])
             others = "" if not key_in_request_form('others') else data['others']
 
             db.session.add(offer)
 
-
             inserted_offer = Offer.Offer.query.filter_by(Workplace_Name=data['workplace_name'],
-                                                                    Workplace_Address=data['workplace_address'],
-                                                                    Contact_Phone=data['contact_phone'],
-                                                                       Contact_Email=data['contact_email']).first()
-            
+                                                         Workplace_Address=data['workplace_address'],
+                                                         Contact_Phone=data['contact_phone'],
+                                                         Contact_Email=data['contact_email']).first()
+
             offer_id = inserted_offer.ID_OFFER
             print(offer_id)
             job_demand = Job_Demand.Job_Demand(Vacancies=data['vacancies'],
@@ -1479,43 +1446,40 @@ def api_register_offer_job_demand():
                                                Vehicle=vehicle,
                                                Geographical_Mobility=geographical_mobility,
                                                Others=others,
-                                               Id_Offer = offer_id)
-           
+                                               Id_Offer=offer_id)
+
             db.session.add(job_demand)
 
             # Refrescar job_demand  para obtener el ID actualizado de la base de datos
             # db.session.refresh(job_demand)
-            #job_demand_id = job_demand.ID_JOB_DEMAND
-            #print(job_demand_id)
+            # job_demand_id = job_demand.ID_JOB_DEMAND
+            # print(job_demand_id)
             # o con esto
             # para poder pillar el id de la job-demand que se ha insertado
 
             inserted_job_demand = Job_Demand.Job_Demand.query.filter_by(Vacancies=data['vacancies'],
-                                                                    Schedule=data['schedule'],
-                                                                       Shift=data['shift'],
+                                                                        Schedule=data['schedule'],
+                                                                        Shift=data['shift'],
                                                                         Working_Day=data['working_day']).first()
-            
-            job_demand_id = inserted_job_demand.ID_JOB_DEMAND
-            
-           
 
-            job_deman_qualification = Job_Demand_Qualification.Job_Demand_Qualification(Id_Qualification=data['qualification'],
-                                                                                        # igualar al id de la  job_demand insertada
-                                                                                        Id_Job_Demand=job_demand_id
-                                                                                        )
+            job_demand_id = inserted_job_demand.ID_JOB_DEMAND
+
+            job_deman_qualification = Job_Demand_Qualification.Job_Demand_Qualification(
+                Id_Qualification=data['qualification'],
+                # igualar al id de la  job_demand insertada
+                Id_Job_Demand=job_demand_id
+            )
             job_demand_category = Job_Demand_Category.Job_Demand_Category(Id_Job_Category=data['job-category'],
                                                                           Id_Job_Demand=job_demand_id
                                                                           )
-            
+
             job_demand_language = Job_Demand_Language.Job_Demand_Language(Id_Language=data['language'],
                                                                           Id_Job_Demand=job_demand_id
                                                                           )
 
-
             db.session.add(job_deman_qualification)
             db.session.add(job_demand_category)
             db.session.add(job_demand_language)
-
 
             db.session.commit()
             msg = {"add_offer": "SUCCESS"}
@@ -1538,14 +1502,12 @@ def api_register_company():
             return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <passwd>')
         if not key_in_request_form('email'):
             return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <email>')
-        if not key_in_request_form('role'):
-            return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <role>]')
 
         user_id = uuid.uuid4()
         user = User.User(ID_USER=user_id,
                          Passwd=sec.hashed_password(data['passwd']),
                          Email=data['email'],
-                         Id_Role=int(data['role']))
+                         Id_Role=103)
         # COMPANY VALIDATIONS
         if not key_in_request_form('company_name'):
             return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <company_name>]')
@@ -1580,15 +1542,29 @@ def api_register_company():
                                   Contact_Phone=data['contact_phone'],
                                   Contact_Email=data['contact_email'],
                                   Description=description)
-       
+
         db.session.add(company)
         db.session.commit()
         msg = {'register_company': 'SUCCESS'}
         return Response(json.dumps(msg), status=200)
-        
+
     except Exception as ex:
         db.session.rollback()
-        return internal_server_error(ERROR_500_DEFAULT_MSG + " " + ex)
+        return internal_server_error()
+
+
+@app.route("/api_v0/auth", methods=["POST"])
+def decode_auth():
+    if not_auth_header():
+        return bad_request("Not auth")
+    role, user = user_privileges()
+    if type(role) is Response:
+        return role
+    msg = {
+        'username': user,
+        'role': role
+    }
+    return Response(json.dumps(msg), status=200)
 
 
 @app.route("/api_v0/admin/member", methods=["GET"])
@@ -1775,7 +1751,6 @@ def register_member():
             user_member_data_form = {
                 "email": data["user-email"],
                 "passwd": data["user-pwd"],
-                "role": 104,
                 "name": data["member-name"],
                 "surname": data["member-surname"],
                 "dni": data["member-dni"],
@@ -1832,7 +1807,7 @@ def profile():
     user_info = requests.get("http://localhost:5000/api_v0/user/{}".format(user_token), cookies=request.cookies)
 
     if user_info.status_code == 200:
-        json_data = user_info.json()['user_get']
+        json_data = user_info.json()['user']
         if role.IsMember:
             context = {
                 'user': {
@@ -2019,15 +1994,19 @@ def register_offer_job_demand():
     elif request.method == "GET":
         offer_data_request = requests.get("http://localhost:5000/api_v0/register/offer",
                                           cookies=request.cookies)
+        payload = None
+        if not not_auth_header():
+            payload = sec.decode_jwt(request.cookies.get("auth"))
         if offer_data_request.status_code == 200:
             return render_template("addoffer.html",
                                    language_list=offer_data_request.json()['offer_add_get']['language_list'],
                                    qualification_list=offer_data_request.json()['offer_add_get']['qualification_list'],
-                                   job_category_list=offer_data_request.json()['offer_add_get']['job_category_list'], 
-                                   shift_list=offer_data_request.json()['offer_add_get']['shift_list'], 
-                                   schedule_list=offer_data_request.json()['offer_add_get']['schedule_list'], 
-                                   working_day_list=offer_data_request.json()['offer_add_get']['working_day_list'], 
-                                   contract_type_list=offer_data_request.json()['offer_add_get']['contract_type_list'])
+                                   job_category_list=offer_data_request.json()['offer_add_get']['job_category_list'],
+                                   shift_list=offer_data_request.json()['offer_add_get']['shift_list'],
+                                   schedule_list=offer_data_request.json()['offer_add_get']['schedule_list'],
+                                   working_day_list=offer_data_request.json()['offer_add_get']['working_day_list'],
+                                   contract_type_list=offer_data_request.json()['offer_add_get']['contract_type_list'],
+                                   payload=payload)
 
         error = offer_data_request.json()['message']
         return render_template("addoffer.html", error=error)
@@ -2065,7 +2044,7 @@ def admin_single_member(uid: str):
     if role.IsAAAHOSTUR and role.CanSeeApiMember:
         member_get_request = requests.get("http://localhost:5000/api_v0/user/{}".format(uid), cookies=request.cookies)
         if member_get_request.status_code == 200:
-            json_data = member_get_request.json()['user_get']
+            json_data = member_get_request.json()['user']
             context = {
                 'user': {
                     'email': json_data['email']
@@ -2139,7 +2118,7 @@ def admin_single_company(uid: str):
     if role.IsAAAHOSTUR and role.CanSeeApiCompany:
         company_get_request = requests.get("http://localhost:5000/api_v0/user/{}".format(uid), cookies=request.cookies)
         if company_get_request.status_code == 200:
-            json_data = company_get_request.json()['user_get']
+            json_data = company_get_request.json()['user']
             context = {
                 'user': {
                     'email': json_data['email']
