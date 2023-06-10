@@ -72,6 +72,12 @@
     font-family: Calibri;
 }
 
+.darker-blue-text3{
+    color: var(--aaahostur-primary-color-darker-blue);
+    padding: 15px;
+    font-family: Calibri;
+}
+
 body {
     overflow: auto;
     background-color: var(--aaahostur-color-grey);
@@ -81,7 +87,14 @@ a {
     text-decoration: none;
     color: var(--aaahostur-primary-color-not-that-yellow);
 }
-
+.linkEscuela{
+    color: var(--aaahostur-color-black);
+}
+.imgEscuela{
+    border: 1px solid #ccc!important;
+    box-sizing: inherit;
+    padding:10px;
+}
 a:hover {
     text-decoration: underline;
 }
@@ -415,9 +428,22 @@ button {
     font-weight: bold;
 }
 
+.yellow-title2 {
+    font-size: 16px;
+    color: var(--aaahostur-primary-color-not-that-yellow);
+    font-weight: bold;
+}
+
 .black-title {
     margin: auto;
     text-align: center;
+    font-weight: bold;
+    font-style: var(--aaahostur-color-black);
+}
+
+.black-title2 {
+    margin: 2vh;
+    text-align: left;
     font-weight: bold;
     font-style: var(--aaahostur-color-black);
 }
@@ -475,6 +501,9 @@ span {
 
 .w40 {
     width: 40%;
+}
+.w45{
+    width: 45%;
 }
 
 .w20 {
@@ -627,6 +656,14 @@ footer .center {
     flex-wrap: wrap;
     justify-content: space-around;
 }
+
+.school{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin-top: 3vh;
+}
 .text-pictureOffice{
     text-align: center;
     font-family: Calibri;
@@ -770,6 +807,10 @@ ul.social-links > li {
 
 .sign-out {
     color: crimson;
+}
+
+.infoEscuela > flex-right{
+    margin: 1vh;
 }
 
 /* SCROLLBAR SETTINGS */
