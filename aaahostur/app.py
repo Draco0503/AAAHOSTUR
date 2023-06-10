@@ -161,7 +161,7 @@ def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
 # method for testing purposes
 @app.route('/prueba')
 def prueba():
-    return render_template('addoffer.html', prueba='holka')
+    return render_template('schools.html', prueba='holka')
 
 
 # endregion
@@ -340,7 +340,6 @@ def company_verify_update(id):
                 msg = {"company_upd": company.to_json()}
                 status_code = 200
             except Exception as ex:
-                print(ex)
                 db.session.rollback()
             if status_code != 200:
                 return internal_server_error("An error has occurred processing PUT query")
@@ -676,7 +675,6 @@ def member_by_id(id):
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
-    # print(type(role))
     if not role.CanSeeApiMember:
         return forbidden()
     member = Member.Member.query.filter_by(ID_MEMBER=id).first()
@@ -811,7 +809,6 @@ def member_verify_update(id):
                     elif data["active"] == 'False':
                         member.Active = False
             except Exception as ex:
-                print(ex)
                 db.session.rollback()
                 msg = {"member_upd": member.to_json()}
                 status_code = 200
@@ -881,7 +878,6 @@ def offer_verify_update(id):
                     elif data["active"] == 'False':
                         offer.Active = False
             except Exception as ex:
-                print(ex)
                 db.session.rollback()
             if status_code != 200:
                 return internal_server_error("An error has occurred processing PUT query")
@@ -1238,7 +1234,6 @@ def api_login():
 @app.route("/api_v0/register/member", methods=["POST"])
 def api_register_member():
     try:
-        print("INSERTANDO MIEMBRO")
         data = request.form
         if data is None or len(data) < 15:
             return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data len()]')
@@ -1328,7 +1323,6 @@ def api_register_member():
                                Disability_Grade=disability_grade,
                                Join_Date=data['join_date'],
                                Cancellation_Date=data['cancellation_date'])
-        print(member)
         db.session.add(member)
         db.session.commit()
         msg = {"register_member": "SUCCESS"}
@@ -1373,26 +1367,18 @@ def api_register_offer_job_demand():
             if not role.CanMakeOffer:
                 return forbidden()
             data = request.form
-            print(data)
             if data is None or (5 > len(data) > 9):
-                print("error de lenght")
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [qualification_add() - data len()]')
             if not key_in_request_form('workplace_name'):
-                print("companyu")
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <company_name>')
             if not key_in_request_form('workplace_address'):
-                print("addres")
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <address>')
             if not key_in_request_form('contact_name'):
-                print("contact")
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <contact_name>')
             if not key_in_request_form('contact_phone'):
-                print("contac_phone")
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <contact_phone>')
             if not key_in_request_form('contact_email'):
-                print("contact_email")
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <contact_email>')
-            print("antes d los if d contacto")
             contact_name_2 = "" if not key_in_request_form('contact_name_2') else data["contact_name_2"]
             contact_phone_2 = "" if not key_in_request_form('contact_phone_2') else data["contact_phone_2"]
             contact_email_2 = "" if not key_in_request_form('contact_email_2') else data["contact_email_2"]
@@ -1434,7 +1420,6 @@ def api_register_offer_job_demand():
                                                          Contact_Email=data['contact_email']).first()
 
             offer_id = inserted_offer.ID_OFFER
-            print(offer_id)
             job_demand = Job_Demand.Job_Demand(Vacancies=data['vacancies'],
                                                Monthly_Salary=monthly_salary,
                                                Contract_Type=contract_type,
@@ -1486,13 +1471,11 @@ def api_register_offer_job_demand():
             return Response(json.dumps(msg), status=200)
         except Exception as ex:
             db.session.rollback()
-            print("Error:" + ex)
             return internal_server_error(ERROR_500_DEFAULT_MSG)
 
 
 @app.route("/api_v0/register/company", methods=["POST"])
 def api_register_company():
-    print("JIJIJAJA")
     try:
         data = request.form
         if data is None or len(data) < 9:
@@ -1742,7 +1725,6 @@ def register_member():
         except:
             files = None
         if data["user-pwd"] == data["user-pwd-2"]:
-            # print(data)
             error = check_member_params(data)
             if error != "":
                 if navigator_user_agent():
@@ -1776,8 +1758,6 @@ def register_member():
                 "disability_grade": 0 if not key_in_request_form("member-handicap") or data[
                     "member-handicap"] == "" else int(data["member-handicap"])
             }
-
-            # print(user_member_data_form)
             user_created = requests.post('http://localhost:5000/api_v0/register/member', data=user_member_data_form,
                                          cookies=request.cookies)
             # Check if the user has been created
@@ -1878,7 +1858,6 @@ def profile():
                 context['publisher'] = True
         else:
             context = {}
-        # print(context)
         return render_template("profile.html", context=context, payload=payload, profile=True)
     return render_template("profile.html")
 
@@ -1914,14 +1893,11 @@ def register_company():
                 "contact_email": data["company-contact1-email"],
                 "description": data["company-desc"]
             }
-            print(user_company_data_form)
             # Check if the user has been created
             user_created = requests.post('http://localhost:5000/api_v0/register/company', data=user_company_data_form,
                                          cookies=request.cookies)
-            print(user_created)
             # Check if the user has been created
             if user_created.status_code == 200:
-                print("OK")
                 return redirect(url_for("login"))  # TODO       
             else:
                 if 'user_add' in user_created.json():
@@ -1981,7 +1957,6 @@ def register_offer_job_demand():
                                       cookies=request.cookies)
         # Check if the user has been created
         if offer_created.status_code == 200:
-            print("OK")
             return redirect(url_for("login"))  # TODO redirect to success-register-page
         else:
                 if 'offer_add' in offer_created.json():

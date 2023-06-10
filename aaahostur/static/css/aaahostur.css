@@ -660,9 +660,16 @@ footer .center {
 .school{
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-around;
     margin-top: 3vh;
+}
+
+.infoSchool{
+   margin-left: 3vh;
+}
+.iconoLink{
+    margin-top: 1vh;
+    height: 4%;
+    width: 4%;
 }
 .text-pictureOffice{
     text-align: center;
