@@ -92,34 +92,34 @@
             <!-- check if keyvalue 'company' is empty (no data to display)-->
             {% if context['company'] is not none %}
                 <label class="dis-block font-16pt">Nombre de empresa :</label>
-                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-name" name="company-name" value="{{ context['company']['name'] }}" disabled>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-name" name="company-name" value="{{ context['company']['company_name'] }}" disabled>
                 <label class="dis-block font-16pt">Ámbito :</label>
-                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-type" name="company-type" value="{{ context['company']['type'] }}" disabled>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-type" name="company-type" value="{{ context['company']['company_type'] }}" disabled>
                 <label class="dis-block font-16pt">Código de identificación (NIF) :</label>
-                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-cif" name="company-cif" value="{{ context['company']['cif'] }}" disabled>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-cif" name="company-cif" value="{{ context['company']['company_nif'] }}" disabled>
 
                 <h2 class="mar-bot-1rem">Datos de contacto</h2>
                 <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
                 <label class="dis-block font-16pt">Nombre de contacto :</label>
-                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-contact-name" name="company-contact-name" value="{{ context['company']['contact_name'] }}" disabled>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-contact-name" name="company-contact-name" value="{{ context['company']['company_contact_name'] }}" disabled>
                 <label class="dis-block font-16pt">Teléfono de contacto :</label>
-                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-contact-phone" name="company-contact-phone" value="{{ context['company']['contact_phone'] }}" disabled>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-contact-phone" name="company-contact-phone" value="{{ context['company']['company_contact_phone'] }}" disabled>
                 <label class="dis-block font-16pt">Correo de contacto :</label>
-                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-contact-email" name="company-contact-email" value="{{ context['company']['contact_email'] }}" disabled>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-contact-email" name="company-contact-email" value="{{ context['company']['company_contact_email'] }}" disabled>
 
                 <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
                 <label class="dis-block font-16pt" >Dirección :</label>
-                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-address" name="company-address" value="{{ context['company']['address'] }}" disabled>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-address" name="company-address" value="{{ context['company']['company_address'] }}" disabled>
                 <label class="dis-block font-16pt" >C.P. :</label>
-                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-cp" name="company-cp" value="{{ context['company']['cp'] }}" disabled>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-cp" name="company-cp" value="{{ context['company']['company_cp'] }}" disabled>
                 <label class="dis-block font-16pt" >Ciudad :</label>
-                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-city" name="company-city" value="{{ context['company']['city'] }}" disabled>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-city" name="company-city" value="{{ context['company']['company_city'] }}" disabled>
                 <label class="dis-block font-16pt" >Provincia :</label>
-                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-province" name="company-province" value="{{ context['company']['province'] }}" disabled>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-province" name="company-province" value="{{ context['company']['company_province'] }}" disabled>
 
                 <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
                 <label class="dis-block font-16pt">Descripción :</label>
-                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-description" name="company-description" value="{{ context['company']['description'] }}" disabled>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="company-description" name="company-description" value="{{ context['company']['company_description'] }}" disabled>
             {% else %}
             <h2 class="mar-bot-1rem">No se ha podido cargar la información de empresa</h2>
             {% endif %}

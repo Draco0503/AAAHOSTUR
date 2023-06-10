@@ -13,9 +13,6 @@ from config import config
 from security import security
 import utils
 
-# import enums correctly important!
-
-
 # region CONSTANTS
 
 ERROR_400_DEFAULT_MSG = "The server cannot or will not process the request."
@@ -192,6 +189,7 @@ def academic_profile_add():
         # NULL fields
         promotion = '' if not key_in_request_form('promotion') else data['promotion']
 
+        # noinspection PyArgumentList
         academic_profile = Academic_Profile.Academic_Profile(School=data['school'],
                                                              Graduation_Date=data['graduation_date'],
                                                              Promotion=promotion)
@@ -278,6 +276,7 @@ def company_add():
         city = "" if not key_in_request_form('city') else data['city']
         province = "" if not key_in_request_form('province') else data['province']
         description = "" if not key_in_request_form('description') else data['description']
+        # noinspection PyArgumentList
         company = Company.Company(ID_COMPANY=data['id'],
                                   Name=data['company_name'],
                                   Type=data['type'],
@@ -307,11 +306,14 @@ def company_add():
 # UPDATE
 @app.route("/api_v0/company/<id>", methods=["PUT"])
 def company_verify_update(id):
-    role, _ = user_privileges()
+    role, username = user_privileges()
     if type(role) is Response:
         return role
     # Now we can ask for the requirement set
-    if not role.CanSeeApiCompany or not role.CanVerifyCompany or not role.CanActiveCompany:
+    if not role.CanSeeApiCompany or not role.CanVerifyCompany and not role.CanActiveCompany:
+        return forbidden()
+    user = User.User.query.filter_by(Email=username).first()
+    if user is None:
         return forbidden()
     company = Company.Company.query.filter_by(ID_COMPANY=id).first()
     # Check if exists
@@ -336,6 +338,7 @@ def company_verify_update(id):
                         company.Active = True
                     elif data["active"] == 'False':
                         company.Active = False
+                company.Id_User_Verify = user.ID_USER
                 db.session.commit()
                 msg = {"company_upd": company.to_json()}
                 status_code = 200
@@ -391,6 +394,7 @@ def job_category_add():
         if not key_in_request_form('description'):
             return bad_request(ERROR_400_DEFAULT_MSG + ' [job_category_add() - data <description>]')
 
+        # noinspection PyArgumentList
         job_category = Job_Category.Job_Category(Name=data['name'],
                                                  Description=data['description'])
 
@@ -595,6 +599,7 @@ def language_add():
     if not key_in_request_form('name'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [language_add() - data <name>')
 
+    # noinspection PyArgumentList
     language = Language.Language(Name=data['name'])
 
     try:
@@ -748,6 +753,7 @@ def member_add():
             else int(data["disability_grade"])
         profile_pic = None if not key_in_request_form('profile_picture') else data["profile_picture"]
 
+        # noinspection PyArgumentList
         member = Member.Member(ID_MEMBER=data['id'],
                                Name=data['name'],
                                Surname=data['surname'],
@@ -787,6 +793,14 @@ def member_add():
 # UPDATE
 @app.route("/api_v0/member/<id>", methods=["PUT"])
 def member_verify_update(id):
+    role, username = user_privileges()
+    if type(role) is Response:
+        return role
+    if not role.CanSeeApiMember or not role.CanVerifyMember and not role.CanActiveMember:
+        return forbidden()
+    user = User.User.query.filter_by(Email=username).first()
+    if user is None:
+        return forbidden()
     member = Member.Member.query.filter_by(ID_MEMBER=id).first()
     # Check if exists
     if member is None:
@@ -810,11 +824,13 @@ def member_verify_update(id):
                         member.Active = True
                     elif data["active"] == 'False':
                         member.Active = False
+                member.Id_User_Verify = user.ID_USER
+                db.session.commit()
+                msg = {"member_upd": member.to_json()}
+                status_code = 200
             except Exception as ex:
                 print(ex)
                 db.session.rollback()
-                msg = {"member_upd": member.to_json()}
-                status_code = 200
             if status_code != 200:
                 return internal_server_error("An error has occurred processing PUT query")
             return Response(json.dumps(msg), status=status_code)
@@ -936,6 +952,7 @@ def qualification_add():
         if not key_in_request_form('description'):
             return bad_request(ERROR_400_DEFAULT_MSG + ' [qualification_add() - data <description>')
 
+        # noinspection PyArgumentList
         qualification = Qualification.Qualification(Name=data['name'],
                                                     Description=data['description'])
 
@@ -1058,6 +1075,7 @@ def section_add():
         if not key_in_request_form('price'):
             return bad_request(ERROR_400_DEFAULT_MSG + ' [section_add() - data <price>')
 
+        # noinspection PyArgumentList
         section = Section.Section(Category=data['category'],
                                   Description=data['description'],
                                   Publication_Date=data['publication_date'],
@@ -1177,6 +1195,7 @@ def user_add():
     if not key_in_request_form('role'):
         return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <role>]')
 
+    # noinspection PyArgumentList
     user = User.User(Passwd=sec.hashed_password(data['passwd']),
                      Email=data['email'],
                      Id_Role=int(data['role']))
@@ -1249,6 +1268,7 @@ def api_register_member():
             return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <email>')
 
         user_id = uuid.uuid4()
+        # noinspection PyArgumentList
         user = User.User(ID_USER=user_id,
                          Passwd=sec.hashed_password(data['passwd']),
                          Email=data['email'],
@@ -1306,6 +1326,7 @@ def api_register_member():
         # BEGINNING OF THE INSERTS
         db.session.add(user)
         # TODO MAYBE WE SHOULD DO A SELECT TO VERIFY THAT THE USER HAS BEEN CREATED
+        # noinspection PyArgumentList
         member = Member.Member(ID_MEMBER=user.ID_USER,
                                Name=data['name'],
                                Surname=data['surname'],
@@ -1366,15 +1387,18 @@ def api_register_offer_job_demand():
             return internal_server_error()
     elif request.method == "POST":
         try:
-            role, _ = user_privileges()
+            role, username = user_privileges()
             if type(role) is Response:
                 return role
             # Now we can ask for the requirement set
             if not role.CanMakeOffer:
                 return forbidden()
+            user_company = User.User.query.filter_by(Email=username).first()
+            if user_company is None:
+                return forbidden()
             data = request.form
             print(data)
-            if data is None or (5 > len(data) > 9):
+            if data is None or len(data) > 9 or len(data) < 5:
                 print("error de lenght")
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [qualification_add() - data len()]')
             if not key_in_request_form('workplace_name'):
@@ -1397,7 +1421,9 @@ def api_register_offer_job_demand():
             contact_phone_2 = "" if not key_in_request_form('contact_phone_2') else data["contact_phone_2"]
             contact_email_2 = "" if not key_in_request_form('contact_email_2') else data["contact_email_2"]
 
-            offer = Offer.Offer(Workplace_Name=data['workplace_name'],
+            # noinspection PyArgumentList
+            offer = Offer.Offer(Id_Company=user_company.ID_USER,
+                                Workplace_Name=data['workplace_name'],
                                 Workplace_Address=data['workplace_address'],
                                 Contact_Name=data['contact_name'],
                                 Contact_Phone=data['contact_phone'],
@@ -1435,6 +1461,7 @@ def api_register_offer_job_demand():
 
             offer_id = inserted_offer.ID_OFFER
             print(offer_id)
+            # noinspection PyArgumentList
             job_demand = Job_Demand.Job_Demand(Vacancies=data['vacancies'],
                                                Monthly_Salary=monthly_salary,
                                                Contract_Type=contract_type,
@@ -1464,20 +1491,19 @@ def api_register_offer_job_demand():
 
             job_demand_id = inserted_job_demand.ID_JOB_DEMAND
 
-            job_deman_qualification = Job_Demand_Qualification.Job_Demand_Qualification(
+            # noinspection PyArgumentList
+            job_demand_qualification = Job_Demand_Qualification.Job_Demand_Qualification(
                 Id_Qualification=data['qualification'],
                 # igualar al id de la  job_demand insertada
-                Id_Job_Demand=job_demand_id
-            )
+                Id_Job_Demand=job_demand_id)
+            # noinspection PyArgumentList
             job_demand_category = Job_Demand_Category.Job_Demand_Category(Id_Job_Category=data['job-category'],
-                                                                          Id_Job_Demand=job_demand_id
-                                                                          )
-
+                                                                          Id_Job_Demand=job_demand_id)
+            # noinspection PyArgumentList
             job_demand_language = Job_Demand_Language.Job_Demand_Language(Id_Language=data['language'],
-                                                                          Id_Job_Demand=job_demand_id
-                                                                          )
+                                                                          Id_Job_Demand=job_demand_id)
 
-            db.session.add(job_deman_qualification)
+            db.session.add(job_demand_qualification)
             db.session.add(job_demand_category)
             db.session.add(job_demand_language)
 
@@ -1486,7 +1512,7 @@ def api_register_offer_job_demand():
             return Response(json.dumps(msg), status=200)
         except Exception as ex:
             db.session.rollback()
-            print("Error:" + ex)
+            print("Error: " + ex)
             return internal_server_error(ERROR_500_DEFAULT_MSG)
 
 
@@ -1504,6 +1530,7 @@ def api_register_company():
             return bad_request(ERROR_400_DEFAULT_MSG + ' [user_add() - data <email>')
 
         user_id = uuid.uuid4()
+        # noinspection PyArgumentList
         user = User.User(ID_USER=user_id,
                          Passwd=sec.hashed_password(data['passwd']),
                          Email=data['email'],
@@ -1530,6 +1557,7 @@ def api_register_company():
         # BEGINNING OF INSERTS
         db.session.add(user)
         # TODO MAYBE WE SHOULD DO A SELECT TO VERIFY THAT THE USER HAS BEEN CREATED
+        # noinspection PyArgumentList
         company = Company.Company(ID_COMPANY=user.ID_USER,
                                   Name=data['company_name'],
                                   Type=data['type'],
@@ -1819,8 +1847,7 @@ def profile():
                     'dni': json_data['dni'],
                     'gender': 'Hombre' if json_data['gender'] == 'H' else (
                         'Mujer' if json_data['gender'] == 'M' else 'Otro'),
-                    'profilepic': "" if json_data['profile_picture'] is None
-                                        or json_data['profile_picture'] == "" else
+                    'profilepic': "" if json_data['profile_picture'] is None or json_data['profile_picture'] == "" else
                     json_data['profile_picture'],
                     'birthdate': json_data['birth_date'],
                     'mobile': json_data['mobile'],
@@ -1836,10 +1863,9 @@ def profile():
                         'pna_city'],
                     'pna_province': '' if 'pna_province' not in json_data or json_data['pna_province'] == '' else
                     json_data['pna_province'],
-                    'vehicle': 'SI' if json_data['vehicle'] or
-                                       json_data['vehicle'] == 'True' else 'NO',
-                    'mov': 'SI' if json_data['geographical_mobility'] or
-                                   json_data['geographical_mobility'] == 'True' else 'NO',
+                    'vehicle': 'SI' if json_data['vehicle'] or json_data['vehicle'] == 'True' else 'NO',
+                    'mov': 'SI' if json_data['geographical_mobility'] or json_data['geographical_mobility'] == 'True'
+                    else 'NO',
                     'handicap': json_data['disability_grade']
                 }
             }
@@ -1946,70 +1972,80 @@ def check_offer_params() -> str:
 @app.route("/register/offer", methods=["GET", "POST"])
 def register_offer_job_demand():
     if request.method == "POST":
-        data = request.form
-        error = check_offer_params()
-        if error != "":
-            if navigator_user_agent():
-                return render_template("addoffer.html", error=error)
-            return bad_request(error)
-        offer_job_demand_data_form = {
-            "workplace_name": data["offer-workplace-name"],
-            "workplace_address": data["offer-workplace-address"],
-            "contact_name": data["offer-contact-name"],
-            "contact_phone": data["offer-contact-phone"],
-            "contact_email": data["offer-contact-email"],
-            "contact_name_2": data["offer-contact-name-2"],
-            "contact_phone_2": data["offer-contact-phone-2"],
-            "contact_email_2": data["offer-contact-email-2"],
-            "vacancies": data["job-demand-vacancies"],
-            "qualification": data["qualification"],
-            "monthly_salary": data["job-demand-monthly-salary"],
-            "contract_type": data["job-demand-contract-type"],
-            "schedule": data["rb-group-job-demand-schedule"],
-            "working_day": data["rb-group-job-demand-working-day"],
-            "shift": data["rb-group-job-demand-shift"],
-            "holidays": data["job-demand-holidays"],
-            "language": data["language"],
-            "job-category":data["job-category"],
-            "experience": data["job-demand-experience"],
-            "vehicle": True if not key_in_request_form('rb-group-car') or data["rb-group-car"] == "y" else False,
-            "geographical_mobility": True if not key_in_request_form('rb-group-mov') or data[
+        role, _ = user_privileges()
+        if type(role) is Response:
+            return role
+        if role.CanMakeOffer:
+            data = request.form
+            error = check_offer_params()
+            if error != "":
+                if navigator_user_agent():
+                    return render_template("addoffer.html", error=error)
+                return bad_request(error)
+            offer_job_demand_data_form = {
+                "workplace_name": data["offer-workplace-name"],
+                "workplace_address": data["offer-workplace-address"],
+                "contact_name": data["offer-contact-name"],
+                "contact_phone": data["offer-contact-phone"],
+                "contact_email": data["offer-contact-email"],
+                "contact_name_2": data["offer-contact-name-2"],
+                "contact_phone_2": data["offer-contact-phone-2"],
+                "contact_email_2": data["offer-contact-email-2"],
+                "vacancies": data["job-demand-vacancies"],
+                "qualification": data["qualification"],
+                "monthly_salary": data["job-demand-monthly-salary"],
+                "contract_type": data["job-demand-contract-type"],
+                "schedule": data["rb-group-job-demand-schedule"],
+                "working_day": data["rb-group-job-demand-working-day"],
+                "shift": data["rb-group-job-demand-shift"],
+                "holidays": data["job-demand-holidays"],
+                "language": data["language"],
+                "job-category": data["job-category"],
+                "experience": data["job-demand-experience"],
+                "vehicle": True if not key_in_request_form('rb-group-car') or data["rb-group-car"] == "y" else False,
+                "geographical_mobility": True if not key_in_request_form('rb-group-mov') or data[
                     "rb-group-mov"] == "y" else False,
-            "others": data["job-demand-others"]
-        }
-        offer_created = requests.post('http://localhost:5000/api_v0/register/offer', data=offer_job_demand_data_form,
-                                      cookies=request.cookies)
-        # Check if the user has been created
-        if offer_created.status_code == 200:
-            print("OK")
-            return redirect(url_for("login"))  # TODO redirect to success-register-page
-        else:
+                "others": data["job-demand-others"]
+            }
+            offer_created = requests.post('http://localhost:5000/api_v0/register/offer', data=offer_job_demand_data_form,
+                                          cookies=request.cookies)
+            # Check if the user has been created
+            if offer_created.status_code == 200:
+                print("OK")
+                return redirect(url_for("login"))  # TODO redirect to success-register-page
+            else:
                 if 'offer_add' in offer_created.json():
                     error = offer_created.json()["offer_add"]
                 elif 'message' in offer_created.json():
                     error = offer_created.json()["message"]
                 else:
                     error = 'DEFAULT ERROR MESSAGE'
-        return render_template("signinmember.html", error=error)
+            return render_template("addoffer.html", error=error)
+        return forbidden()
     elif request.method == "GET":
-        offer_data_request = requests.get("http://localhost:5000/api_v0/register/offer",
-                                          cookies=request.cookies)
-        payload = None
-        if not not_auth_header():
-            payload = sec.decode_jwt(request.cookies.get("auth"))
-        if offer_data_request.status_code == 200:
-            return render_template("addoffer.html",
-                                   language_list=offer_data_request.json()['offer_add_get']['language_list'],
-                                   qualification_list=offer_data_request.json()['offer_add_get']['qualification_list'],
-                                   job_category_list=offer_data_request.json()['offer_add_get']['job_category_list'],
-                                   shift_list=offer_data_request.json()['offer_add_get']['shift_list'],
-                                   schedule_list=offer_data_request.json()['offer_add_get']['schedule_list'],
-                                   working_day_list=offer_data_request.json()['offer_add_get']['working_day_list'],
-                                   contract_type_list=offer_data_request.json()['offer_add_get']['contract_type_list'],
-                                   payload=payload)
+        role, _ = user_privileges()
+        if type(role) is Response:
+            return role
+        if role.CanMakeOffer:
+            offer_data_request = requests.get("http://localhost:5000/api_v0/register/offer",
+                                              cookies=request.cookies)
+            payload = None
+            if not not_auth_header():
+                payload = sec.decode_jwt(request.cookies.get("auth"))
+            if offer_data_request.status_code == 200:
+                return render_template("addoffer.html",
+                                       language_list=offer_data_request.json()['offer_data']['language_list'],
+                                       qualification_list=offer_data_request.json()['offer_data']['qualification_list'],
+                                       job_category_list=offer_data_request.json()['offer_data']['job_category_list'],
+                                       shift_list=offer_data_request.json()['offer_data']['shift_list'],
+                                       schedule_list=offer_data_request.json()['offer_data']['schedule_list'],
+                                       working_day_list=offer_data_request.json()['offer_data']['working_day_list'],
+                                       contract_type_list=offer_data_request.json()['offer_data']['contract_type_list'],
+                                       payload=payload)
 
-        error = offer_data_request.json()['message']
-        return render_template("addoffer.html", error=error)
+            error = offer_data_request.json()['message']
+            return render_template("addoffer.html", error=error)
+        return forbidden()
     else:
         return bad_request("{} method not supported".format(request.method))
 
@@ -2055,8 +2091,7 @@ def admin_single_member(uid: str):
                     'dni': json_data['dni'],
                     'gender': 'Hombre' if json_data['gender'] == 'H' else (
                         'Mujer' if json_data['gender'] == 'M' else 'Otro'),
-                    'profilepic': "" if json_data['profile_picture'] is None
-                                        or json_data['profile_picture'] == "" else
+                    'profilepic': "" if json_data['profile_picture'] is None or json_data['profile_picture'] == "" else
                     json_data['profile_picture'],
                     'birthdate': json_data['birth_date'],
                     'mobile': json_data['mobile'],
@@ -2072,10 +2107,9 @@ def admin_single_member(uid: str):
                         'pna_city'],
                     'pna_province': '' if 'pna_province' not in json_data or json_data['pna_province'] == '' else
                     json_data['pna_province'],
-                    'vehicle': 'SI' if json_data['vehicle'] or
-                                       json_data['vehicle'] == 'True' else 'NO',
-                    'mov': 'SI' if json_data['geographical_mobility'] or
-                                   json_data['geographical_mobility'] == 'True' else 'NO',
+                    'vehicle': 'SI' if json_data['vehicle'] or json_data['vehicle'] == 'True' else 'NO',
+                    'mov': 'SI' if json_data['geographical_mobility'] or json_data['geographical_mobility'] == 'True'
+                    else 'NO',
                     'handicap': json_data['disability_grade']
                 }
             }
@@ -2086,6 +2120,50 @@ def admin_single_member(uid: str):
             return bad_request()
     else:
         return forbidden()
+
+
+@app.route("/admin/member/<uid>/verify", methods=["POST"])
+def member_verify(uid):
+    if not valid_uuid(uid):
+        return bad_request()
+    role, _ = user_privileges()
+    if type(role) is Response:
+        return role
+    if role.IsAAAHOSTUR and role.CanVerifyMember:
+        data = request.form
+        if not key_in_request_form("verify"):
+            return bad_request("Not 'verify' key in form")
+        context = {
+            "verify": data["verify"]
+        }
+        verify_request = requests.put("http://localhost:5000/api_v0/member/{}".format(uid), data=context, cookies=request.cookies)
+
+        if verify_request.status_code == 200:
+            return redirect(url_for("admin_member", _method="GET"))
+        return bad_request()
+    return forbidden()
+
+
+@app.route("/admin/member/<uid>/active", methods=["POST"])
+def member_active(uid):
+    if not valid_uuid(uid):
+        return bad_request()
+    role, _ = user_privileges()
+    if type(role) is Response:
+        return role
+    if role.IsAAAHOSTUR and role.CanActiveMember:
+        data = request.form
+        if not key_in_request_form("active"):
+            return bad_request("Not 'active' key in form")
+        context = {
+            "active": data["active"]
+        }
+        active_request = requests.put("http://localhost:5000/api_v0/member/{}".format(uid), data=context, cookies=request.cookies)
+
+        if active_request.status_code == 200:
+            return redirect(url_for("admin_member", _method="GET"))
+        return bad_request()
+    return forbidden()
 
 
 @app.route("/admin/company", methods=["GET"])
@@ -2144,6 +2222,50 @@ def admin_single_company(uid: str):
             return bad_request()
     else:
         return forbidden()
+
+
+@app.route("/admin/company/<uid>/verify", methods=["POST"])
+def company_verify(uid):
+    if not valid_uuid(uid):
+        return bad_request()
+    role, _ = user_privileges()
+    if type(role) is Response:
+        return role
+    if role.IsAAAHOSTUR and role.CanVerifyCompany:
+        data = request.form
+        if not key_in_request_form("verify"):
+            return bad_request("Not 'verify' key in form")
+        context = {
+            "verify": data["verify"]
+        }
+        verify_request = requests.put("http://localhost:5000/api_v0/company/{}".format(uid), data=context, cookies=request.cookies)
+
+        if verify_request.status_code == 200:
+            return redirect(url_for("admin_company", _method="GET"))
+        return bad_request()
+    return forbidden()
+
+
+@app.route("/admin/company/<uid>/active", methods=["POST"])
+def company_active(uid):
+    if not valid_uuid(uid):
+        return bad_request()
+    role, _ = user_privileges()
+    if type(role) is Response:
+        return role
+    if role.IsAAAHOSTUR and role.CanActiveCompany:
+        data = request.form
+        if not key_in_request_form("active"):
+            return bad_request("Not 'active' key in form")
+        context = {
+            "active": data["active"]
+        }
+        active_request = requests.put("http://localhost:5000/api_v0/company/{}".format(uid), data=context, cookies=request.cookies)
+
+        if active_request.status_code == 200:
+            return redirect(url_for("admin_company", _method="GET"))
+        return bad_request()
+    return forbidden()
 
 
 @app.route('/admin/offer', methods=['GET'])

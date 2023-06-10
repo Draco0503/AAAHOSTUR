@@ -714,6 +714,10 @@ ul.social-links > li {
     border-left: 3px solid var(--aaahostur-primary-color-not-that-yellow);
 }
 
+.you-shall-not-pass-x {
+    overflow-x: auto;
+}
+
 .to-verify-btn {
     color: var(--aaahostur-color-green);
     font-weight: bold;
