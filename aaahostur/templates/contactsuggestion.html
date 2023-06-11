@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block mainContent %}
+<div class="container w80 shadow pad-2rem dis-flex pad-top-4rem">
+    <div class="w80 mar-bot-1rem">
+        <h1 class="black-title">Como contactarnos</h1>
+        <dl class="margin-left">
+            <dt class="yellow-title">Correos</dt>
+            <dd class="darker-blue-text">antiguos@aaahos-tur.com</dd>
+            <dd class="darker-blue-text">asociacion@aaahos-tur.com</dd>
+            <dt class="yellow-title">Numeros de Telefono</dt>
+            <dd class="darker-blue-text">91 - 464 93 09</dd>
+            <dd class="darker-blue-text">91 - 526 39 09</dd> 
+            <dt class="yellow-title">Disponibilidad</dt>
+            <dd class="darker-blue-text">Mañanas: Lunes a jueves de 9:00 á 14:00 horas</dd>   
+            <dd class="darker-blue-text">Tardes: Lunes a jueves  de 15:00 á 18:00 horas</dd>
+            <dd class="darker-blue-text">Viernes de 9:00 á 13:30 horas.</dd>                 
+        </dl>
+        <h1 class="black-title">Sugerencias</h1>
+        <p class="darker-blue-text">No dudes en dejarnos una sugerencia rellenando este pequeño formulario</p>
+        <div class="margin-left">
+            <form action="{{ url_for(request.endpoint) }}" method="POST">
+                <label class="dis-block font-16pt" for="member-name">Nombre <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="entity-name" name="entity-name" required>
+                <label class="dis-block font-16pt" for="member-surname">Apellidos <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="entity-surname" name="entity-surname" required>
+                <label class="dis-block font-16pt" for="member-mobile">Teléfono <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="number" name="entity-mobile" id="entity-mobile" minlength="9" required>
+                <label class="dis-block font-16pt" for="user-email">Correo electrónico <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="entity-email" name="entity-email" required>
+                <label class="dis-block font-16pt" for="member-province">Provincia <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-1rem" type="text" id="entity-province" name="entity-province" required>
+                <label class="dis-block font-16pt" for="job-demand-others">Comentarios </label>
+                <textarea class="w60 pad-input font-14pt mar-bot-2rem" id="entity-coment" name="entity-coment" maxlength="256" rows=3></textarea>
+                <input class="w60 pad-o5rem font-16pt mar-bot-1rem" type="submit" value="Enviar">
+                {% if error %}
+                    <p><span>{{ error }}</span></p>
+                {% endif %}
+            </form>
+        </div>  
+    </div>
+</div>
+{% endblock %}
