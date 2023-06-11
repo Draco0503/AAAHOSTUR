@@ -78,6 +78,13 @@
     font-family: Calibri;
 }
 
+.darker-blue-text-list{
+    color: var(--aaahostur-primary-color-darker-blue);
+    padding: 10px;
+    font-family: Calibri;
+    font-size: 16pt;
+}
+
 body {
     overflow: auto;
     background-color: var(--aaahostur-color-grey);
@@ -731,6 +738,10 @@ ul {
     padding: 0;
 }
 
+.lista{
+    list-style: circle;
+    margin-left: 2vh;
+}
 ul.social-links > li {
     display: inline-block;
     width: 2rem;

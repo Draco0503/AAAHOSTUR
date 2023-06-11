@@ -1,0 +1,22 @@
+{% extends 'baselogin.html' %}
+
+{% block mainContent %}
+<div class="dis-grid container w20 pad-2rem shadow mar-bot-3rem">
+    <a class="how-to-center-a-div mar-bot-3rem text-center" href="/">
+        <img class="how-to-center-a-div w60" src="{{ url_for('static', filename='resources/logo.png') }}" alt="aaahostur hosteleria turismo">
+    </a>
+    <hr>
+        <h2 class="yellow-title">Como empresa</h2>
+    <hr>
+        <ul class="lista">
+            <li class="darker-blue-text-list">Podrás crear ofertas</li>
+            <li class="darker-blue-text-list">Ver tus ofertas</li>
+            <li class="darker-blue-text-list">Se podrán inscribir personas capacitadas y verificadas</li>
+        </ul>
+        {% if error %}
+            <p><span>{{ error }}</span></p>
+        {% endif %}
+    <hr>
+        <p>Ir al inicio <a class="link-on-white" href="{{ url_for('index') }}">Pulsa aquí</a></p>
+</div>
+{% endblock %}
