@@ -915,3 +915,36 @@ ul.social-links > li {
     }
 
 }
+
+/* employmentexchange */
+.filter-container{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.filter{
+    width: 50%;
+}
+.offer-list-container{
+    width: 100%;
+    height: 600px;
+    overflow: auto;
+}
+.offer-container{
+    color: #fefefe;
+    margin-top: 2%;
+    margin-bottom: 2%;
+    padding: 2%;
+    background-color: #273145;
+    border-radius: 10px;
+}
+.job_demand-list-container{
+}
+.job_demand-container{
+    margin-top: 2%;
+    margin-bottom: 2%;
+    padding: 2%;
+    color: #131313;
+    background-color:#f7c331;
+}
+

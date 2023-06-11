@@ -158,7 +158,7 @@ def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
 # method for testing purposes
 @app.route('/prueba')
 def prueba():
-    return render_template('schools.html', prueba='holka')
+    return render_template('employmentexchange.html', prueba='holka')
 
 
 # endregion
@@ -862,7 +862,59 @@ def offer_by_id(id: int):
     offer = Offer.Offer.query.filter_by(ID_OFFER=id).first()
     if offer is None:
         return not_found()
-    data_list = offer.to_json()
+    job_demands = Job_Demand.Job_Demand.query.filter_by(Id_Offer=id)
+    job_demands_data_list = []
+    if job_demands is not None and job_demands.count() > 0:
+        for job_demand in job_demands:
+            job_categories = []
+            qualifications = []
+            languages = []
+            job_demand_categories = Job_Demand_Category.Job_Demand_Category.query.filter_by(Id_Job_Demand=job_demand.ID_JOB_DEMAND)
+            if job_demand_categories is not None and job_demand_categories.count() > 0:
+                for job_demand_category in job_demand_categories:
+                    job_category = Job_Category.Job_Category.query.filter_by(ID_JOB_CATEGORY=job_demand_category.Id_Job_Category).first()
+                    job_categories.append(job_category.Name)
+            job_demand_qualifications = Job_Demand_Qualification.Job_Demand_Qualification.query.filter_by(Id_Job_Demand=job_demand.ID_JOB_DEMAND)
+            if job_demand_qualifications is not None and job_demand_qualifications.count() > 0:
+                for job_demand_qualification in job_demand_qualifications:
+                    qualification = Qualification.Qualification.query.filter_by(ID_QUALIFICATION=job_demand_qualification.Id_Qualification).first()
+                    qualifications.append(qualification.Name)
+            job_demand_languages = Job_Demand_Language.Job_Demand_Language.query.filter_by(Id_Job_Demand=job_demand.ID_JOB_DEMAND)
+            if job_demand_languages is not None and job_demand_languages.count() > 0:
+                for job_demand_language in job_demand_languages:
+                    language = Language.Language.query.filter_by(ID_LANGUAGE=job_demand_language.Id_Language).first()
+                    languages.append(language.Name)
+
+            jd_data_dict = {
+                'id_job_demand': job_demand.ID_JOB_DEMAND,
+                'job_category': job_categories,
+                'qualification': qualifications,
+                'language': languages,
+                'vacancies': job_demand.Vacancies,
+                'working_day': job_demand.Working_Day,
+                'shift': job_demand.Shift,
+                'schedule': job_demand.Schedule,
+                'salary': job_demand.Monthly_Salary,
+                'job_contract': job_demand.Contract_Type,
+                'holidays': job_demand.Holidays,
+                'experience': job_demand.Experience,
+                'others': job_demand.Others,
+                'vehicle': "SI" if job_demand.Vehicle else "NO",
+                'mov': "SI" if job_demand.Geographical_Mobility else "NO"
+            }
+            job_demands_data_list.append(jd_data_dict)
+
+    data_list = {
+        'workplace_name': offer.Workplace_Name,
+        'workplace_address': offer.Workplace_Address,
+        'contact_name': offer.Contact_Name,
+        'contact_name_2': offer.Contact_Name_2,
+        'contact_phone': offer.Contact_Phone,
+        'contact_phone_2': offer.Contact_Phone_2,
+        'contact_email': offer.Contact_Email,
+        'contact_email_2': offer.Contact_Email_2,
+        'job_demand': job_demands_data_list
+    }
     msg = {"offer": data_list}
     return Response(json.dumps(msg), status=200)
 
@@ -870,34 +922,46 @@ def offer_by_id(id: int):
 # UPDATE
 @app.route("/api_v0/offer/<id>", methods=["PUT"])
 def offer_verify_update(id):
+    role, username = user_privileges()
+    if type(role) is Response:
+        return role
+    if not role.CanSeeApiOffer or not role.CanVerifyOffer and not role.CanActiveOffer:
+        return forbidden()
+    user = User.User.query.filter_by(Email=username).first()
+    if user is None:
+        return forbidden()
     offer = Offer.Offer.query.filter_by(ID_OFFER=id).first()
     # comprobación de que se almacen un dato
     if offer is None:
         return not_found()
-    if request.method == "PUT":
-        data = request.form
-        # comprobacion que se guarde el valor que queremos cambiar
-        if not key_in_request_form('verify') and not key_in_request_form('active'):
-            return bad_request()
-        else:
-            status_code = 400
-            msg = ERROR_400_DEFAULT_MSG
-            try:
-                if key_in_request_form('verify'):
-                    if data["verify"] == 'True':
-                        offer.Verify = True
-                    elif data["verify"] == 'False':
-                        offer.Verify = False
-                if key_in_request_form('active'):
-                    if data["active"] == 'True':
-                        offer.Active = True
-                    elif data["active"] == 'False':
-                        offer.Active = False
-            except Exception as ex:
-                db.session.rollback()
-            if status_code != 200:
-                return internal_server_error("An error has occurred processing PUT query")
-            return Response(json.dumps(msg), status=status_code)
+    data = request.form
+    # comprobacion que se guarde el valor que queremos cambiar
+    if not key_in_request_form('verify') and not key_in_request_form('active'):
+        return bad_request()
+    else:
+        status_code = 400
+        msg = ERROR_400_DEFAULT_MSG
+        try:
+            if key_in_request_form('verify'):
+                if data["verify"] == 'True':
+                    offer.Verify = True
+                elif data["verify"] == 'False':
+                    offer.Verify = False
+            if key_in_request_form('active'):
+                if data["active"] == 'True':
+                    offer.Active = True
+                elif data["active"] == 'False':
+                    offer.Active = False
+            offer.Id_User_Verify = user.ID_USER
+            db.session.commit()
+            msg = {"offer_upd": offer.to_json()}
+            status_code = 200
+        except Exception as ex:
+            print(ex)
+            db.session.rollback()
+        if status_code != 200:
+            return internal_server_error("An error has occurred processing PUT query")
+        return Response(json.dumps(msg), status=status_code)
 
 
 # -------------------------------PROFESSIONAL_PROFILE-------------------------------#
@@ -1629,6 +1693,36 @@ def api_get_company_list():
         return forbidden()
 
 
+@app.route("/api_v0/admin/offer", methods=["GET"])
+def api_get_offer_list():
+    role, _ = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
+    if role.IsAAAHOSTUR and role.CanSeeApiOffer:
+        result_set = Offer.Offer.query.group_by(Offer.Offer.Id_Company).all()
+        data_list = []
+        for offer in result_set:
+            if offer is not None:
+                json_data = {
+                    'id_offer': str(offer.ID_OFFER),
+                    'workplace_name': offer.Workplace_Name,
+                    'contact_name': offer.Contact_Name,
+                    'contact_name_2': offer.Contact_Name_2,
+                    'contact_email': offer.Contact_Email,
+                    'contact_email_2': offer.Contact_Email_2,
+                    'contact_phone': offer.Contact_Phone,
+                    'contact_phone_2': offer.Contact_Phone_2,
+                    'offer_verify': offer.Verify,
+                    'offer_active': offer.Active
+                }
+                data_list.append(json_data)
+        msg = {'adm_offer': data_list}
+        return Response(json.dumps(msg), status=200)
+    else:
+        return forbidden()
+
+
 # endregion
 # ==================================================================================================================== #
 # =======================================================   PAGES   ================================================== #
@@ -2246,22 +2340,93 @@ def company_active(uid):
 
 @app.route('/admin/offer', methods=['GET'])
 def admin_offer():
-    pass
+    role, _ = user_privileges()
+    if type(role) is Response:
+        return role
+    payload = sec.decode_jwt(request.cookies.get('auth'))
+    # Now we can ask for the requirement set
+    if role.IsAAAHOSTUR and role.CanSeeApiOffer:
+        offer_list_request = requests.get("http://localhost:5000/api_v0/admin/offer", cookies=request.cookies)
+        if offer_list_request.status_code == 200:
+            context = {'offer': offer_list_request.json()['adm_offer']}
+            return render_template('admin.html', context=context, payload=payload)
+        else:
+            if navigator_user_agent():
+                return render_template('admin.html', payload=payload)
+            return bad_request()
+    else:
+        return forbidden()
 
 
-@app.route('/admin/offer/<uid>', methods=['GET'])
-def admin_single_offer(uid):
-    pass
+@app.route('/admin/offer/<id>', methods=['GET'])
+def admin_single_offer(id):
+    role, _ = user_privileges()
+    if type(role) is Response:
+        return role
+    payload = sec.decode_jwt(request.cookies.get('auth'))
+    # Now we can ask for the requirement set
+    if role.IsAAAHOSTUR and role.CanSeeApiOffer:
+        offer_list_request = requests.get("http://localhost:5000/api_v0/offer/{}".format(id), cookies=request.cookies)
+        if offer_list_request.status_code == 200:
+            context = offer_list_request.json()['offer']
+            return render_template('showoffer.html', context=context, payload=payload)
+        else:
+            if navigator_user_agent():
+                return render_template('admin.html', payload=payload)
+            return bad_request()
+    else:
+        return forbidden()
+
+
+@app.route('/admin/offer/<id>/verify', methods=['POST'])
+def offer_verify(id):
+    role, _ = user_privileges()
+    if type(role) is Response:
+        return role
+    if role.IsAAAHOSTUR and role.CanVerifyOffer:
+        data = request.form
+        if not key_in_request_form("verify"):
+            return bad_request("Not 'verify' key in form")
+        context = {
+            "verify": data["verify"]
+        }
+        verify_request = requests.put("http://localhost:5000/api_v0/offer/{}".format(id), data=context, cookies=request.cookies)
+
+        if verify_request.status_code == 200:
+            return redirect(url_for("admin_offer", _method="GET"))
+        return bad_request()
+    return forbidden()
+
+
+@app.route('/admin/offer/<id>/active', methods=['POST'])
+def offer_active(id):
+    role, _ = user_privileges()
+    if type(role) is Response:
+        return role
+    if role.IsAAAHOSTUR and role.CanActiveOffer:
+        data = request.form
+        if not key_in_request_form("active"):
+            return bad_request("Not 'active' key in form")
+        context = {
+            "active": data["active"]
+        }
+        active_request = requests.put("http://localhost:5000/api_v0/offer/{}".format(id), data=context,
+                                      cookies=request.cookies)
+
+        if active_request.status_code == 200:
+            return redirect(url_for("admin_offer", _method="GET"))
+        return bad_request()
+    return forbidden()
 
 
 @app.route('/admin/section', methods=['GET'])
 def admin_section():
-    pass
+    return "<h1> Wait until v2 </h1>"
 
 
 @app.route('/admin/section/<uid>', methods=['GET'])
 def admin_single_section(uid):
-    pass
+    return "<h1> Wait until v2 </h1>"
 
 
 @app.route('/job', methods=['GET'])
@@ -2269,14 +2434,28 @@ def job_opportunities():
     return "<h1> IN PROGRESS :S </h1>"
 
 
+@app.route('/schools', methods=['GET'])
+def schools():
+    if not_auth_header():
+        return render_template("schools.html", code=200)
+    payload = sec.decode_jwt(request.cookies.get('auth'))
+    return render_template("schools.html", payload=payload, code=200)
+
+
 @app.route("/privacy", methods=["GET"])
 def privacy():
-    return "<h1>IN PROGRESS</h1>"
+    if not_auth_header():
+        return render_template("privacy.html", code=200)
+    payload = sec.decode_jwt(request.cookies.get('auth'))
+    return render_template("privacy.html", payload=payload, code=200)
 
 
 @app.route("/legal", methods=["GET"])
 def legal():
-    return "<h1>IN PROGRESS</h1>"
+    if not_auth_header():
+        return render_template("legal.html", code=200)
+    payload = sec.decode_jwt(request.cookies.get('auth'))
+    return render_template("legal.html", payload=payload, code=200)
 
 
 # endregion

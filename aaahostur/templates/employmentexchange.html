@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block mainContent %}
+<div class="foreign_container w80 container shadow pad-2rem">
+    <h1 class="">¡Bienvenid@ a la bolsa de trabajo!</h1>
+    <hr class="bg-color-darker-blue mar-bot-3rem">
+
+    <h2 class="mar-bot-1rem">Tablón de ofertas</h2>
+    <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+
+    <form class="dis-grid" action="{{ url_for(request.endpoint) }}" method="POST">
+        <div class="filter-container">
+            <div class="filter">
+                <label class="dis-block font-16pt" for="job-category">Categoría profesional</label>
+                <!-- SELECT (get <JOB_CATEGORY> data) -->
+                <select class="w60 pad-input font-14pt mar-bot-2rem" name="job-category" id="job-category">
+                    {% if job_category_list is defined and not none %}
+                        <option value="all">Todas las categorías</option>
+                        {% for job_category in job_category_list %}
+                            <option value="{{ job_category['id_job_category'] }}">{{ job_category['name'] }}</option>
+                        {% endfor %}
+                    {% else %}
+                        <option>Ha habido un error cargando la lista de categorias</option>
+                    {% endif %}
+                </select>
+            </div>
+            <div class="filter">
+                <label class="dis-block font-16pt" for="qualification">Titulación</label>
+                <!-- SELECT (get <QUALIFICATION> data) -->
+                <select class="w60 pad-input font-14pt mar-bot-2rem" name="qualification" id="qualification">
+                    {% if qualification_list is defined and not none %}
+                        <option value="all">Todas las titulaciones</option>
+                        {% for qualification in qualification_list %}
+                            <option value="{{ qualification['id_qualification'] }}">{{ qualification['name'] }}</option>
+                        {% endfor %}
+                    {% else %}
+                        <option>Ha habido un error cargando la lista de títulos</option>
+                    {% endif %}
+                </select>
+            </div>
+        </div>
+        <div class="offer-list-container">
+            <div class="offer-container">
+                <label class="dis-block font-16pt" for="offer-prueba-1">Oferta de prueba 1</label>
+                <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+                <div class="job_demand-list-container">
+                    <div class="job_demand-container">
+                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 1</label>
+                        <hr class="bg-color-darker-blue mar-bot-3rem">
+                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 1</label>
+                        <hr class="bg-color-darker-blue mar-bot-3rem">
+                    </div>
+                </div>
+                <div class="font-14pt custom-cr-input mar-bot-2rem">
+                    Me interesa esta oferta
+                    <input type="checkbox" id="tumadre1" name="vehicle1" value="Bike">
+                    <span class="checkmark"></span>
+                </div>
+            </div>
+            <div class="offer-container">
+                <label class="dis-block font-16pt" for="offer-prueba-1">Oferta de prueba 2</label>
+                <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+                <div class="job_demand-list-container">
+                    <div class="job_demand-container">
+                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 2</label>
+                        <hr class="bg-color-darker-blue mar-bot-3rem">
+                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 2</label>
+                        <hr class="bg-color-darker-blue mar-bot-3rem">
+                    </div>
+                </div>
+                <div class="font-14pt custom-cr-input mar-bot-2rem">
+                    Me interesa esta oferta
+                    <input type="checkbox" id="tumadre2" name="vehicle1" value="Bike">
+                    <span class="checkmark"></span>
+                </div>
+            </div>
+            <div class="offer-container">
+                <label class="dis-block font-16pt" for="offer-prueba-1">Oferta de prueba 3</label>
+                <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+                <div class="job_demand-list-container">
+                    <div class="job_demand-container">
+                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 3</label>
+                        <hr class="bg-color-darker-blue mar-bot-3rem">
+                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 3</label>
+                        <hr class="bg-color-darker-blue mar-bot-3rem">
+                    </div>
+                </div>
+                <div class="font-14pt custom-cr-input mar-bot-2rem">
+                    Me interesa esta oferta
+                    <input type="checkbox" id="tumadre3" name="vehicle1" value="Bike">
+                    <span class="checkmark"></span>
+                </div>
+            </div>
+            <div class="offer-container">
+                <label class="dis-block font-16pt" for="offer-prueba-1">Oferta de prueba 4</label>
+                <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+                <div class="job_demand-list-container">
+                    <div class="job_demand-container">
+                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 4</label>
+                        <hr class="bg-color-darker-blue mar-bot-3rem">
+                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 4</label>
+                        <hr class="bg-color-darker-blue mar-bot-3rem">
+                    </div>
+                </div>
+                <div class="font-14pt custom-cr-input mar-bot-2rem">
+                    Me interesa esta oferta
+                    <input type="checkbox" id="tumadre4" name="vehicle1" value="Bike">
+                    <span class="checkmark"></span>
+                </div>
+            </div>
+            <div class="offer-container">
+                <label class="dis-block font-16pt" for="offer-prueba-1">Oferta de prueba 5</label>
+                <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+                <div class="job_demand-list-container">
+                    <div class="job_demand-container">
+                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 5</label>
+                        <hr class="bg-color-darker-blue mar-bot-3rem">
+                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 5</label>
+                        <hr class="bg-color-darker-blue mar-bot-3rem">
+                    </div>
+                </div>
+                <div class="font-14pt custom-cr-input mar-bot-2rem">
+                    Me interesa esta oferta
+                    <input type="checkbox" id="tumadre5" name="vehicle1" value="Bike">
+                    <span class="checkmark"></span>
+                </div>
+            </div>
+        </div>
+
+        <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+        <p class="">Los campos con <span class="font-14pt">*</span> son obligatorios</p>
+        <div class="w80 dis-flex flex-right">
+            <input class="w20 pad-o5rem font-16pt" type="submit" value="Enviar &rarr;">
+        </div>
+        {% if error %}
+            <p><span>{{ error }}</span></p>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}
