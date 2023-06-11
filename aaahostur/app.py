@@ -158,7 +158,7 @@ def gateway_timeout(msg: str = ERROR_504_DEFAULT_MSG) -> Response:
 # method for testing purposes
 @app.route('/prueba')
 def prueba():
-    return render_template('schools.html', prueba='holka')
+    return render_template('employmentexchange.html', prueba='holka')
 
 
 # endregion
