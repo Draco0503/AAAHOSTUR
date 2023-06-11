@@ -557,7 +557,7 @@ span {
 
 .dis-table {
     display: table;
-    border-collapse: collapse;
+    border-collapse: collapse;   
 }
 
 .dis-tb-row {
@@ -656,6 +656,9 @@ footer .center {
     display: flex;
     justify-content: left;
     --float: left;
+}
+.margin-left{
+    margin-left: 5vh;
 }
 .office{
     display: flex;
