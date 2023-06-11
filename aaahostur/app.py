@@ -2372,7 +2372,7 @@ def admin_single_offer(id):
             return render_template('showoffer.html', context=context, payload=payload)
         else:
             if navigator_user_agent():
-                return render_template('admin.html', payload=payload)
+                return render_template('showoffer.html', payload=payload)
             return bad_request()
     else:
         return forbidden()
