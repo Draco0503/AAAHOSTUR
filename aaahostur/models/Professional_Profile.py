@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from . import db
 
 @dataclass()
-class ProfessionalProfile(db.Model):
+class Professional_Profile(db.Model):
     __tablename__ = 'Professional_Profile'
     ID_PROFESSIONAL_PROFILE = db.Column(db.Integer, primary_key=True, autoincrement=True)
     Workplace = db.Column(db.String(512), nullable=False)
