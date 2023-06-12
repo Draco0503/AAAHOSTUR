@@ -29,7 +29,7 @@
                 </a>
             </div>
             <div class="center">
-                <a href="#" class="navbar-item">Bolsa de Trabajo</a>
+                <a href="{{ url_for('job_opportunities') }}" class="navbar-item">Bolsa de Trabajo</a>
                 <a href="#" class="navbar-item">Actividades</a>
                 <a href="#" class="navbar-item">Cursos</a>
                 <a href="#" class="navbar-item">Revista</a>
@@ -78,10 +78,10 @@
                 <h2 class="yellow-title">Links de Interés</h2>
                 <ul class="links">
                     <li>
-                        <h4><a href="#">Contáctanos</a></h4>
+                        <h4><a href="{{ url_for('contact') }}">Contáctanos</a></h4>
                     </li>
                     <li>
-                        <h4><a href="#">Escuelas</a></h4>
+                        <h4><a href="{{ url_for('schools') }}">Escuelas</a></h4>
                     </li>
                     <li>
                         <h4><a href="#">Nuestros Servicios</a></h4>

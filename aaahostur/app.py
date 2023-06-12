@@ -843,10 +843,72 @@ def offer_list():
     # Now we can ask for the requirement set
     if not role.CanSeeApiOffer:
         return forbidden()
-    data_list = [offer.to_json() for offer in Offer.Offer.query.all()]
-    if len(data_list) == 0:
+    offer_list = Offer.Offer.query.all()
+    if len(offer_list) == 0:
         return not_found()
-    msg = {"offer_list": data_list}
+    offer_data = []
+    for offer in offer_list:
+        job_demands = Job_Demand.Job_Demand.query.filter_by(Id_Offer=offer.ID_OFFER).all()
+        job_demands_data_list = []
+        if job_demands is not None and len(job_demands) > 0:
+            for job_demand in job_demands:
+                job_categories = []
+                qualifications = []
+                languages = []
+                job_demand_categories = Job_Demand_Category.Job_Demand_Category.query.filter_by(
+                    Id_Job_Demand=job_demand.ID_JOB_DEMAND).all()
+                if job_demand_categories is not None and len(job_demand_categories) > 0:
+                    for job_demand_category in job_demand_categories:
+                        job_category = Job_Category.Job_Category.query.filter_by(
+                            ID_JOB_CATEGORY=job_demand_category.Id_Job_Category).first()
+                        job_categories.append(job_category.Name)
+                job_demand_qualifications = Job_Demand_Qualification.Job_Demand_Qualification.query.filter_by(
+                    Id_Job_Demand=job_demand.ID_JOB_DEMAND).all()
+                if job_demand_qualifications is not None and len(job_demand_qualifications) > 0:
+                    for job_demand_qualification in job_demand_qualifications:
+                        qualification = Qualification.Qualification.query.filter_by(
+                            ID_QUALIFICATION=job_demand_qualification.Id_Qualification).first()
+                        qualifications.append(qualification.Name)
+                job_demand_languages = Job_Demand_Language.Job_Demand_Language.query.filter_by(
+                    Id_Job_Demand=job_demand.ID_JOB_DEMAND).all()
+                if job_demand_languages is not None and len(job_demand_languages) > 0:
+                    for job_demand_language in job_demand_languages:
+                        language = Language.Language.query.filter_by(
+                            ID_LANGUAGE=job_demand_language.Id_Language).first()
+                        languages.append(language.Name)
+
+                jd_data_dict = {
+                    'id_job_demand': job_demand.ID_JOB_DEMAND,
+                    'job_category': job_categories,
+                    'qualification': qualifications,
+                    'language': languages,
+                    'vacancies': job_demand.Vacancies,
+                    'working_day': job_demand.Working_Day,
+                    'shift': job_demand.Shift,
+                    'schedule': job_demand.Schedule,
+                    'salary': job_demand.Monthly_Salary,
+                    'job_contract': job_demand.Contract_Type,
+                    'holidays': job_demand.Holidays,
+                    'experience': job_demand.Experience,
+                    'others': job_demand.Others,
+                    'vehicle': "SI" if job_demand.Vehicle else "NO",
+                    'mov': "SI" if job_demand.Geographical_Mobility else "NO"
+                }
+                job_demands_data_list.append(jd_data_dict)
+
+        data_list = {
+            'workplace_name': offer.Workplace_Name,
+            'workplace_address': offer.Workplace_Address,
+            'contact_name': offer.Contact_Name,
+            'contact_name_2': offer.Contact_Name_2,
+            'contact_phone': offer.Contact_Phone,
+            'contact_phone_2': offer.Contact_Phone_2,
+            'contact_email': offer.Contact_Email,
+            'contact_email_2': offer.Contact_Email_2,
+            'job_demand': job_demands_data_list
+        }
+        offer_data.append(data_list)
+    msg = {"offer_list": offer_data}
     return Response(json.dumps(msg), status=200)
 
 
@@ -862,25 +924,30 @@ def offer_by_id(id: int):
     offer = Offer.Offer.query.filter_by(ID_OFFER=id).first()
     if offer is None:
         return not_found()
-    job_demands = Job_Demand.Job_Demand.query.filter_by(Id_Offer=id)
+    job_demands = Job_Demand.Job_Demand.query.filter_by(Id_Offer=id).all()
     job_demands_data_list = []
-    if job_demands is not None and job_demands.count() > 0:
+    if job_demands is not None and len(job_demands) > 0:
         for job_demand in job_demands:
             job_categories = []
             qualifications = []
             languages = []
-            job_demand_categories = Job_Demand_Category.Job_Demand_Category.query.filter_by(Id_Job_Demand=job_demand.ID_JOB_DEMAND)
-            if job_demand_categories is not None and job_demand_categories.count() > 0:
+            job_demand_categories = Job_Demand_Category.Job_Demand_Category.query.filter_by(
+                Id_Job_Demand=job_demand.ID_JOB_DEMAND).all()
+            if job_demand_categories is not None and len(job_demand_categories) > 0:
                 for job_demand_category in job_demand_categories:
-                    job_category = Job_Category.Job_Category.query.filter_by(ID_JOB_CATEGORY=job_demand_category.Id_Job_Category).first()
+                    job_category = Job_Category.Job_Category.query.filter_by(
+                        ID_JOB_CATEGORY=job_demand_category.Id_Job_Category).first()
                     job_categories.append(job_category.Name)
-            job_demand_qualifications = Job_Demand_Qualification.Job_Demand_Qualification.query.filter_by(Id_Job_Demand=job_demand.ID_JOB_DEMAND)
-            if job_demand_qualifications is not None and job_demand_qualifications.count() > 0:
+            job_demand_qualifications = Job_Demand_Qualification.Job_Demand_Qualification.query.filter_by(
+                Id_Job_Demand=job_demand.ID_JOB_DEMAND).all()
+            if job_demand_qualifications is not None and len(job_demand_qualifications) > 0:
                 for job_demand_qualification in job_demand_qualifications:
-                    qualification = Qualification.Qualification.query.filter_by(ID_QUALIFICATION=job_demand_qualification.Id_Qualification).first()
+                    qualification = Qualification.Qualification.query.filter_by(
+                        ID_QUALIFICATION=job_demand_qualification.Id_Qualification).first()
                     qualifications.append(qualification.Name)
-            job_demand_languages = Job_Demand_Language.Job_Demand_Language.query.filter_by(Id_Job_Demand=job_demand.ID_JOB_DEMAND)
-            if job_demand_languages is not None and job_demand_languages.count() > 0:
+            job_demand_languages = Job_Demand_Language.Job_Demand_Language.query.filter_by(
+                Id_Job_Demand=job_demand.ID_JOB_DEMAND).all()
+            if job_demand_languages is not None and len(job_demand_languages) > 0:
                 for job_demand_language in job_demand_languages:
                     language = Language.Language.query.filter_by(ID_LANGUAGE=job_demand_language.Id_Language).first()
                     languages.append(language.Name)
@@ -916,6 +983,85 @@ def offer_by_id(id: int):
         'job_demand': job_demands_data_list
     }
     msg = {"offer": data_list}
+    return Response(json.dumps(msg), status=200)
+
+
+@app.route('/api_v0/employmentexchange', methods=['POST'])
+def reduced_offer_list():
+    role, username = user_privileges()
+    if type(role) is Response:
+        return role
+    if not role.CanApplyOffer:
+        return forbidden()
+    user = User.User.query.filter_by(Email=username).first()
+    if user is None:
+        return not_found()
+    permitted = True
+    if len(user.member) > 0:
+        if not user.member[0].Verify or not user.member[0].Active:
+            permitted = False
+    if len(user.company) > 0:
+        if not user.company[0].Verify or not user.company[0].Active:
+            permitted = False
+    if not permitted:
+        return forbidden("Usuario no verificado")
+    data = request.form
+
+    category = data['id_category'] if key_in_request_form('id_category') else None
+
+    offer_list = Offer.Offer.query.all()
+    if len(offer_list) == 0:
+        return not_found()
+    offer_data_list = []
+    for offer in offer_list:
+        if offer.Verify and offer.Active:
+            job_demands = Job_Demand.Job_Demand.query.filter_by(Id_Offer=offer.ID_OFFER).all()
+            job_demands_data_list = []
+            if job_demands is not None and len(job_demands) > 0:
+                for job_demand in job_demands:
+                    job_categories = []
+                    qualifications = []
+                    if category is None:
+                        job_demand_categories = Job_Demand_Category.Job_Demand_Category.query.filter_by(
+                            Id_Job_Demand=job_demand.ID_JOB_DEMAND).all()
+                    else:
+                        job_demand_categories = Job_Demand_Category.Job_Demand_Category.query.filter_by(
+                            Id_Job_Demand=job_demand.ID_JOB_DEMAND,
+                            Id_Job_Category=int(category)).all()
+                    if job_demand_categories is not None and len(job_demand_categories) > 0:
+                        for job_demand_category in job_demand_categories:
+                            job_category = Job_Category.Job_Category.query.filter_by(
+                                ID_JOB_CATEGORY=job_demand_category.Id_Job_Category).first()
+                            job_categories.append(job_category.Name)
+
+                    job_demand_qualifications = Job_Demand_Qualification.Job_Demand_Qualification.query.filter_by(
+                        Id_Job_Demand=job_demand.ID_JOB_DEMAND).all()
+                    if job_demand_qualifications is not None and len(job_demand_qualifications) > 0:
+                        for job_demand_qualification in job_demand_qualifications:
+                            qualification = Qualification.Qualification.query.filter_by(
+                                ID_QUALIFICATION=job_demand_qualification.Id_Qualification).first()
+                            qualifications.append(qualification.Name)
+
+                    if len(job_categories) != 0:
+                        job_demand_data = {
+                            'id_job_demand': str(job_demand.ID_JOB_DEMAND),
+                            'job_category': job_categories,
+                            'qualification': qualifications,
+                            'vacancies': job_demand.Vacancies,
+                            'working_day': job_demand.Working_Day,
+                            'shift': job_demand.Shift,
+                            'schedule': job_demand.Schedule
+                        }
+                        job_demands_data_list.append(job_demand_data)
+            if len(job_demands_data_list) != 0:
+                offer_dict = {
+                    'id_offer': str(offer.ID_OFFER),
+                    'workplace_name': offer.Workplace_Name,
+                    'workplace_address': offer.Workplace_Address,
+                    'job_demand': job_demands_data_list
+                }
+                offer_data_list.append(offer_dict)
+    msg = {'jobs': offer_data_list}
     return Response(json.dumps(msg), status=200)
 
 
@@ -1510,6 +1656,7 @@ def api_register_offer_job_demand():
                                                          Contact_Email=data['contact_email']).first()
 
             offer_id = inserted_offer.ID_OFFER
+            # noinspection PyArgumentList
             job_demand = Job_Demand.Job_Demand(Vacancies=data['vacancies'],
                                                Monthly_Salary=monthly_salary,
                                                Contract_Type=contract_type,
@@ -2078,10 +2225,11 @@ def register_offer_job_demand():
                 "others": data["job-demand-others"]
 
             }
-            offer_created = requests.post('http://localhost:5000/api_v0/register/offer', data=offer_job_demand_data_form,
-                                      cookies=request.cookies)
-            
-            if offer_created.status_code == 200:             
+            offer_created = requests.post('http://localhost:5000/api_v0/register/offer',
+                                          data=offer_job_demand_data_form,
+                                          cookies=request.cookies)
+
+            if offer_created.status_code == 200:
                 return redirect(url_for("login"))  # TODO redirect to success-register-page
             else:
                 if 'offer_add' in offer_created.json():
@@ -2206,7 +2354,8 @@ def member_verify(uid):
         context = {
             "verify": data["verify"]
         }
-        verify_request = requests.put("http://localhost:5000/api_v0/member/{}".format(uid), data=context, cookies=request.cookies)
+        verify_request = requests.put("http://localhost:5000/api_v0/member/{}".format(uid), data=context,
+                                      cookies=request.cookies)
 
         if verify_request.status_code == 200:
             return redirect(url_for("admin_member", _method="GET"))
@@ -2228,7 +2377,8 @@ def member_active(uid):
         context = {
             "active": data["active"]
         }
-        active_request = requests.put("http://localhost:5000/api_v0/member/{}".format(uid), data=context, cookies=request.cookies)
+        active_request = requests.put("http://localhost:5000/api_v0/member/{}".format(uid), data=context,
+                                      cookies=request.cookies)
 
         if active_request.status_code == 200:
             return redirect(url_for("admin_member", _method="GET"))
@@ -2308,7 +2458,8 @@ def company_verify(uid):
         context = {
             "verify": data["verify"]
         }
-        verify_request = requests.put("http://localhost:5000/api_v0/company/{}".format(uid), data=context, cookies=request.cookies)
+        verify_request = requests.put("http://localhost:5000/api_v0/company/{}".format(uid), data=context,
+                                      cookies=request.cookies)
 
         if verify_request.status_code == 200:
             return redirect(url_for("admin_company", _method="GET"))
@@ -2330,7 +2481,8 @@ def company_active(uid):
         context = {
             "active": data["active"]
         }
-        active_request = requests.put("http://localhost:5000/api_v0/company/{}".format(uid), data=context, cookies=request.cookies)
+        active_request = requests.put("http://localhost:5000/api_v0/company/{}".format(uid), data=context,
+                                      cookies=request.cookies)
 
         if active_request.status_code == 200:
             return redirect(url_for("admin_company", _method="GET"))
@@ -2390,7 +2542,8 @@ def offer_verify(id):
         context = {
             "verify": data["verify"]
         }
-        verify_request = requests.put("http://localhost:5000/api_v0/offer/{}".format(id), data=context, cookies=request.cookies)
+        verify_request = requests.put("http://localhost:5000/api_v0/offer/{}".format(id), data=context,
+                                      cookies=request.cookies)
 
         if verify_request.status_code == 200:
             return redirect(url_for("admin_offer", _method="GET"))
@@ -2429,9 +2582,33 @@ def admin_single_section(uid):
     return "<h1> Wait until v2 </h1>"
 
 
-@app.route('/job', methods=['GET'])
+@app.route('/job', methods=['GET', 'POST'])
 def job_opportunities():
-    return "<h1> IN PROGRESS :S </h1>"
+    role, _ = user_privileges()
+    if type(role) is Response:
+        return role
+    payload = sec.decode_jwt(request.cookies.get('auth'))
+    if role.CanApplyOffer:
+        if request.method == 'POST':
+            jobs_request = requests.post('http://localhost:5000/api_v0/employmentexchange', data=request.form,cookies=request.cookies)
+        else:
+            jobs_request = requests.post('http://localhost:5000/api_v0/employmentexchange', cookies=request.cookies)
+        if jobs_request.status_code == 200:
+            context = jobs_request.json()['jobs']
+            category_request = requests.get('http://localhost:5000/api_v0/job_category-list', cookies=request.cookies)
+            job_categories = []
+            if category_request.status_code == 200:
+                job_categories = category_request.json()['job_category_list']
+            return render_template('employmentexchange.html', context=context, payload=payload, job_category_list=job_categories)
+    elif role.CanMakeOffer:
+        pass
+    else:
+        return forbidden()
+
+
+@app.route('/subscribe/offer/<id>', methods=['POST'])
+def subscribe_offer(id):
+    pass
 
 
 @app.route('/schools', methods=['GET'])

@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block mainContent %}
+<div class="foreign_container w80 container shadow pad-2rem">
+    <h1 class="">Oferta</h1>
+    <hr class="bg-color-darker-blue mar-bot-3rem">
+
+    <h2 class="mar-bot-1rem">Datos de oferta</h2>
+    <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+
+    <label class="dis-block font-16pt" >Nombre del centro de trabajo</label>
+    <p class="w60 pad-input font-14pt mar-bot-2rem" id="offer-workplace-name">{{ context['workplace_name'] }}</p>
+    <label class="dis-block font-16pt" >Dirección del centro de trabajo</label>
+    <p class="w60 pad-input font-14pt mar-bot-2rem" id="offer-workplace-address">{{ context['workplace_address'] }}</p>
+
+    {% if context['registered'] is not none and context['registered'] == 'True' %}
+      <h3 class="mar-bot-1rem">Datos de contacto</h3>
+      <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+      <label class="dis-block font-16pt" >Nombre de contacto</label>
+  <p class="w60 pad-input font-14pt mar-bot-2rem" id="offer-contact-name">{{ context['contact_name'] }}</p>
+      <label class="dis-block font-16pt" >Teléfono de contacto</label>
+  <p class="w60 pad-input font-14pt mar-bot-2rem" id="offer-contact-phone">{{ context['contact_phone'] }}</p>
+      <label class="dis-block font-16pt" >Correo de contacto</label>
+  <p class="w60 pad-input font-14pt mar-bot-2rem" id="offer-contact-email">{{ context['contact_email'] }}</p>
+      <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+
+      <div id="extra-data" class="dis-grid dis-none">
+          {% if context['contact_name_2'] is not none and context['contact_name_2'] != "" %}
+              <label class="dis-block font-16pt">Nombre de contacto secundario</label>
+        <p class="w60 pad-input font-14pt mar-bot-2rem" id="offer-contact-name-2">{{ context['contact_name_2'] }}</p>
+          {% endif %}
+          {% if context['contact_phone_2'] is not none and context['contact_phone_2'] != "" %}
+          <label class="dis-block font-16pt">Teléfono de contacto secundario</label>
+        <p class="w60 pad-input font-14pt mar-bot-2rem" id="offer-contact-phone-2">{{ context['contact_phone_2'] }}</p>
+          {% endif %}
+          {% if context['contact_email_2'] is not none and context['contact_email_2'] != "" %}
+          <label class="dis-block font-16pt">Correo de contacto secundario</label>
+        <p class="w60 pad-input font-14pt mar-bot-2rem" id="offer-contact-email-2">{{ context['contact_email_2'] }}</p>
+          {% endif %}
+      </div>
+    {% endif %}
+    <h2 class="mar-bot-1rem">Datos de demanda de empleo</h2>
+    {% if context['job_demand'] is defined and not none %}
+        {% for job_demand in context['job_demand'] %}
+            <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+            <div class="azul" style=background-color:aliceblue;padding:2%;border-radius:5px;>
+                <label class="dis-block font-16pt">Categoría profesional</label>
+                <!-- SELECT (get <JOB_CATEGORY> data) -->
+                {% for job_category in job_demand['job_category']%}
+                    <p class="pad-input font-14pt mar-bot-2rem">{{ job_category }}</p>
+                {% endfor %}
+                <label class="dis-block font-16pt">Titulación de preferencia</label>
+                <!-- SELECT (get <QUALIFICATION> data) -->
+                {% for qualification in job_demand['qualification']%}
+                    <p class="pad-input font-14pt mar-bot-2rem">{{ qualification }}</p>
+                {% endfor %}
+                <label class="dis-block font-16pt" >Cantidad de puestos vacantes</label>
+                <p class="w60 pad-input font-14pt mar-bot-2rem" id="job-demand-vacancies">{{ job_demand['vacancies'] }}</p>
+                <label class="dis-block font-16pt">Tipo de jornada</label>
+                <!-- RADIOGROUP (get <WORKING_DAY> data) -->
+                <p class="pad-input font-14pt mar-bot-2rem">{{ job_demand['working_day'] }}</p>
+                <label class="dis-block font-16pt">Turno</label>
+                <!-- RADIOGROUP (get <SHIFT> data) -->
+                <p class="pad-input font-14pt mar-bot-2rem">{{ job_demand['shift'] }}</p>
+                <label class="dis-block font-16pt">Horario</label>
+                <!-- RADIOGROUP (get <SCHEDULE> data) -->
+                <p class="pad-input font-14pt mar-bot-2rem">{{ job_demand['schedule'] }}</p>
+                <label class="dis-block font-16pt">Salario mensual </label>
+                <p class="w60 pad-input font-14pt mar-bot-2rem" id="job-demand-monthly-salary">{{ job_demand['salary'] }}</p>
+                <label class="dis-block font-16pt">Tipo de contrato </label>
+                <!-- SELECT (get <CONTRACT_TYPE> data) -->
+                <p class="pad-input font-14pt mar-bot-2rem">{{ job_demand['job_contract'] }}</p>
+                <label class="dis-block font-16pt" >Vacaciones </label>
+                <p class="w60 pad-input font-14pt mar-bot-2rem" id="job-demand-holidays">{{ job_demand['holidays'] }}</p>
+                <label class="dis-block font-16pt" >Experiencia</label>
+                <p class="w60 pad-input font-14pt mar-bot-2rem" id="job-demand-experience">{{ job_demand['experience'] }}</p>
+                <label class="dis-block font-16pt">Idioma de preferencia </label>
+                <!-- SELECT (get <LANGUAGE> data) -->
+                {% for language in job_demand['language']%}
+                    <p class="pad-input font-14pt mar-bot-2rem">{{ language }}</p>
+                {% endfor %}
+                <label class="dis-block font-16pt" >Otros </label>
+                <p class="w60 pad-input font-14pt mar-bot-2rem" id="job-demand-others">{{ job_demand['others'] }}</p>
+                <label class="dis-block font-16pt mar-bot-1rem">Se requiere de vehículo propio</label>
+                    <p class="pad-input font-14pt mar-bot-2rem">{{ job_demand['vehicle'] }}</p>
+                <label class="dis-block font-16pt mar-bot-1rem">Se requiere de movilidad geográfica</label>
+                <p class="pad-input font-14pt mar-bot-2rem">{{ job_demand['mov'] }}</p>
+                {% if context['registered'] is none or context['registered'] == 'False' %}
+                  <form action="{{ '/subscribe/offer/' + context['id_offer'] }}" method="POST">
+                      <div class="w80 dis-flex flex-right">
+                          <input class="w20 pad-o5rem font-16pt" type="submit" value="Enviar &rarr;">
+                      </div>
+                  </form>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <h2>Esta oferta no tiene más datos</h2>
+    {% endif %}
+    {% if error %}
+        <p><span>{{ error }}</span></p>
+    {% endif %}
+</div>
+{% endblock %}

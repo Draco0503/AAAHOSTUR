@@ -24,107 +24,34 @@
                     {% endif %}
                 </select>
             </div>
-            <div class="filter">
-                <label class="dis-block font-16pt" for="qualification">Titulación</label>
-                <!-- SELECT (get <QUALIFICATION> data) -->
-                <select class="w60 pad-input font-14pt mar-bot-2rem" name="qualification" id="qualification">
-                    {% if qualification_list is defined and not none %}
-                        <option value="all">Todas las titulaciones</option>
-                        {% for qualification in qualification_list %}
-                            <option value="{{ qualification['id_qualification'] }}">{{ qualification['name'] }}</option>
-                        {% endfor %}
-                    {% else %}
-                        <option>Ha habido un error cargando la lista de títulos</option>
-                    {% endif %}
-                </select>
-            </div>
         </div>
         <div class="offer-list-container">
-            <div class="offer-container">
-                <label class="dis-block font-16pt" for="offer-prueba-1">Oferta de prueba 1</label>
-                <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
-                <div class="job_demand-list-container">
-                    <div class="job_demand-container">
-                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 1</label>
-                        <hr class="bg-color-darker-blue mar-bot-3rem">
-                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 1</label>
-                        <hr class="bg-color-darker-blue mar-bot-3rem">
-                    </div>
+            {% for offer in context %}
+                <div class="offer-container">
+                    <label class="dis-block font-16pt">{{ offer['workplace_name'] }}</label>
+                    <p>{{ offer['workplace_address'] }}</p>
+                    <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+                    {% for demand in offer['job_demand'] %}
+                        <div class="job_demand-list-container">
+                            <div class="job_demand-container">
+                                <label class="dis-block font-16pt">{% for category in demand['job_category'] %} {{ category }} | {% endfor %}</label>
+                                <hr class="bg-color-darker-blue mar-bot-3rem">
+                                {% if offer['qualification']|length > 0 %}
+                                    <label class="dis-block font-16pt">Estudios:   {% for qualification in demand['qualification'] %} {{ qualification }} | {% endfor %}</label>
+                                {% else %}
+                                    <label class="dis-block font-16pt">Estudios:   Sin estudios</label>
+                                {% endif %}
+                                <label class="dis-block font-16pt">Horario:    {{ demand['schedule'] }}</label>
+                                <label class="dis-block font-16pt">Jornada:    {{ demand['working_day'] }}</label>
+                                <label class="dis-block font-16pt">Turno:      {{ demand['shift'] }}</label>
+                                <label class="dis-block font-16pt">Vacantes:   {{ demand['vacancies'] }}</label>
+                                <hr class="bg-color-darker-blue">
+                            </div>
+                        </div>
+                        <a class="pad-input font-14pt" href="{{ '/offer/' +  offer['id_offer'] + '?job_demand=' + demand['id_job_demand'] }}" target="_blank">Más información...</a>
+                    {% endfor %}
                 </div>
-                <div class="font-14pt custom-cr-input mar-bot-2rem" onclick="">
-                    Me interesa esta oferta
-                    <input type="checkbox" id="tumadre1" name="vehicle1" value="Bike">
-                    <span class="checkmark"></span>
-                </div>
-            </div>
-            <div class="offer-container">
-                <label class="dis-block font-16pt" for="offer-prueba-1">Oferta de prueba 2</label>
-                <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
-                <div class="job_demand-list-container">
-                    <div class="job_demand-container">
-                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 2</label>
-                        <hr class="bg-color-darker-blue mar-bot-3rem">
-                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 2</label>
-                        <hr class="bg-color-darker-blue mar-bot-3rem">
-                    </div>
-                </div>
-                <div class="font-14pt custom-cr-input mar-bot-2rem">
-                    Me interesa esta oferta
-                    <input type="checkbox" id="tumadre2" name="vehicle1" value="Bike">
-                    <span class="checkmark"></span>
-                </div>
-            </div>
-            <div class="offer-container">
-                <label class="dis-block font-16pt" for="offer-prueba-1">Oferta de prueba 3</label>
-                <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
-                <div class="job_demand-list-container">
-                    <div class="job_demand-container">
-                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 3</label>
-                        <hr class="bg-color-darker-blue mar-bot-3rem">
-                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 3</label>
-                        <hr class="bg-color-darker-blue mar-bot-3rem">
-                    </div>
-                </div>
-                <div class="font-14pt custom-cr-input mar-bot-2rem">
-                    Me interesa esta oferta
-                    <input type="checkbox" id="tumadre3" name="vehicle1" value="Bike">
-                    <span class="checkmark"></span>
-                </div>
-            </div>
-            <div class="offer-container">
-                <label class="dis-block font-16pt" for="offer-prueba-1">Oferta de prueba 4</label>
-                <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
-                <div class="job_demand-list-container">
-                    <div class="job_demand-container">
-                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 4</label>
-                        <hr class="bg-color-darker-blue mar-bot-3rem">
-                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 4</label>
-                        <hr class="bg-color-darker-blue mar-bot-3rem">
-                    </div>
-                </div>
-                <div class="font-14pt custom-cr-input mar-bot-2rem">
-                    Me interesa esta oferta
-                    <input type="checkbox" id="tumadre4" name="vehicle1" value="Bike">
-                    <span class="checkmark"></span>
-                </div>
-            </div>
-            <div class="offer-container">
-                <label class="dis-block font-16pt" for="offer-prueba-1">Oferta de prueba 5</label>
-                <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
-                <div class="job_demand-list-container">
-                    <div class="job_demand-container">
-                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 5</label>
-                        <hr class="bg-color-darker-blue mar-bot-3rem">
-                        <label class="dis-block font-16pt" for="job_demand-1-prueba-1">Demanda de empleo de prueba 5</label>
-                        <hr class="bg-color-darker-blue mar-bot-3rem">
-                    </div>
-                </div>
-                <div class="font-14pt custom-cr-input mar-bot-2rem">
-                    Me interesa esta oferta
-                    <input type="checkbox" id="tumadre5" name="vehicle1" value="Bike">
-                    <span class="checkmark"></span>
-                </div>
-            </div>
+            {% endfor %}
         </div>
 
         <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
