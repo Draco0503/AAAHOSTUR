@@ -9,7 +9,7 @@
     <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
 
     <form class="dis-grid" action="{{ url_for(request.endpoint) }}" method="POST">
-        <div class="filter-container">
+        {# <div class="filter-container">
             <div class="filter">
                 <label class="dis-block font-16pt" for="job-category">Categoría profesional</label>
                 <!-- SELECT (get <JOB_CATEGORY> data) -->
@@ -24,7 +24,7 @@
                     {% endif %}
                 </select>
             </div>
-        </div>
+        </div> #}
         <div class="offer-list-container">
             {% for offer in context %}
                 <div class="offer-container">
@@ -53,14 +53,6 @@
                 </div>
             {% endfor %}
         </div>
-
-        <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
-        <div class="w80 dis-flex flex-right">
-            <input class="w20 pad-o5rem font-16pt" type="submit" value="Enviar &rarr;">
-        </div>
-        {% if error %}
-            <p><span>{{ error }}</span></p>
-        {% endif %}
     </form>
 </div>
 {% endblock %}

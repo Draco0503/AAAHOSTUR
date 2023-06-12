@@ -1727,7 +1727,7 @@ def api_register_company():
         user = User.User(ID_USER=user_id,
                          Passwd=sec.hashed_password(data['passwd']),
                          Email=data['email'],
-                         Id_Role=103)
+                         Id_Role=105)
         # COMPANY VALIDATIONS
         if not key_in_request_form('company_name'):
             return bad_request(ERROR_400_DEFAULT_MSG + ' [academic_profile_add() - data <company_name>]')
@@ -2599,7 +2599,7 @@ def job_opportunities():
             job_categories = []
             if category_request.status_code == 200:
                 job_categories = category_request.json()['job_category_list']
-            return render_template('employmentexchange.html', context=context, payload=payload, job_category_list=job_categories)
+            return render_template('employmentexchange.html', context=context, payload=payload)  # , job_category_list=job_categories)
     elif role.CanMakeOffer:
         pass
     else:
