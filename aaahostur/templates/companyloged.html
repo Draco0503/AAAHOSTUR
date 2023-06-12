@@ -1,7 +1,7 @@
 {% extends 'baselogin.html' %}
 
 {% block mainContent %}
-<div class="dis-grid container w20 pad-2rem shadow mar-bot-3rem">
+<div class="dis-grid container w40 pad-2rem shadow mar-bot-3rem">
     <a class="how-to-center-a-div mar-bot-3rem text-center" href="/">
         <img class="how-to-center-a-div w60" src="{{ url_for('static', filename='resources/logo.png') }}" alt="aaahostur hosteleria turismo">
     </a>
@@ -9,9 +9,11 @@
         <h2 class="yellow-title">Como empresa</h2>
     <hr>
         <ul class="lista">
-            <li class="darker-blue-text-list">Podrás crear ofertas</li>
+            <li class="darker-blue-text-list">Primero tendras que estar verificado para poder acceder a la Bolsa de Trabajo</li>
+            <li class="darker-blue-text-list">Una ver verificado podrás:</li>
+            <li class="darker-blue-text-list">Crear ofertas</li>
             <li class="darker-blue-text-list">Ver tus ofertas</li>
-            <li class="darker-blue-text-list">Se podrán inscribir personas capacitadas y verificadas</li>
+            <li class="darker-blue-text-list">Se podrán inscribir personas capacitadas</li>
         </ul>
         {% if error %}
             <p><span>{{ error }}</span></p>

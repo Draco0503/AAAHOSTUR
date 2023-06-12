@@ -2458,6 +2458,14 @@ def legal():
     return render_template("legal.html", payload=payload, code=200)
 
 
+@app.route("/contact", methods=["GET"])
+def contact():
+    if not_auth_header():
+        return render_template("contactsuggestion.html", code=200)
+    payload = sec.decode_jwt(request.cookies.get('auth'))
+    return render_template("contactsuggestion.html", payload=payload, code=200)
+
+
 # endregion
 # ==================================================================================================================== #
 # ========================================================= MAIN ===================================================== #

@@ -742,7 +742,7 @@ ul {
 }
 
 .lista{
-    list-style: circle;
+     /* list-style: circle; */
     margin-left: 2vh;
 }
 ul.social-links > li {
