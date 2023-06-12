@@ -2372,7 +2372,7 @@ def admin_single_offer(id):
             return render_template('showoffer.html', context=context, payload=payload)
         else:
             if navigator_user_agent():
-                return render_template('admin.html', payload=payload)
+                return render_template('showoffer.html', payload=payload)
             return bad_request()
     else:
         return forbidden()
@@ -2456,6 +2456,14 @@ def legal():
         return render_template("legal.html", code=200)
     payload = sec.decode_jwt(request.cookies.get('auth'))
     return render_template("legal.html", payload=payload, code=200)
+
+
+@app.route("/contact", methods=["GET"])
+def contact():
+    if not_auth_header():
+        return render_template("contactsuggestion.html", code=200)
+    payload = sec.decode_jwt(request.cookies.get('auth'))
+    return render_template("contactsuggestion.html", payload=payload, code=200)
 
 
 # endregion
