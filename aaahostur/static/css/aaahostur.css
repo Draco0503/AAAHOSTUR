@@ -428,18 +428,6 @@ button {
 }
 
 
-.yellow-title {
-    font-size: 22px;
-    color: var(--aaahostur-primary-color-not-that-yellow);
-    font-weight: bold;
-}
-
-.yellow-title2 {
-    font-size: 16px;
-    color: var(--aaahostur-primary-color-not-that-yellow);
-    font-weight: bold;
-}
-
 .black-title {
     margin: auto;
     text-align: center;
@@ -453,6 +441,18 @@ button {
     font-weight: bold;
     font-style: var(--aaahostur-color-black);
 }
+.black-title3 {
+    font-size: 16px;
+    color: var(--aaahostur-color-black);
+    font-weight: bold;
+}
+
+.black-title4 {
+    font-size: 22px;
+    color: var(--aaahostur-color-black);
+    font-weight: bold;
+}
+
 
 .navbar > div.left {
     flex: 1 0 20%;
