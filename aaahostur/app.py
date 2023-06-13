@@ -1945,7 +1945,7 @@ def api_get_offer_list():
         return role
     # Now we can ask for the requirement set
     if role.IsAAAHOSTUR and role.CanSeeApiOffer:
-        result_set = Offer.Offer.query.group_by(Offer.Offer.Id_Company).all()
+        result_set = Offer.Offer.query.all()
         data_list = []
         for offer in result_set:
             if offer is not None:
