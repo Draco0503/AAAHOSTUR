@@ -4,12 +4,14 @@
 <div class="foreign_container w80 container shadow pad-2rem">
     <h1 class="">¡Bienvenid@ a la bolsa de trabajo!</h1>
     <hr class="bg-color-darker-blue mar-bot-3rem">
+    {% if verified %}
     <div class="w95 dis-flex flex-right">
         <a href="{{ url_for('register_offer_job_demand') }}" class="adm-btn" style="flex: 0 0 10%; text-align: center;">
             <i class="fa fa-file-text fa-2x" aria-hidden="true"></i>
             Crear<br>Oferta
         </a>
     </div>
+    {% endif %}
     <h2 class="mar-bot-1rem">Tus ofertas</h2>
     <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
     <!-- check if context is defined-->
