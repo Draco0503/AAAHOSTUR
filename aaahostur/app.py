@@ -1603,29 +1603,17 @@ def api_register_member():
             return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <join_date>')
         if not key_in_request_form('cancellation_date'):
             return bad_request(ERROR_400_DEFAULT_MSG + ' [member_add() - data <cancellation_date>')
-        pna_address = None
-        pna_cp = None
-        pna_city = None
-        pna_province = None
-        if key_in_request_form('pna_data'):
-            if not key_in_request_form('pna_address'):
-                return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_address")
-            if not key_in_request_form('pna_cp'):
-                return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_cp")
-            if not key_in_request_form('pna_city'):
-                return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_city")
-            if not key_in_request_form('pna_province'):
-                return bad_request(ERROR_400_DEFAULT_MSG + "[ERROR] - member_add() - insert: pna_province")
-            pna_address = data['pna_address']
-            pna_cp = data['pna_cp']
-            pna_city = data['pna_city']
-            pna_province = data['pna_province']
+        pna_address = None if not key_in_request_form('pna_address') else data['pna_address']
+        pna_cp = None if not key_in_request_form('pna_cp') else data['pna_cp']
+        pna_city = None if not key_in_request_form('pna_city') else data['pna_city']
+        pna_province = None if not key_in_request_form('pna_province') else data['pna_province']
+
         land_line = None if not key_in_request_form('land_line') else data["land_line"]
-        vehicle = False if not key_in_request_form('vehicle') or data["vehicle"] else bool(data["vehicle"])
+        vehicle = False if not key_in_request_form('vehicle') or data["vehicle"] != 'True' else bool(data["vehicle"])
         geographical_mobility = False if not key_in_request_form('geographical_mobility') or data[
-            "geographical_mobility"] \
+            "geographical_mobility"] != 'True' \
             else bool(data["geographical_mobility"])
-        disability_grade = 0 if not key_in_request_form('disability_grade') or data["disability_grade"] != "" \
+        disability_grade = 0 if not key_in_request_form('disability_grade') or data["disability_grade"] == "" \
             else int(data["disability_grade"])
         profile_pic = None if not key_in_request_form('profile_picture') else b64decode(data["profile_picture"])
         # BEGINNING OF THE INSERTS
@@ -2129,7 +2117,7 @@ def register_member():
                                          cookies=request.cookies)
             # Check if the user has been created
             if user_created.status_code == 200:
-                return redirect(url_for("login"))  # TODO redirect to success-register-page
+                return redirect(url_for("member_register_succeed"))
             else:
                 if 'user_add' in user_created.json():
                     error = user_created.json()["user_add"]
@@ -2142,6 +2130,11 @@ def register_member():
         return render_template("signinmember.html")
     else:
         return bad_request("{} method not supported".format(request.method))
+
+
+@app.route('/register/member/succeed', methods=['GET'])
+def member_register_succeed():
+    return render_template('memberloged.html')
 
 
 @app.route("/profile", methods=["GET"])
@@ -2263,7 +2256,7 @@ def register_company():
                                          cookies=request.cookies)
             # Check if the user has been created
             if user_created.status_code == 200:
-                return redirect(url_for("login"))  # TODO       
+                return redirect(url_for("company_register_succeed"))
             else:
                 if 'user_add' in user_created.json():
                     error = user_created.json()["user_add"]
@@ -2277,6 +2270,11 @@ def register_company():
         return render_template("signincompany.html")
     else:
         return bad_request("{} method not supported".format(request.method))
+
+
+@app.route('/register/company/succeed', methods=['GET'])
+def company_register_succeed():
+    return render_template('companyloged.html')
 
 
 # TODO
