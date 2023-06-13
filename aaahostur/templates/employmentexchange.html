@@ -28,7 +28,7 @@
     </form> #}
     <div class="offer-list-container">
         {% if permited is defined and permited %}
-            {% if context is defined and context is not none %}
+            {% if context is defined and context is not none and context|length > 0 %}
                 {% for offer in context %}
                     <div class="offer-container">
                         <label class="dis-block font-16pt">{{ offer['workplace_name'] }}</label>

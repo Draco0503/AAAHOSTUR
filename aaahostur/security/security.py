@@ -22,8 +22,10 @@ class Security:
         return bcrypt.checkpw(pwd_bytes, hsd_pwd)
 
     def generate_jwt(self, payload: dict):
-        # IN LINUX ADD .decode() TO THIS LINE
-        return jwt.encode(payload, self._secret, algorithm=self._algorithm)
+        jwt_str = jwt.encode(payload, self._secret, algorithm=self._algorithm)
+        if type(jwt_str) is not str:  # should be binary, it only happened in linux system
+            jwt_str = jwt_str.decode()
+        return jwt_str
 
     def decode_jwt(self, token: str) -> dict:
         return jwt.decode(token, self._secret, algorithms=[self._algorithm])

@@ -1117,7 +1117,7 @@ def company_offer_list():
     company = User.User.query.filter_by(Email=username).first()
     if company is None:
         return not_found()
-    if not company.Verify or not company.Active:
+    if not company.company[0].Verify or not company.company[0].Active:
         return forbidden("Not verified")
     offers_from_company = Offer.Offer.query.filter_by(Id_Company=company.ID_USER).all()
     offer_data_list = []
@@ -1730,9 +1730,9 @@ def api_register_offer_job_demand():
             contract_type = "" if not key_in_request_form('contract_type') else data['contract_type']
             holidays = "" if not key_in_request_form('holidays') else data['holidays']
             experience = "" if not key_in_request_form('experience') else data['experience']
-            vehicle = False if not key_in_request_form('vehicle') or data["vehicle"] else bool(data["vehicle"])
+            vehicle = False if not key_in_request_form('vehicle') or data["vehicle"] != 'True' else bool(data["vehicle"])
             geographical_mobility = False if not key_in_request_form('geographical_mobility') or data[
-                "geographical_mobility"] \
+                "geographical_mobility"] != 'True' \
                 else bool(data["geographical_mobility"])
             others = "" if not key_in_request_form('others') else data['others']
 
@@ -2327,7 +2327,7 @@ def register_offer_job_demand():
                                           cookies=request.cookies)
 
             if offer_created.status_code == 200:
-                return redirect(url_for("login"))  # TODO redirect to success-register-page
+                return redirect(url_for("login"))
             else:
                 if 'offer_add' in offer_created.json():
                     error = offer_created.json()["offer_add"]
