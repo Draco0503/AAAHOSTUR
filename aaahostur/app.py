@@ -1654,7 +1654,7 @@ def api_register_offer_job_demand():
             if user_company is None:
                 return forbidden()
             data = request.form
-            if data is None or len(data) > 9 or len(data) < 5:
+            if data is None  or len(data) < 9:
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [qualification_add() - data len()]')
             if not key_in_request_form('workplace_name'):
                 return bad_request(ERROR_400_DEFAULT_MSG + ' [offer_add() - data <company_name>')
