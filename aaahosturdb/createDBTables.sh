@@ -4,7 +4,7 @@ passwd=$3
 db=$1
 
 if [ "$db" = "" ]; then
-    echo "Uso: $0 host db_name user password"
+    echo "Uso: $0 db_name user password"
     exit 1
 fi
 
