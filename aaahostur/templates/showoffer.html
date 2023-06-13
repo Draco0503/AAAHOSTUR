@@ -23,14 +23,14 @@
     <input class="w60 pad-input font-14pt mar-bot-2rem" type="email" id="offer-contact-email" name="offer-contact-email" value="{{ context['contact_email'] }}" disabled>
     <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
 
-    <div id="extra-data" class="dis-grid dis-none">
+    <div id="extra-data" class="dis-grid">
         {% if context['contact_name_2'] is not none and context['contact_name_2'] != "" %}
             <label class="dis-block font-16pt" for="offer-contact-name-2">Nombre de contacto secundario</label>
             <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="offer-contact-name-2" name="offer-contact-name-2" value="{{ context['contact_name_2'] }}" disabled>
         {% endif %}
         {% if context['contact_phone_2'] is not none and context['contact_phone_2'] != "" %}
         <label class="dis-block font-16pt" for="offer-contact-phone-2">Teléfono de contacto secundario</label>
-        <input class="w60 pad-input font-14pt mar-bot-2rem" type="tel" id="offer-contact-phone-2" name="offer-contact-phone-2" minlength="9" value="{{ context['contact_phone_2'] }}" disabled>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="offer-contact-phone-2" name="offer-contact-phone-2" value="{{ context['contact_phone_2'] }}" disabled>
         {% endif %}
         {% if context['contact_email_2'] is not none and context['contact_email_2'] != "" %}
         <label class="dis-block font-16pt" for="offer-contact-email-2">Correo de contacto secundario</label>

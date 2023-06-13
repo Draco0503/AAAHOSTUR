@@ -1117,6 +1117,8 @@ def company_offer_list():
     company = User.User.query.filter_by(Email=username).first()
     if company is None:
         return not_found()
+    if not company.Verify or not company.Active:
+        return forbidden("Not verified")
     offers_from_company = Offer.Offer.query.filter_by(Id_Company=company.ID_USER).all()
     offer_data_list = []
     if offers_from_company is not None and len(offers_from_company) > 0:
@@ -1945,7 +1947,7 @@ def api_get_offer_list():
         return role
     # Now we can ask for the requirement set
     if role.IsAAAHOSTUR and role.CanSeeApiOffer:
-        result_set = Offer.Offer.query.group_by(Offer.Offer.Id_Company).all()
+        result_set = Offer.Offer.query.all()
         data_list = []
         for offer in result_set:
             if offer is not None:
