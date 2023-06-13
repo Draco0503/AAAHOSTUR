@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+
+{% block mainContent %}
+<div class="foreign_container w80 container shadow pad-2rem">
+    <h1 class="">ADMINISTRACIÓN</h1>
+    <hr class="bg-color-darker-blue mar-bot-3rem">
+    <!-- check if context is defined-->
+    <div class="you-shall-not-pass-x">
+        {% if context is defined and not none %}
+            {% if 'member' in context %}
+                {% if context['member'] is not none %}
+                    <div class="dis-table w100">
+                        <div class="dis-tb-row">
+                            <div class="dis-tb-cell header">DNI</div>
+                            <div class="dis-tb-cell header">Nombre</div>
+                            <div class="dis-tb-cell header">Correo</div>
+                            <div class="dis-tb-cell header">Contacto</div>
+                            <div class="dis-tb-cell header">
+                                Verificado
+                                <i class="fa fa-info-circle link-on-white" aria-hidden="true" title="Los usuarios verificados podrán interactuar con la bolsa de empleo"></i>
+                            </div>
+                            <div class="dis-tb-cell header">
+                                Activo
+                                <i class="fa fa-info-circle link-on-white" aria-hidden="true" title="Los usuarios desactivados serán borrados tras un tiempo"></i>
+                            </div>
+                            <div class="dis-tb-cell header">Más...</div>
+                        </div>
+                        {% for member in context['member'] %}
+                            <div class="dis-tb-row">
+                                <div class="dis-tb-cell">{{ member['member_dni'] }}</div>
+                                <div class="dis-tb-cell">{{ member['member_surname'] }}, {{ member['member_name'] }}</div>
+                                <div class="dis-tb-cell">{{ member['email'] }}</div>
+                                <div class="dis-tb-cell">{{ member['member_mobile'] }} / {{ member['member_landline'] }}</div>
+                                <div class="dis-tb-cell">
+                                    <form action="{{ url_for(request.endpoint) + '/' + member['id_user'] + '/verify' }}" method="POST">
+                                        {% if member['member_verify'] or member['member_verify'] == 'True' %}
+                                            <input class="dis-none" name="verify" type="radio" value="False" checked>
+                                            <button class="to-verify-btn" type="submit">
+                                                <i class="fa fa-check" aria-hidden="true"></i>
+                                                Verificado
+                                            </button>
+                                        {% elif not member['member_verify'] or member['member_verify'] == 'False' %}
+                                            <input class="dis-none" name="verify" type="radio" value="True" checked>
+                                            <button class="to-not-verify-btn" type="submit">
+                                                <i class="fa fa-times" aria-hidden="true"></i>
+                                                No verificado
+                                            </button>
+                                        {% else %}
+                                            ERROR
+                                        {% endif %}
+                                    </form>
+                                </div>
+                                <div class="dis-tb-cell">
+                                    <form action="{{ url_for(request.endpoint) + '/' + member['id_user'] + '/active' }}" method="POST">
+                                        {% if member['member_active'] or member['member_active'] == 'True' %}
+                                            <input class="dis-none" name="active" type="radio" value="False" checked>
+                                            <button class="to-verify-btn" type="submit">
+                                                <i class="fa fa-check" aria-hidden="true"></i>
+                                                Activo
+                                            </button>
+                                        {% elif not member['member_active'] or member['member_active'] == 'False' %}
+                                            <input class="dis-none" name="active" type="radio" value="True" checked>
+                                            <button class="to-not-verify-btn" type="submit">
+                                                <i class="fa fa-times" aria-hidden="true"></i>
+                                                Inactivo
+                                            </button>
+                                        {% else %}
+                                            ERROR
+                                        {% endif %}
+                                    </form>
+                                </div>
+                                <a class="dis-tb-cell link-on-white" href="{{ url_for(request.endpoint) + '/' + member['id_user'] }}" target="_blank">
+                                    <i class="fa fa-external-link" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <h2 class="mar-bot-1rem">No se ha podido cargar la información de miembro</h2>
+                {% endif %}
+            <!-- check if context has the keyvalue 'company' -->
+            {% elif 'company' in context %}
+                {% if context['company'] is not none %}
+                    <div class="dis-table w100">
+                        <div class="dis-tb-row">
+                            <div class="dis-tb-cell header">NIF</div>
+                            <div class="dis-tb-cell header">Nombre de empresa</div>
+                            <div class="dis-tb-cell header">Correo de empresa</div>
+                            <div class="dis-tb-cell header">Correo de contacto</div>
+                            <div class="dis-tb-cell header">Nombre de contacto</div>
+                            <div class="dis-tb-cell header">Teléfono de contacto</div>
+                            <div class="dis-tb-cell header">
+                                Verificado
+                                <i class="fa fa-info-circle link-on-white" aria-hidden="true" title="Los usuarios verificados podrán interactuar con la bolsa de empleo"></i>
+                            </div>
+                            <div class="dis-tb-cell header">
+                                Activo
+                                <i class="fa fa-info-circle link-on-white" aria-hidden="true" title="Los usuarios desactivados serán borrados tras un tiempo"></i>
+                            </div>
+                            <div class="dis-tb-cell header">Más...</div>
+                        </div>
+                        {% for company in context['company'] %}
+                            <div class="dis-tb-row">
+                                <div class="dis-tb-cell">{{ company['company_nif'] }}</div>
+                                <div class="dis-tb-cell">{{ company['company_name'] }}</div>
+                                <div class="dis-tb-cell">{{ company['email'] }}</div>
+                                <div class="dis-tb-cell">{{ company['company_contact_email'] }}</div>
+                                <div class="dis-tb-cell">{{ company['company_contact_name'] }}</div>
+                                <div class="dis-tb-cell">{{ company['company_contact_mobile'] }}</div>
+                                <div class="dis-tb-cell">
+                                    <form action="{{ url_for(request.endpoint) + '/' + company['id_user'] + '/verify' }}" method="POST">
+                                        {% if company['company_verify'] or company['company_verify'] == 'True' %}
+                                            <input class="dis-none" name="verify" type="radio" value="False" checked>
+                                            <button class="to-verify-btn" type="submit">
+                                                <i class="fa fa-check" aria-hidden="true"></i>
+                                                Verificado
+                                            </button>
+                                        {% elif not company['company_verify'] or company['company_verify'] == 'False' %}
+                                            <input class="dis-none" name="verify" type="radio" value="True" checked>
+                                            <button class="to-not-verify-btn" type="submit">
+                                                <i class="fa fa-times" aria-hidden="true"></i>
+                                                No verificado
+                                            </button>
+                                        {% else %}
+                                            ERROR
+                                        {% endif %}
+                                    </form>
+                                </div>
+                                <div class="dis-tb-cell">
+                                    <form action="{{ url_for(request.endpoint) + '/' + company['id_user'] + '/active' }}" method="POST">
+                                        {% if company['company_active'] or company['company_active'] == 'True' %}
+                                            <input class="dis-none" name="active" type="radio" value="False" checked>
+                                            <button class="to-verify-btn" type="submit">
+                                                <i class="fa fa-check" aria-hidden="true"></i>
+                                                Activo
+                                            </button>
+                                        {% elif not company['company_active'] or company['company_active'] == 'False' %}
+                                            <input class="dis-none" name="active" type="radio" value="True" checked>
+                                            <button class="to-not-verify-btn" type="submit">
+                                                <i class="fa fa-times" aria-hidden="true"></i>
+                                                Inactivo
+                                            </button>
+                                        {% else %}
+                                            ERROR
+                                        {% endif %}
+                                    </form>
+                                </div>
+                                <a class="dis-tb-cell link-on-white" href="{{ url_for(request.endpoint) + '/' + company['id_user'] }}" target="_blank">
+                                    <i class="fa fa-external-link" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                <h2 class="mar-bot-1rem">No se ha podido cargar la información de empresa</h2>
+                {% endif %}
+            {% elif 'offer' in context %}
+                {% if context['offer'] is not none %}
+                    <div class="dis-table w100">
+                        <div class="dis-tb-row">
+                            <div class="dis-tb-cell header">Lugar de trabajo</div>
+                            <div class="dis-tb-cell header">Personas de contacto (1º/2º)</div>
+                            <div class="dis-tb-cell header">Correos de contacto (1º/2º)</div>
+                            <div class="dis-tb-cell header">Telefonos de contacto (1º/2º)</div>
+                            <div class="dis-tb-cell header">
+                                Verificado
+                                <i class="fa fa-info-circle link-on-white" aria-hidden="true" title="Las ofertas verificadas saldrán en la bolsa de empleo"></i>
+                            </div>
+                            <div class="dis-tb-cell header">
+                                Activo
+                                <i class="fa fa-info-circle link-on-white" aria-hidden="true" title="Las ofertas desactivadas serán borrados tras un tiempo"></i>
+                            </div>
+                            <div class="dis-tb-cell header">Más...</div>
+                        </div>
+                        {% for offer in context['offer'] %}
+                            <div class="dis-tb-row">
+                                <div class="dis-tb-cell">{{ offer['workplace_name'] }}</div>
+                                <div class="dis-tb-cell">{{ offer['contact_name'] }} / {{ offer['contact_name_2'] }}</div>
+                                <div class="dis-tb-cell">{{ offer['contact_email'] }} / {{ offer['contact_email_2'] }}</div>
+                                <div class="dis-tb-cell">{{ offer['contact_phone'] }} / {{ offer['contact_phone_2'] }}</div>
+                                <div class="dis-tb-cell">
+                                    <form action="{{ url_for(request.endpoint) + '/' + offer['id_offer'] + '/verify' }}" method="POST">
+                                        {% if offer['offer_verify'] or offer['offer_verify'] == 'True' %}
+                                            <input class="dis-none" name="verify" type="radio" value="False" checked>
+                                            <button class="to-verify-btn" type="submit">
+                                                <i class="fa fa-check" aria-hidden="true"></i>
+                                                Verificado
+                                            </button>
+                                        {% elif not offer['offer_verify'] or offer['offer_verify'] == 'False' %}
+                                            <input class="dis-none" name="verify" type="radio" value="True" checked>
+                                            <button class="to-not-verify-btn" type="submit">
+                                                <i class="fa fa-times" aria-hidden="true"></i>
+                                                No verificado
+                                            </button>
+                                        {% else %}
+                                            ERROR
+                                        {% endif %}
+                                    </form>
+                                </div>
+                                <div class="dis-tb-cell">
+                                    <form action="{{ url_for(request.endpoint) + '/' + offer['id_offer'] + '/active' }}" method="POST">
+                                        {% if offer['offer_active'] or offer['offer_active'] == 'True' %}
+                                            <input class="dis-none" name="active" type="radio" value="False" checked>
+                                            <button class="to-verify-btn" type="submit">
+                                                <i class="fa fa-check" aria-hidden="true"></i>
+                                                Activo
+                                            </button>
+                                        {% elif not offer['offer_active'] or offer['offer_active'] == 'False' %}
+                                            <input class="dis-none" name="active" type="radio" value="True" checked>
+                                            <button class="to-not-verify-btn" type="submit">
+                                                <i class="fa fa-times" aria-hidden="true"></i>
+                                                Inactivo
+                                            </button>
+                                        {% else %}
+                                            ERROR
+                                        {% endif %}
+                                    </form>
+                                </div>
+                                <a class="dis-tb-cell link-on-white" href="{{ url_for(request.endpoint) + '/' + offer['id_offer'] }}" target="_blank">
+                                    <i class="fa fa-external-link" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <h2 class="mar-bot-1rem">No tiene información adicional</h2>
+            {% endif %}
+        {% else %}
+            <h2 class="mar-bot-1rem">No se ha podido cargar la información</h2>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

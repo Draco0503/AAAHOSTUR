@@ -1,0 +1,22 @@
+{% extends 'baselogin.html' %}
+
+{% block mainContent %}
+<div class="dis-grid container w20 pad-2rem shadow mar-bot-3rem">
+    <a class="how-to-center-a-div mar-bot-3rem text-center" href="/">
+        <img class="how-to-center-a-div w60" src="{{ url_for('static', filename='resources/logo.png') }}" alt="aaahostur hosteleria turismo">
+    </a>
+    <hr>
+    <form class="dis-grid" action="{{ url_for(request.endpoint) }}" method="POST">
+        <label class="dis-block font-16pt" for="user-login">Escribe tu email</label>
+        <input class="w100 pad-input font-12pt dis-block mar-bot-1rem" type="email" name="user-login" id="user-login">
+        <label class="dis-block font-16pt" for="user-passwd">Escribe tu contraseña</label>
+        <input class="w100 pad-input font-12pt dis-block mar-bot-2rem" type="password" name="user-passwd" id="user-passwd">
+        <input class="w100 pad-o5rem font-16pt mar-bot-1rem" type="submit" value="Iniciar sesión">
+        {% if error %}
+            <p><span>{{ error }}</span></p>
+        {% endif %}
+        <p class="mar-bot-1rem">¿Quieres ser socio? <a class="link-on-white" href="{{ url_for('register_member') }}">Pulsa aquí</a></p>
+        <p>¿Tienes un local y quieres colaborar con nosotros? <a class="link-on-white" href="{{ url_for('register_company') }}">Pulsa aquí</a></p>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,7 @@
+.env
+aaahostur-oauth
+backup
+__pycache__
+*/__pycache__
+.vscode
+.idea

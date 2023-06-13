@@ -1,0 +1,24 @@
+{% extends 'baselogin.html' %}
+
+{% block mainContent %}
+<div class="dis-grid container w40 pad-2rem shadow mar-bot-3rem">
+    <a class="how-to-center-a-div mar-bot-3rem text-center" href="/">
+        <img class="how-to-center-a-div w60" src="{{ url_for('static', filename='resources/logo.png') }}" alt="aaahostur hosteleria turismo">
+    </a>
+    <hr>
+        <h2 class="yellow-title">Como miembro</h2>
+    <hr>
+        <ul class="lista">
+            <li class="darker-blue-text-list">Primero tendrás que estar verificado para poder acceder a la Bolsa de Trabajo</li>
+            <li class="darker-blue-text-list">Una ver verificado podrás:</li>
+            <li class="darker-blue-text-list">Podrás ver ofertas</li>
+            <li class="darker-blue-text-list">Inscribirte a la que oferta que quieras</li>
+            <li class="darker-blue-text-list">Trabajarás para empresas verificadas</li>
+        </ul>
+        {% if error %}
+            <p><span>{{ error }}</span></p>
+        {% endif %}
+    <hr>
+        <p>Ir al inicio <a class="link-on-white" href="{{ url_for('index') }}">Pulsa aquí</a></p>
+</div>
+{% endblock %}

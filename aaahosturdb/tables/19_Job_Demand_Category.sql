@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS Job_Demand_Category;
+CREATE TABLE Job_Demand_Category(
+    ID_JOB_DEMAND_CATEGORY INT NOT NULL AUTO_INCREMENT,
+    Id_Job_Category INT,
+    Id_Job_Demand INT,
+    PRIMARY KEY (ID_JOB_DEMAND_CATEGORY),
+    FOREIGN KEY (Id_Job_Category) REFERENCES Job_Category(ID_JOB_CATEGORY),
+    FOREIGN KEY (Id_Job_Demand) REFERENCES Job_Demand(ID_JOB_DEMAND)
+);

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASOCIACIÓN ESPAÑOLA DE ANTIGUOS ALUMNOS DE LA ESCUELA DE HOSTELERÍA Y TURISMO</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/aaahostur.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='resources/icon.jpg') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome-4.7.0/css/font-awesome.min.css') }}">
+    <script src="{{ url_for('static', filename='js/site.js') }}"></script>
+</head>
+<body>
+    <button onclick="goToTop()" id="up-btn" title="Inicio">
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </button>
+    <header id="up">
+        <div id="header-decorator" class="nav primary-nav">
+            <a href="{{ url_for('index') }}">
+                <img id="logo" src="{{ url_for('static', filename='resources/logo.png') }}"
+                    alt="aaahostur hosteleria turismo"/>
+            </a>
+            <h2 class="main-title">Asociación Española de Antiguos Alumnos de<br> Escuelas de Hostelería y Turismo</h2>
+        </div>
+        <nav id="navbar" class="nav navbar">
+            <div class="left">
+                <a id="navbar-logo" class="navbar-item" href="{{ url_for('index') }}">
+                    <img class="logo" src="{{ url_for('static', filename='resources/logo.png') }}" alt="aaahostur hosteleria turismo">
+                    <div class="yellow-title">AAAHOSTUR</div>
+                </a>
+            </div>
+            <div class="center">
+                <a href="{{ url_for('job_opportunities') }}" class="navbar-item">Bolsa de Trabajo</a>
+                <a href="#" class="navbar-item">Actividades</a>
+                <a href="#" class="navbar-item">Cursos</a>
+                <a href="#" class="navbar-item">Revista</a>
+                <a href="{{ url_for('schools') }}" class="navbar-item">Link a Escuelas</a>
+                <a href="{{ url_for('contact') }}" class="navbar-item">Contacto y Sugerencias</a>
+            </div>
+            <div class="right">
+                <div class="user-box">
+<!--                    <img class="navbar-item" src="" alt="">-->
+                    {% if payload is defined and not none %}
+                        <a href="{{ url_for('profile') }}" class="navbar-item yellow-hover-text">{{ payload.get("user") }}</a>
+                    {% else %}
+                        <a href="{{ url_for('profile') }}" class="navbar-item">Iniciar sesión</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main>
+        {% block mainContent %} {% endblock %}
+    </main>
+    <footer class="nav">
+        <div class="nav center b2-top">
+            <div class="foo-col">
+                <h2 class="yellow-title">Sobre nosotros</h2>
+                <p>Asociación Española de Antiguos Alumnos de las Escuelas de Hostelería y Tursimo</p>
+                <ul class="social-links">
+                    <li class="icon">
+                        <a href="#">
+                            <i class="fa fa-facebook-square" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    <li class="icon">
+                        <a href="#">
+                            <i class="fa fa-instagram" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    <li class="icon">
+                        <a href="#">
+                            <i class="fa fa-twitter" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="foo-col">
+                <h2 class="yellow-title">Links de Interés</h2>
+                <ul class="links">
+                    <li>
+                        <h4><a href="{{ url_for('contact') }}">Contáctanos</a></h4>
+                    </li>
+                    <li>
+                        <h4><a href="{{ url_for('schools') }}">Escuelas</a></h4>
+                    </li>
+                    <li>
+                        <h4><a href="#">Nuestros Servicios</a></h4>
+                    </li>
+                </ul>
+            </div>
+            <div class="foo-col">
+                <h2 class="yellow-title">Contactos</h2>
+            </div>
+        </div>
+        <div class="nav darker-blue p1-tb b2-top">
+            <ul class="latest-foo">
+                <li>© 2023</li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
+                <li><a href="#">EMPRESA</a></li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
+                <li>Todos los derechos reservados</li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
+                <li><a href="{{ url_for('legal') }}">Aviso legal</a></li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
+                <li><a href="{{ url_for('privacy') }}">Política de Privacidad</a></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>

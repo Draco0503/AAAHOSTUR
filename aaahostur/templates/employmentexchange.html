@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block mainContent %}
+<div class="foreign_container w80 container shadow pad-2rem">
+    <h1 class="">¡Bienvenid@ a la bolsa de trabajo!</h1>
+    <hr class="bg-color-darker-blue mar-bot-3rem">
+
+    <h2 class="mar-bot-1rem">Tablón de ofertas</h2>
+    <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+
+    {# <form class="dis-grid" action="{{ url_for(request.endpoint) }}" method="POST">
+        <div class="filter-container">
+            <div class="filter">
+                <label class="dis-block font-16pt" for="job-category">Categoría profesional</label>
+                <!-- SELECT (get <JOB_CATEGORY> data) -->
+                <select class="w60 pad-input font-14pt mar-bot-2rem" name="job-category" id="job-category">
+                    {% if job_category_list is defined and not none %}
+                        <option value="all">Todas las categorías</option>
+                        {% for job_category in job_category_list %}
+                            <option value="{{ job_category['id_job_category'] }}">{{ job_category['name'] }}</option>
+                        {% endfor %}
+                    {% else %}
+                        <option>Ha habido un error cargando la lista de categorias</option>
+                    {% endif %}
+                </select>
+            </div>
+        </div>
+    </form> #}
+    <div class="offer-list-container">
+        {% if permited is defined and permited %}
+            {% if context is defined and context is not none and context|length > 0 %}
+                {% for offer in context %}
+                    <div class="offer-container">
+                        <label class="dis-block font-16pt">{{ offer['workplace_name'] }}</label>
+                        <p>{{ offer['workplace_address'] }}</p>
+                        <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+                        {% for demand in offer['job_demand'] %}
+                            <div class="job_demand-list-container">
+                                <div class="job_demand-container">
+                                    <label class="dis-block font-16pt">{% for category in demand['job_category'] %} {{ category }} | {% endfor %}</label>
+                                    <hr class="bg-color-darker-blue mar-bot-3rem">
+                                    {% if demand['qualification']|length > 0 %}
+                                        <label class="dis-block font-16pt">Estudios:   {% for qualification in demand['qualification'] %} {{ qualification }} | {% endfor %}</label>
+                                    {% else %}
+                                        <label class="dis-block font-16pt">Estudios:   Sin estudios</label>
+                                    {% endif %}
+                                    <label class="dis-block font-16pt">Horario:    {{ demand['schedule'] }}</label>
+                                    <label class="dis-block font-16pt">Jornada:    {{ demand['working_day'] }}</label>
+                                    <label class="dis-block font-16pt">Turno:      {{ demand['shift'] }}</label>
+                                    <label class="dis-block font-16pt">Vacantes:   {{ demand['vacancies'] }}</label>
+                                    <hr class="bg-color-darker-blue">
+                                </div>
+                            </div>
+                            <a class="pad-input font-14pt" href="{{ '/offer/' +  offer['id_offer'] + '?job_demand=' + demand['id_job_demand'] }}" target="_blank">Más información...</a>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <h3>NADA QUE MOSTRAR</h3>
+            {% endif %}
+        {% else %}
+            <h3>TODAVÍA NO ESTÁS VERIFICADO</h3>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

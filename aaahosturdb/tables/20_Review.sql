@@ -1,0 +1,16 @@
+DROP TABLE IF EXISTS Review;
+CREATE TABLE Review(
+    ID_REVIEW INT NOT NULL AUTO_INCREMENT,
+    Score INT NOT NULL,
+    Description VARCHAR(512),
+    Business_Sender INT NOT NULL,
+    Verify BOOLEAN DEFAULT FALSE,
+    Active BOOLEAN DEFAULT TRUE,
+    Id_User_Verify INT,
+    Id_Company INT,
+    Id_Member INT,
+    PRIMARY KEY (ID_REVIEW),
+    FOREIGN KEY (Id_User_Verify) REFERENCES User(ID_USER),
+    FOREIGN KEY (Id_Company) REFERENCES Company(ID_COMPANY),
+    FOREIGN KEY (Id_Member) REFERENCES Member(ID_MEMBER)
+);

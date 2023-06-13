@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASOCIACIÓN ESPAÑOLA DE ANTIGUOS ALUMNOS DE LA ESCUELA DE HOSTELERÍA Y TURISMO</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/aaahostur.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='resources/icon.jpg') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome-4.7.0/css/font-awesome.min.css') }}">
+</head>
+<body>
+    <button onclick="goToTop()" id="up-btn" title="Inicio">
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </button>
+    <header id="up"></header>
+    <main>
+        {% block mainContent %} {% endblock %}
+    </main>
+    <footer class="nav">
+        <div class="nav center b2-top">
+            <div class="foo-col">
+                <h2 class="yellow-title">Sobre nosotros</h2>
+                <p>Asociación Española de Antiguos Alumnos de las Escuelas de Hostelería y Tursimo</p>
+                <ul class="social-links">
+                    <li class="icon">
+                        <a href="#">
+                            <i class="fa fa-facebook-square" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    <li class="icon">
+                        <a href="#">
+                            <i class="fa fa-instagram" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    <li class="icon">
+                        <a href="#">
+                            <i class="fa fa-twitter" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="foo-col">
+                <h2 class="yellow-title">Links de Interés</h2>
+                <ul class="links">
+                    <li>
+                        <h4><a href="#">Contáctanos</a></h4>
+                    </li>
+                    <li>
+                        <h4><a href="#">Escuelas</a></h4>
+                    </li>
+                    <li>
+                        <h4><a href="#">Nuestros Servicios</a></h4>
+                    </li>
+                </ul>
+            </div>
+            <div class="foo-col">
+                <h2 class="yellow-title">Contactos</h2>
+            </div>
+        </div>
+        <div class="nav darker-blue p1-tb b2-top">
+            <ul class="latest-foo">
+                <li>© 2023</li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
+                <li><a href="#">EMPRESA</a></li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
+                <li>Todos los derechos reservados</li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
+                <li><a href="{{ url_for('legal') }}">Aviso legal</a></li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
+                <li><a href="{{ url_for('privacy') }}">Política de Privacidad</a></li>
+            </ul>
+        </div>
+    </footer>
+    <script src="{{ url_for('static', filename='js/site.js') }}"></script>
+</body>
+</html>

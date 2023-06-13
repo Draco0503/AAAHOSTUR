@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block mainContent %}
+<div class="foreign_container w80 container shadow pad-2rem">
+    <h1 class="">¡Bienvenid@ a la bolsa de trabajo!</h1>
+    <hr class="bg-color-darker-blue mar-bot-3rem">
+    {% if verified is not none and verified %}
+        <div class="w95 dis-flex flex-right">
+            <a href="{{ url_for('register_offer_job_demand') }}" class="adm-btn" style="flex: 0 0 10%; text-align: center;">
+                <i class="fa fa-file-text fa-2x" aria-hidden="true"></i>
+                Crear<br>Oferta
+            </a>
+        </div>
+        <h2 class="mar-bot-1rem">Tus ofertas</h2>
+        <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+        <!-- check if context is defined-->
+        <div class="you-shall-not-pass-x">
+            {% if context['offer'] is not none %}
+                <div class="dis-table w100">
+                    <div class="dis-tb-row">
+                        <div class="dis-tb-cell header">Lugar de Trabajo</div>
+                        <div class="dis-tb-cell header">Direccion</div>
+                        <div class="dis-tb-cell header">Personas de contacto (1º/2º)</div>
+                        <div class="dis-tb-cell header">Correos de contacto (1º/2º)</div>
+                        <div class="dis-tb-cell header">Telefonos de contacto (1º/2º)</div>
+                        <div class="dis-tb-cell header">Categorías</div>
+                        <div class="dis-tb-cell header">Vacantes</div>
+                        <div class="dis-tb-cell header">
+                            Verificado
+                            <i class="fa fa-info-circle link-on-white" aria-hidden="true" title="Las ofertas verificadas se verán en la bolsa de empleo"></i>
+                        </div>
+                    </div>
+                    {% for offer in context['offer'] %}
+                        <div class="dis-tb-row">
+                            <div class="dis-tb-cell">{{ offer['workplace_name'] }}</div>
+                            <div class="dis-tb-cell">{{ offer['workplace_address'] }}</div>
+                            <div class="dis-tb-cell">{{ offer['contact_name'] }} / {{ offer['contact_name_2'] }}</div>
+                            <div class="dis-tb-cell">{{ offer['contact_email'] }} / {{ offer['contact_email_2'] }}</div>
+                            <div class="dis-tb-cell">{{ offer['contact_phone'] }} / {{ offer['contact_phone_2'] }}</div>
+                            <div class="dis-tb-cell">
+                                {% for demand in offer['job_demand'] %}
+                                    {% for category in demand['job_category'] %}
+                                        {{ category }},
+                                    {% endfor %}
+                                {% endfor %}
+                            </div>
+                            <div class="dis-tb-cell">
+                                {% for demand in offer['job_demand'] %}
+                                    {{ demand['vacancies'] }},
+                                {% endfor %}
+                            </div>
+                            <div class="dis-tb-cell">
+                                <div>
+                                    {% if offer['verify'] or offer['verify'] == 'True' %}
+                                        <div class="to-verify-btn">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                            Verificado
+                                        </div>
+                                    {% elif not offer['verify'] or offer['verify'] == 'False' %}
+                                        <div class="to-not-verify-btn">
+                                            <i class="fa fa-times" aria-hidden="true"></i>
+                                            No verificado
+                                        </div>
+                                    {% else %}
+                                        ERROR
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <h2 class="mar-bot-1rem">No se ha podido cargar la información de empresa</h2>
+            {% endif %}
+        </div>
+    {% else %}
+        <h2>Todavía NO estás verificado</h2>
+    {% endif %}
+</div>
+{% endblock %}

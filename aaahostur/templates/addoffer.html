@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% block mainContent %}
+<div class="foreign_container w80 container shadow pad-2rem">
+    <h1 class="">Formulario de registro de oferta</h1>
+    <hr class="bg-color-darker-blue mar-bot-3rem">
+
+    <h2 class="mar-bot-1rem">Datos de oferta</h2>
+    <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+
+    <form class="dis-grid" action="{{ url_for(request.endpoint) }}" method="POST">
+        <label class="dis-block font-16pt" for="offer-workplace-name">Nombre del centro de trabajo <span>*</span></label>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="offer-workplace-name" name="offer-workplace-name" required>
+        <label class="dis-block font-16pt" for="offer-workplace-address">Dirección del centro de trabajo <span>*</span></label>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="offer-workplace-address" name="offer-workplace-address" required>
+
+        <h3 class="mar-bot-1rem">Datos de contacto</h3>
+        <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+        <label class="dis-block font-16pt" for="offer-contact-name">Nombre de contacto <span>*</span></label>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="offer-contact-name" name="offer-contact-name" required>
+        <label class="dis-block font-16pt" for="offer-contact-phone">Teléfono de contacto <span>*</span></label>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="tel" id="offer-contact-phone" name="offer-contact-phone" minlength="9" required>
+        <label class="dis-block font-16pt" for="offer-contact-email">Correo de contacto <span>*</span></label>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="email" id="offer-contact-email" name="offer-contact-email" required>
+        <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+        <div class="font-14pt custom-cr-input mar-bot-2rem" onclick="showContactSecundaryData(this)">
+            ¿Desea añadir otro contacto adicional?
+            <input type="checkbox" id="extra_cb">
+            <span class="checkmark"></span>
+        </div>
+        <div id="extra-data" class="dis-grid dis-none">
+            <label class="dis-block font-16pt" for="offer-contact-name-2">Nombre de contacto secundario <span>*</span></label>
+            <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="offer-contact-name-2" name="offer-contact-name-2">
+            <label class="dis-block font-16pt" for="offer-contact-phone-2">Teléfono de contacto secundario <span>*</span></label>
+            <input class="w60 pad-input font-14pt mar-bot-2rem" type="tel" id="offer-contact-phone-2" name="offer-contact-phone-2" minlength="9">
+            <label class="dis-block font-16pt" for="offer-contact-email-2">Correo de contacto secundario <span>*</span></label>
+            <input class="w60 pad-input font-14pt mar-bot-2rem" type="email" id="offer-contact-email-2" name="offer-contact-email-2">
+        </div>
+
+        <h2 class="mar-bot-1rem">Datos de demanda de empleo</h2>
+        <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+        <div class="azul" style=background-color:aliceblue;padding:2%;border-radius:2px;>
+        <label class="dis-block font-16pt" for="job-category">Categoría profesional <span>*</span></label>
+        <!-- SELECT (get <JOB_CATEGORY> data) -->
+        <select class="w60 pad-input font-14pt mar-bot-2rem" name="job-category" id="job-category" required>
+            {% if job_category_list is defined and not none %}
+                <option disabled selected hidden value>Selecciona...</option>
+                {% for job_category in job_category_list %}
+                    <option value="{{ job_category['id_job_category'] }}">{{ job_category['name'] }}</option>
+                {% endfor %}
+            {% else %}
+                <option>Ha habido un error cargando la lista de categorias</option>
+            {% endif %}
+        </select>
+        <label class="dis-block font-16pt" for="qualification">Titulación de preferencia  </label>
+        <!-- SELECT (get <QUALIFICATION> data) -->
+        <select class="w60 pad-input font-14pt mar-bot-2rem" name="qualification" id="qualification">
+            {% if qualification_list is defined and not none %}
+                    <option disabled selected hidden value>Selecciona...</option>
+                    <option value="">Sin preferencia</option>
+                {% for qualification in qualification_list %}
+                    <option value="{{ qualification['id_qualification'] }}">{{ qualification['name'] }}</option>
+                {% endfor %}
+            {% else %}
+                <option>Ha habido un error cargando la lista de títulos</option>
+            {% endif %}
+        </select>
+        <label class="dis-block font-16pt" for="job-demand-vacancies">Cantidad de puestos vacantes <span>*</span></label>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="number" min="1" step="1" id="job-demand-vacancies" name="job-demand-vacancies" required>
+        <label class="dis-block font-16pt" for="job-demand-working-day">Tipo de jornada <span>*</span></label>
+        <!-- RADIOGROUP (get <WORKING_DAY> data) -->
+        <div id="rbgroup-job-demand-working-day" class="mar-bot-2rem">
+            {% if working_day_list is defined and not none %}
+                {% for working_day in working_day_list %}
+                    {% if working_day == 'Media' %}
+                        <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
+                            {{ working_day }}
+                            <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-{{ working_day }}" value="{{ working_day }}" checked>
+                            <span class="radiomark"></span>
+                        </label>  
+                    {% else %}
+                    <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-working-day', this)">
+                        {{ working_day }}
+                        <input class="rbgroup-job-demand-working-day" type="radio" name="rb-group-job-demand-working-day" id="rbgroup-job-demand-working-day-{{ working_day }}" value="{{ working_day }}">
+                        <span class="radiomark"></span>
+                    </label>  
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+            <p>Ha habido un error cargando la lista de jornadas</p>
+            {% endif %}
+        </div>
+        <label class="dis-block font-16pt" for="job-demand-shift">Turno <span>*</span></label>
+        <!-- RADIOGROUP (get <SHIFT> data) -->
+        <div id="rbgroup-job-demand-shift" class="mar-bot-2rem">
+            {% if shift_list is defined and not none %}
+                {% for shift in shift_list %}
+                    {% if shift == 'Seguido' %}
+                        <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-shift', this)">
+                            {{ shift }}
+                            <input class="rbgroup-job-demand-shift" type="radio" name="rb-group-job-demand-shift" id="rbgroup-job-demand-shift-{{ shift }}" value="{{ shift }}" checked>
+                            <span class="radiomark"></span>
+                        </label>
+                    {% else %}
+                        <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-shift', this)">
+                            {{ shift }}
+                            <input class="rbgroup-job-demand-shift" type="radio" name="rb-group-job-demand-shift" id="rbgroup-job-demand-shift-{{ shift }}" value="{{ shift }}">
+                            <span class="radiomark"></span>
+                        </label>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+            <p>Ha habido un error cargando la lista de turnos</p>
+            {% endif %}
+        </div>
+        <label class="dis-block font-16pt" for="job-demand-schedule">Horario <span>*</span></label>
+        <!-- RADIOGROUP (get <SCHEDULE> data) -->
+        <div id="rbgroup-job-demand-schedule" class="mar-bot-2rem">
+            {% if schedule_list is defined and not none %}
+                {% for schedule in schedule_list %}
+                    {% if schedule == 'Mañana' %}
+                        <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-schedule', this)">
+                            {{ schedule }}
+                            <input class="rbgroup-job-demand-schedule" type="radio" name="rb-group-job-demand-schedule" id="rbgroup-job-demand-schedule-{{ schedule }}" value="{{ schedule }}" checked>
+                            <span class="radiomark"></span>
+                        </label>    
+                    {% else %}
+                        <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-job-demand-schedule', this)">
+                            {{ schedule }}
+                            <input class="rbgroup-job-demand-schedule" type="radio" name="rb-group-job-demand-schedule" id="rbgroup-job-demand-schedule-{{ schedule }}" value="{{ schedule }}">
+                            <span class="radiomark"></span>
+                        </label> 
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+            <p>Ha habido un error cargando la lista de turnos</p>
+            {% endif %}
+        </div>
+        <label class="dis-block font-16pt" for="job-demand-monthly-salary">Salario mensual </label>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="job-demand-monthly-salary" name="job-demand-monthly-salary" required>
+        <label class="dis-block font-16pt" for="job-demand-contract-type">Tipo de contrato </label>
+        <!-- SELECT (get <CONTRACT_TYPE> data) -->
+        <select class="w60 pad-input font-14pt mar-bot-2rem" name="job-demand-contract-type" id="job-demand-contract-type" required>
+            {% if contract_type_list is defined and not none %}
+                <option disabled selected hidden value>Selecciona...</option>
+                <option value="">Sin especificar</option>
+                {% for contract_type in contract_type_list %}
+                    <option value="{{ contract_type }}">{{ contract_type }}</option>
+                {% endfor %}
+            {% else %}
+                <option>Ha habido un error cargando la lista de contratos</option>
+            {% endif %}
+        </select>
+        <label class="dis-block font-16pt" for="job-demand-holidays">Vacaciones </label>
+        <input class="w60 pad-input font-14pt mar-bot-2rem" type="number" id="job-demand-holidays" name="job-demand-holidays" required>
+        <label class="dis-block font-16pt" for="job-demand-experience">Experiencia</label>
+        <textarea class="w60 pad-input font-14pt mar-bot-2rem" id="job-demand-experience" name="job-demand-experience" maxlength="256" rows=3></textarea>
+        <label class="dis-block font-16pt" for="language">Idioma de preferencia </label>
+        <!-- SELECT (get <LANGUAGE> data) -->
+        <select class="w60 pad-input font-14pt mar-bot-2rem" name="language" id="language" required>
+            {% if language_list is defined and not none %}
+                <option disabled selected hidden value>Selecciona...</option>
+                <option value="">Sin preferencia</option>
+                {% for language in language_list %}
+                    <option value="{{ language['id_language'] }}">{{ language['name'] }}</option>                  
+                {% endfor %}
+            {% else %}
+                <option>Ha habido un error cargando la lista de lenguajes</option>
+            {% endif %}
+        </select>
+        <label class="dis-block font-16pt" for="job-demand-others">Otros </label>
+        <textarea class="w60 pad-input font-14pt mar-bot-2rem" id="job-demand-others" name="job-demand-others" maxlength="256" rows=3></textarea>
+        <label class="dis-block font-16pt mar-bot-1rem" for="rbgroup-car">Se requiere de vehículo propio</label>
+        <div id="rbgroup-car" class="mar-bot-2rem">
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-car', this)">
+                No
+                <input class="rbgroup-car" type="radio" name="rb-group-car" id="rbgroup-car-rb1" value="n" checked>
+                <span class="radiomark"></span>
+            </label>
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-car', this)">
+                Si
+                <input class="rbgroup-car" type="radio" name="rb-group-car" id="rbgroup-car-rb2" value="y">
+                <span class="radiomark"></span>
+            </label>
+        </div>
+        <label class="dis-block font-16pt mar-bot-1rem" for="rbgroup-mov">Se requiere de movilidad geográfica</label>
+        <div id="rbgroup-mov" class="mar-bot-2rem">
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-mov', this)">
+                No
+                <input class="rbgroup-mov" type="radio" name="rb-group-mov" id="rbgroup-mov-rb1" value="n" checked>
+                <span class="radiomark"></span>
+            </label>
+            <label class="font-14pt custom-cr-input" onclick="changeRadioGroupButtonState('rbgroup-mov', this)">
+                Si
+                <input class="rbgroup-mov" type="radio" name="rb-group-mov" id="rbgroup-mov-rb2" value="y">
+                <span class="radiomark"></span>
+            </label>
+        </div>
+        </div>
+
+        <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+        <p class="">Los campos con <span class="font-14pt">*</span> son obligatorios</p>
+        <div class="w80 dis-flex flex-right">
+            <input class="w20 pad-o5rem font-16pt" type="submit" value="Enviar &rarr;">
+        </div>
+        {% if error %}
+            <p><span>{{ error }}</span></p>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}

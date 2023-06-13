@@ -1,26 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASOCIACIÓN ESPAÑOLA DE ANTIGUOS ALUMNOS DE LA ESCUELA DE HOSTELERÍA Y TURISMO</title>
-    <link rel="stylesheet" href="css/aaahostur.css">
-    <link rel="shortcut icon" href="resources/icon.jpg" type="image/x-icon">
-    <link rel="stylesheet" href="css/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../assets/css/aaahostur.css">
+    <link rel="shortcut icon" href="../assets/resources/icon.jpg" type="image/x-icon">
+    <link rel="stylesheet" href="../assets/css/font-awesome-4.7.0/css/font-awesome.min.css">
 </head>
+
 <body>
     <button onclick="goToTop()" id="up-btn" title="Inicio">
         <i class="fa fa-arrow-up" aria-hidden="true"></i>
     </button>
     <header id="up">
-        <div class="nav primary-nav">
-            <a href="index.html"><img id="logo" src="resources/logo.png" alt="aaahostur hosteleria turismo"></a>
+        <div id="header-decorator" class="nav primary-nav">
+            <a href="index.html">
+                <img id="logo" src="../assets/resources/logo.png"
+                    alt="aaahostur hosteleria turismo"/>
+            </a>
             <h2 class="main-title">Asociación Española de Antiguos Alumnos de<br> Escuelas de Hostelería y Turismo</h2>
         </div>
         <nav id="navbar" class="nav navbar">
             <div class="left">
                 <a id="navbar-logo" class="navbar-item" href="index.html">
-                    <img class="logo" src="resources/logo.png" alt="aaahostur hosteleria turismo">
+                    <img class="logo" src="../assets/resources/logo.png" alt="aaahostur hosteleria turismo">
                     <div class="yellow-title">AAAHOSTUR</div>
                 </a>
             </div>
@@ -41,8 +46,32 @@
         </nav>
     </header>
     <main>
-        <div class="w80 container" style="height: 800px;">
-            
+        <div class="w80 container shadow pad-2rem">
+            <h1 class="">Registrar Socio</h1>
+            <hr class="bg-color-darker-blue mar-bot-3rem">
+            <h2 class="mar-bot-1rem">Estudios</h2>
+            <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+            <form class="dis-grid" action="" method="post">
+                <!-- TODO: Crear select dinamico con las Qualifications -->
+                <label class="dis-block font-16pt" for="member-qualification">Titulo <span>*</span></label>
+                <select class="w60 pad-input font-14pt mar-bot-2rem" name="member-qualification" id="member-qualification" required>
+                    <option value="">Estudio 1</option>
+                    <option value="">Estudio 2</option>
+                    <option value="">Estudio 3</option>
+                    <option value="">Estudio 4</option>
+                </select>
+                <label class="dis-block font-16pt" for="member-school">Escuela <span>*</span></label>
+                <input class="w60 pad-input font-14pt mar-bot-2rem" type="text" id="member-name"required>
+                <label class="dis-block font-16pt" for="member-finishdate">Fecha de finalización <span>*</span></label>
+                <input class="w20 pad-input font-14pt mar-bot-2rem" type="date" name="member-finishdate" id="member-finishdate" required>
+                <label class="dis-block font-16pt" for="member-promotion">Promoción</label>
+                <input class="w20 pad-input font-14pt mar-bot-2rem" type="number" id="member-promotion">
+                <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+                <p class="">Los campos con <span class="font-14pt">*</span> son obligatorios</p>
+                <div class="w80 dis-flex flex-right">
+                    <input class="w20 pad-o5rem font-16pt" type="submit" value="Enviar &rarr;">
+                </div>
+            </form>
         </div>
     </main>
     <footer class="nav">
@@ -71,9 +100,15 @@
             <div class="foo-col">
                 <h2 class="yellow-title">Links de Interés</h2>
                 <ul class="links">
-                    <li><h4><a href="#">Contáctanos</a></h4></li>
-                    <li><h4><a href="#">Escuelas</a></h4></li>
-                    <li><h4><a href="#">Nuestros Servicios</a></h4></li>
+                    <li>
+                        <h4><a href="#">Contáctanos</a></h4>
+                    </li>
+                    <li>
+                        <h4><a href="#">Escuelas</a></h4>
+                    </li>
+                    <li>
+                        <h4><a href="#">Nuestros Servicios</a></h4>
+                    </li>
                 </ul>
             </div>
             <div class="foo-col">
@@ -83,35 +118,18 @@
         <div class="nav darker-blue p1-tb b2-top">
             <ul class="latest-foo">
                 <li>© 2023</li>
-                <li class="yellow-title">&#8212;</li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
                 <li><a href="#">EMPRESA</a></li>
-                <li class="yellow-title">&#8212;</li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
                 <li>Todos los derechos reservados</li>
-                <li class="yellow-title">&#8212;</li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
                 <li><a href="#">Aviso legal</a></li>
-                <li class="yellow-title">&#8212;</li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
                 <li><a href="#">Política de Privacidad</a></li>
             </ul>
         </div>
     </footer>
-    <script>
-        window.onscroll = function() { hideOnScroll() };
-        function hideOnScroll() {
-
-            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20)
-                document.getElementById("up-btn").style.display = "block";
-            else
-                document.getElementById("up-btn").style.display = "none";
-
-            if (document.body.scrollTop > 120 || document.documentElement.scrollTop > 120)
-                document.getElementById("navbar-logo").style.visibility = "visible";
-            else
-                document.getElementById("navbar-logo").style.visibility = "hidden";
-        }
-
-        function goToTop() {
-            document.getElementById("up").scrollIntoView();
-        }
-    </script>
+    <script src="../assets/js/site.js"></script>
 </body>
+
 </html>

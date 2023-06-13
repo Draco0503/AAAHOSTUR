@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maquetas de Diseño</title>
+    <link rel="stylesheet" href="../static/css/aaahostur.css">
+    <link rel="shortcut icon" href="../static/resources/icon.jpg" type="image/x-icon">
+    <link rel="stylesheet" href="../static/css/font-awesome-4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    <header id="up">
+        <div id="header-decorator" class="nav primary-nav">
+            <a href="index.html"><img id="logo" src="../static/resources/logo.png" alt="aaahostur hosteleria turismo"></a>
+            <h2 class="main-title">Asociación Española de Antiguos Alumnos de<br> Escuelas de Hostelería y Turismo</h2>
+        </div>
+        <nav id="navbar" class="nav navbar">
+            <div class="left">
+                <a id="navbar-logo" class="navbar-item" href="index.html">
+                    <img class="logo" src="../static/resources/logo.png" alt="aaahostur hosteleria turismo">
+                    <div class="yellow-title">AAAHOSTUR</div>
+                </a>
+            </div>
+            <div class="center">
+                <a href="#" class="navbar-item">Bolsa de Trabajo</a>
+                <a href="#" class="navbar-item">Actividades</a>
+                <a href="#" class="navbar-item">Cursos</a>
+                <a href="#" class="navbar-item">Revista</a>
+                <a href="#" class="navbar-item">Link a Escuelas</a>
+                <a href="#" class="navbar-item">Contacto y Sugerencias</a>
+            </div>
+            <div class="right">
+                <div class="user-box">
+                    <img class="navbar-item" src="" alt="">
+                    <div class="navbar-item">Iniciar sesión</div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <div class="w80 container pad-2rem shadow">
+            <h1>This is for titles</h1>
+            <h2>This is for subtitles</h2>
+            <p class="font-12pt">Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga ad maiores expedita, sed, ut repudiandae reprehenderit, eligendi voluptate consequuntur temporibus tempora natus sapiente veniam doloremque omnis. Omnis quas nisi alias!</p>
+            <hr>
+            <hr class="bg-color-darker-blue">
+            <hr class="bg-color-not-that-yellow">
+            <form id="_form" class="" action="">
+                <label class="dis-block font-16pt" for="">Input type text</label>
+                <input class="w80 pad-input font-14pt" type="text">
+                <br><br>
+                <label class="dis-block font-16pt" for="">Input type date</label>
+                <input class="w80 pad-input font-14pt" type="date" name="" id="">
+                <br><br>
+                <label class="dis-block font-16pt" for="">Input type email</label>
+                <input class="w80 pad-input font-14pt" type="email" name="" id="">
+                <br><br>
+                <label class="dis-block font-16pt" for="">Input type number</label>
+                <input class="w80 pad-input font-14pt" type="number" name="" id="" value="0">
+                <br><br>
+                <label class="dis-block font-16pt" for="">Input type select</label>
+                <select class="w80 pad-input font-14pt" name="" id="">
+                    <option value="">Seleccione uno...</option>
+                    <option value="">Cocina</option>
+                    <option value="">Turismo</option>
+                    <option value="">Mixto</option>
+                    <option value="">Otro</option>
+                </select>
+                <br><br>
+                <label class="dis-block font-16pt" for="">Input type file</label>
+                <input class="w80 font-14pt" type="file" name="" id="">
+                <br><br>
+                <label class="dis-block font-16pt" for="">Input type password</label>
+                <input class="w80 pad-input font-14pt" type="password" name="" id="">
+                <br><br>
+                <label class="dis-block font-16pt" for="">Textarea for descriptions</label>
+                <textarea class="w80 pad-input font-14pt"></textarea>
+                <br><br>
+                <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('_rbgroup', this)">
+                    Radio Button 1
+                    <input class="_rbgroup" type="radio" name="rb-group" id="rb1">
+                    <span class="radiomark"></span>
+                </label>                
+                <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('_rbgroup', this)">
+                    Radio Button Selected
+                    <input class="_rbgroup" type="radio" name="rb-group" id="rb2" checked>
+                    <span class="radiomark"></span>
+                </label>
+                <label class="font-14pt custom-cr-input" for="" onclick="changeRadioGroupButtonState('_rbgroup', this)">
+                    Radio Button 2
+                    <input class="_rbgroup" type="radio" name="rb-group" id="rb2">
+                    <span class="radiomark"></span>
+                </label>
+                <br><br>
+                <label class="font-14pt custom-cr-input" for="" onclick="changeCheckboxState(this)">
+                    Checkbox
+                    <input type="checkbox" name="" id="cb1">
+                    <span class="checkmark"></span>
+                </label>
+                <label class="font-14pt custom-cr-input" for="" onclick="changeCheckboxState(this)">
+                    Checkbox checked
+                    <input type="checkbox" name="" id="cb2" checked>
+                    <span class="checkmark"></span>
+                </label>
+                <br><br>
+                <input class="pad-o5rem font-16pt" type="button" value="Button">
+                <input class="pad-o5rem font-16pt" type="reset" value="Reset" onclick="resetForm('_form', '_rbgroup')">
+                <input class="pad-o5rem font-16pt" type="submit" value="Submit">
+            </form>
+        </div>
+    </main>
+    <footer class="nav">
+        <div class="nav center b2-top">
+            <div class="foo-col">
+                <h2 class="yellow-title">Sobre nosotros</h2>
+                <p>Asociación Española de Antiguos Alumnos de las Escuelas de Hostelería y Tursimo</p>
+                <ul class="social-links">
+                    <li class="icon">
+                        <a href="#">
+                            <i class="fa fa-facebook-square" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    <li class="icon">
+                        <a href="#">
+                            <i class="fa fa-instagram" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    <li class="icon">
+                        <a href="#">
+                            <i class="fa fa-twitter" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="foo-col">
+                <h2 class="yellow-title">Links de Interés</h2>
+                <ul class="links">
+                    <li><h4><a href="#">Contáctanos</a></h4></li>
+                    <li><h4><a href="#">Escuelas</a></h4></li>
+                    <li><h4><a href="#">Nuestros Servicios</a></h4></li>
+                </ul>
+            </div>
+            <div class="foo-col">
+                <h2 class="yellow-title">Contactos</h2>
+            </div>
+        </div>
+        <div class="nav darker-blue p1-tb b2-top">
+            <ul class="latest-foo">
+                <li>© 2023</li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
+                <li><a href="#">EMPRESA</a></li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
+                <li>Todos los derechos reservados</li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
+                <li><a href="#">Aviso legal</a></li>
+                <li class="yellow-title not-show-on-responsive">&#8212;</li>
+                <li><a href="#">Política de Privacidad</a></li>
+            </ul>
+        </div>
+    </footer>
+    <script src="../static/js/site.js"></script>
+</body>
+</html>
