@@ -8,8 +8,8 @@
     <h2 class="mar-bot-1rem">Tablón de ofertas</h2>
     <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
 
-    <form class="dis-grid" action="{{ url_for(request.endpoint) }}" method="POST">
-        {# <div class="filter-container">
+    {# <form class="dis-grid" action="{{ url_for(request.endpoint) }}" method="POST">
+        <div class="filter-container">
             <div class="filter">
                 <label class="dis-block font-16pt" for="job-category">Categoría profesional</label>
                 <!-- SELECT (get <JOB_CATEGORY> data) -->
@@ -24,35 +24,36 @@
                     {% endif %}
                 </select>
             </div>
-        </div> #}
-        <div class="offer-list-container">
-            {% for offer in context %}
-                <div class="offer-container">
-                    <label class="dis-block font-16pt">{{ offer['workplace_name'] }}</label>
-                    <p>{{ offer['workplace_address'] }}</p>
-                    <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
-                    {% for demand in offer['job_demand'] %}
-                        <div class="job_demand-list-container">
-                            <div class="job_demand-container">
-                                <label class="dis-block font-16pt">{% for category in demand['job_category'] %} {{ category }} | {% endfor %}</label>
-                                <hr class="bg-color-darker-blue mar-bot-3rem">
-                                {% if offer['qualification']|length > 0 %}
-                                    <label class="dis-block font-16pt">Estudios:   {% for qualification in demand['qualification'] %} {{ qualification }} | {% endfor %}</label>
-                                {% else %}
-                                    <label class="dis-block font-16pt">Estudios:   Sin estudios</label>
-                                {% endif %}
-                                <label class="dis-block font-16pt">Horario:    {{ demand['schedule'] }}</label>
-                                <label class="dis-block font-16pt">Jornada:    {{ demand['working_day'] }}</label>
-                                <label class="dis-block font-16pt">Turno:      {{ demand['shift'] }}</label>
-                                <label class="dis-block font-16pt">Vacantes:   {{ demand['vacancies'] }}</label>
-                                <hr class="bg-color-darker-blue">
-                            </div>
+        </div> 
+    </form> #}
+    <div class="offer-list-container">
+        {% for offer in context %}
+            <div class="offer-container">
+                <label class="dis-block font-16pt">{{ offer['workplace_name'] }}</label>
+                <p>{{ offer['workplace_address'] }}</p>
+                <hr class="w80 bg-color-not-that-yellow mar-bot-2rem">
+                {% for demand in offer['job_demand'] %}
+                    <div class="job_demand-list-container">
+                        <div class="job_demand-container">
+                            <label class="dis-block font-16pt">{% for category in demand['job_category'] %} {{ category }} | {% endfor %}</label>
+                            <hr class="bg-color-darker-blue mar-bot-3rem">
+                            {% if offer['qualification']|length > 0 %}
+                                <label class="dis-block font-16pt">Estudios:   {% for qualification in demand['qualification'] %} {{ qualification }} | {% endfor %}</label>
+                            {% else %}
+                                <label class="dis-block font-16pt">Estudios:   Sin estudios</label>
+                            {% endif %}
+                            <label class="dis-block font-16pt">Horario:    {{ demand['schedule'] }}</label>
+                            <label class="dis-block font-16pt">Jornada:    {{ demand['working_day'] }}</label>
+                            <label class="dis-block font-16pt">Turno:      {{ demand['shift'] }}</label>
+                            <label class="dis-block font-16pt">Vacantes:   {{ demand['vacancies'] }}</label>
+                            <hr class="bg-color-darker-blue">
                         </div>
-                        <a class="pad-input font-14pt" href="{{ '/offer/' +  offer['id_offer'] + '?job_demand=' + demand['id_job_demand'] }}" target="_blank">Más información...</a>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-        </div>
-    </form>
+                    </div>
+                    <a class="pad-input font-14pt" href="{{ '/offer/' +  offer['id_offer'] + '?job_demand=' + demand['id_job_demand'] }}" target="_blank">Más información...</a>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
 </div>
 {% endblock %}

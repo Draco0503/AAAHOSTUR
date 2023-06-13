@@ -1065,6 +1065,59 @@ def reduced_offer_list():
     return Response(json.dumps(msg), status=200)
 
 
+@app.route('/api_v0/company/offer-list', methods=['GET'])
+def company_offer_list():
+    role, username = user_privileges()
+    if type(role) is Response:
+        return role
+    if not role.CanMakeOffer:
+        return forbidden()
+    company = User.User.query.filter_by(Email=username).first()
+    if company is None:
+        return not_found()
+    offers_from_company = Offer.Offer.query.filter_by(Id_Company=company.ID_USER).all()
+    offer_data_list = []
+    if offers_from_company is not None and len(offers_from_company) > 0:
+        for offer in offers_from_company:
+            job_demands = Job_Demand.Job_Demand.query.filter_by(Id_Offer=offer.ID_OFFER).all()
+            job_demands_data_list = []
+            if job_demands is not None and len(job_demands) > 0:
+                for job_demand in job_demands:
+                    job_categories = []
+                    job_demand_categories = Job_Demand_Category.Job_Demand_Category.query.filter_by(
+                            Id_Job_Demand=job_demand.ID_JOB_DEMAND).all()
+                    if job_demand_categories is not None and len(job_demand_categories) > 0:
+                        for job_demand_category in job_demand_categories:
+                            job_category = Job_Category.Job_Category.query.filter_by(
+                                ID_JOB_CATEGORY=job_demand_category.Id_Job_Category).first()
+                            job_categories.append(job_category.Name)
+
+                    if len(job_categories) != 0:
+                        job_demand_data = {
+                            'id_job_demand': str(job_demand.ID_JOB_DEMAND),
+                            'job_category': job_categories,
+                            'vacancies': job_demand.Vacancies,
+                        }
+                        job_demands_data_list.append(job_demand_data)
+            if len(job_demands_data_list) != 0:
+                offer_dict = {
+                    'id_offer': str(offer.ID_OFFER),
+                    'workplace_name': offer.Workplace_Name,
+                    'workplace_address': offer.Workplace_Address,
+                    'contact_name': offer.Contact_Name,
+                    'contact_name_2': offer.Contact_Name_2,
+                    'contact_phone': offer.Contact_Phone,
+                    'contact_phone_2': offer.Contact_Phone_2,
+                    'contact_email': offer.Contact_Email,
+                    'contact_email_2': offer.Contact_Email_2,
+                    'verify': offer.Verify,
+                    'job_demand': job_demands_data_list
+                }
+                offer_data_list.append(offer_dict)
+    msg = {'company_offers': offer_data_list}
+    return Response(json.dumps(msg), status=200)
+
+
 # UPDATE
 @app.route("/api_v0/offer/<id>", methods=["PUT"])
 def offer_verify_update(id):
@@ -1952,8 +2005,7 @@ def check_member_params(form) -> str:
         return "Nombre no valido"
     if 'member-surname' not in form or form['member-name'] is None or form['member-name'] == "":
         return "Apellidos no valido"
-    # TODO Check for valid DNI, at least sth like 8 digits and 1 letter, it can be a NIE...
-    if 'member-dni' not in form or form['member-dni'] is None or not utils.validate_nif(form['member-dni']):
+    if 'member-dni' not in form or form['member-dni'] is None:  # or not utils.validate_nif(form['member-dni']):
         return "DNI no valido"
     if 'member-address' not in form or form['member-address'] is None or form['member-address'] == "":
         return "Direccion no valido"
@@ -2589,19 +2641,26 @@ def job_opportunities():
         return role
     payload = sec.decode_jwt(request.cookies.get('auth'))
     if role.CanApplyOffer:
-        if request.method == 'POST':
-            jobs_request = requests.post('http://localhost:5000/api_v0/employmentexchange', data=request.form,cookies=request.cookies)
-        else:
-            jobs_request = requests.post('http://localhost:5000/api_v0/employmentexchange', cookies=request.cookies)
+        # if request.method == 'POST':
+        # jobs_request = requests.post('http://localhost:5000/api_v0/employmentexchange', data=request.form, cookies=request.cookies)
+        # else:
+        jobs_request = requests.post('http://localhost:5000/api_v0/employmentexchange', cookies=request.cookies)
+        context = None
         if jobs_request.status_code == 200:
             context = jobs_request.json()['jobs']
-            category_request = requests.get('http://localhost:5000/api_v0/job_category-list', cookies=request.cookies)
-            job_categories = []
-            if category_request.status_code == 200:
-                job_categories = category_request.json()['job_category_list']
-            return render_template('employmentexchange.html', context=context, payload=payload)  # , job_category_list=job_categories)
+            # category_request = requests.get('http://localhost:5000/api_v0/job_category-list', cookies=request.cookies)
+            # job_categories = []
+            # if category_request.status_code == 200:
+            #     job_categories = category_request.json()['job_category_list']
+        return render_template('employmentexchange.html', context=context, payload=payload)  # , job_category_list=job_categories)
     elif role.CanMakeOffer:
-        pass
+        company_offers_request = requests.get('http://localhost:5000/api_v0/company/offer-list', cookies=request.cookies)
+        context = None
+        if company_offers_request.status_code == 200:
+            context = {
+                'offer': company_offers_request.json()['company_offers']
+            }
+        return render_template('offertocompany.html', context=context, payload=payload)
     else:
         return forbidden()
 
