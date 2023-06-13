@@ -24,14 +24,16 @@ pip install python-dotenv passlib mysqlclient Flask SQLAlchemy flask-sqlalchemy 
 Linux (puede que tengas *pip3*, si es así, el comando es el mismo pero con *pip3*)
 
 ```commandline
-pip install python-dotenv passlib libmysqlclient-dev mysqlclient Flask SQLAlchemy flask-sqlalchemy SQLAlchemy-Utils bcrypt PyJWT user_agents uuid
+sudo apt install libmysqlclient-dev
+
+pip install python-dotenv passlib Flask SQLAlchemy flask-sqlalchemy SQLAlchemy-Utils bcrypt PyJWT user_agents uuid
 ```
 
 Por si estas líneas no funcionan dejamos las librerías con sus respectivas versiones:
 
 ```text
 python-dotenv==0.21.0
-mysqlclient==2.1.1
+mysqlclient==2.1.1  # Esta no en Linux
 Flask==2.2.2
 SQLAlchemy==2.0.13
 flask-sqlalchemy==3.0.2
