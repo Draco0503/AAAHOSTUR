@@ -641,7 +641,7 @@ def member_offer_list():
 
 # READ BY
 @app.route('/api_v0/member_offer/<id>', methods=['GET'])
-def member_offer_by_id(id: int):
+def member_offer_by_id(id):
     role, _ = user_privileges()
     if type(role) is Response:
         return role
@@ -653,6 +653,47 @@ def member_offer_by_id(id: int):
         return not_found()
     data_list = member_offer.to_json()
     msg = {"member_offer": data_list}  # there can be member_offers with the same id_member
+    return Response(json.dumps(msg), status=200)
+
+
+@app.route('/api_v0/member_registered_to_offer/<id>', methods=['GET'])
+def member_registered_to_offer(id):
+    role, username = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
+    if not role.CanSeeApiMember:
+        return forbidden()
+    user = User.User.query.filter_by(Email=username).first()
+    member_offer = Member_Offer.Member_Offer.query.filter_by(Id_Member=user.ID_USER, Id_Offer=id).first()
+    value = True
+    if member_offer is None:
+        value = False
+    msg = {"member_registered_to_offer": value}
+    return Response(json.dumps(msg), status=200)
+
+
+@app.route('/api_v0/subscribe/member/to_offer/<id>', methods=['POST'])
+def register_member_to_offer(id):
+    role, username = user_privileges()
+    if type(role) is Response:
+        return role
+    # Now we can ask for the requirement set
+    if not role.CanApplyOffer:
+        return forbidden()
+    user = User.User.query.filter_by(Email=username).first()
+    member_offer = Member_Offer.Member_Offer.query.filter_by(Id_Member=user.ID_USER, Id_Offer=id).first()
+    msg = {'subscribe_offer': 'member in offer'}
+    if member_offer is None:
+        try:
+            # noinspection PyArgumentList
+            member_offer = Member_Offer.Member_Offer(Id_Member=user.ID_USER, Id_Offer=id)
+            db.session.add(member_offer)
+            db.session.commit()
+            msg = {'subscribe_offer': 'member subscribed to offer'}
+        except Exception as ex:
+            db.session.rollback()
+            return internal_server_error()
     return Response(json.dumps(msg), status=200)
 
 
@@ -953,7 +994,7 @@ def offer_by_id(id: int):
                     languages.append(language.Name)
 
             jd_data_dict = {
-                'id_job_demand': job_demand.ID_JOB_DEMAND,
+                'id_job_demand': str(job_demand.ID_JOB_DEMAND),
                 'job_category': job_categories,
                 'qualification': qualifications,
                 'language': languages,
@@ -972,6 +1013,7 @@ def offer_by_id(id: int):
             job_demands_data_list.append(jd_data_dict)
 
     data_list = {
+        'id_offer': str(offer.ID_OFFER),
         'workplace_name': offer.Workplace_Name,
         'workplace_address': offer.Workplace_Address,
         'contact_name': offer.Contact_Name,
@@ -1494,19 +1536,22 @@ def api_login():
             user = User.User.query.filter_by(Email=username).first()
             if user is not None:
                 # As the method says
-                if sec.verify_password(passwd, user.Passwd):
-                    # Generate the auth token
-                    token_info = sec.generate_jwt({
-                        "user": user.Email,
-                        "user-role": user.Id_Role,
-                        "curr_time": dt.now().strftime("%y-%m-%d %H:%M:%S"),
-                        "exp_time": (dt.now() + timedelta(minutes=30)).strftime("%y-%m-%d %H:%M:%S")
-                    })
-                    # Custom response to add the auth cookie
-                    return Response(json.dumps({'auth': token_info}), status=200)
-                else:
-                    error = "Contraseña incorrecta"
-                    return bad_request(error)
+                try:
+                    if sec.verify_password(passwd, user.Passwd):
+                        # Generate the auth token
+                        token_info = sec.generate_jwt({
+                            "user": user.Email,
+                            "user-role": user.Id_Role,
+                            "curr_time": dt.now().strftime("%y-%m-%d %H:%M:%S"),
+                            "exp_time": (dt.now() + timedelta(minutes=30)).strftime("%y-%m-%d %H:%M:%S")
+                        })
+                        # Custom response to add the auth cookie
+                        return Response(json.dumps({'auth': token_info}), status=200)
+                    else:
+                        error = "Contraseña incorrecta"
+                        return bad_request(error)
+                except Exception as ex:
+                    return internal_server_error("Error con la contraseña")
             else:
                 error = "Usuario incorrecto"
                 return bad_request(error)
@@ -2646,28 +2691,64 @@ def job_opportunities():
         # else:
         jobs_request = requests.post('http://localhost:5000/api_v0/employmentexchange', cookies=request.cookies)
         context = None
+        permited = True
         if jobs_request.status_code == 200:
             context = jobs_request.json()['jobs']
             # category_request = requests.get('http://localhost:5000/api_v0/job_category-list', cookies=request.cookies)
             # job_categories = []
             # if category_request.status_code == 200:
             #     job_categories = category_request.json()['job_category_list']
-        return render_template('employmentexchange.html', context=context, payload=payload)  # , job_category_list=job_categories)
+        elif jobs_request.status_code == 403:
+            permited = False
+        return render_template('employmentexchange.html', context=context, payload=payload, permited=permited)  # , job_category_list=job_categories)
     elif role.CanMakeOffer:
         company_offers_request = requests.get('http://localhost:5000/api_v0/company/offer-list', cookies=request.cookies)
         context = None
+        verified = True
         if company_offers_request.status_code == 200:
             context = {
                 'offer': company_offers_request.json()['company_offers']
             }
-        return render_template('offertocompany.html', context=context, payload=payload)
+        elif company_offers_request.status_code == 403:
+            verified = False
+        return render_template('offertocompany.html', context=context, payload=payload, verified=verified)
     else:
         return forbidden()
 
 
 @app.route('/subscribe/offer/<id>', methods=['POST'])
 def subscribe_offer(id):
-    pass
+    role, username = user_privileges()
+    if type(role) is Response:
+        return role
+    if role.CanApplyOffer:
+        register_member_offer_request = requests.post('http://localhost:5000/api_v0/subscribe/member/to_offer/{}'.format(id), cookies=request.cookies)
+        return redirect(url_for('show_offer', id=id))
+    return forbidden()
+
+
+@app.route("/offer/<id>", methods=['GET'])
+def show_offer(id):
+    role, _ = user_privileges()
+    if type(role) is Response:
+        return role
+    payload = sec.decode_jwt(request.cookies.get('auth'))
+    # Now we can ask for the requirement set
+    if role.CanApplyOffer:
+        offer_list_request = requests.get("http://localhost:5000/api_v0/offer/{}".format(id), cookies=request.cookies)
+        if offer_list_request.status_code == 200:
+            context = offer_list_request.json()['offer']
+            user_registered_to_offer_request = requests.get("http://localhost:5000/api_v0/member_registered_to_offer/{}".format(id), cookies=request.cookies)
+            registered = False
+            if user_registered_to_offer_request.status_code == 200:
+                registered = user_registered_to_offer_request.json()['member_registered_to_offer']
+            return render_template('offertomember.html', context=context, payload=payload, register=registered)
+        else:
+            if navigator_user_agent():
+                return render_template('offertomember.html', payload=payload)
+            return bad_request()
+    else:
+        return forbidden()
 
 
 @app.route('/schools', methods=['GET'])
