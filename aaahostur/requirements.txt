@@ -1,6 +1,4 @@
 # TO RUN APP.PY
-
-pip install python-dotenv passlib mysqlclient Flask SQLAlchemy flask-sqlalchemy SQLAlchemy-Utils bcrypt PyJWT user_agents uuid
 python-dotenv==0.21.0
 mysqlclient==2.1.1
 Flask==2.2.2
@@ -12,11 +10,3 @@ bcrypt==4.0.1
 PyJWT==2.7.0
 user_agents==2.2.0
 uuid==1.30
-
-# conventional names:
-# - hola_soy_un_paquete
-# - HolaSoyUnaClase
-# - HOLASOYUNACONSTANTE
-# - hola_soy_un_metodo
-# - hola_soy_una_variable
-# - app.route('/api/v0/path')
