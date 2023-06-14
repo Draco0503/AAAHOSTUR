@@ -88,7 +88,7 @@ mysql -u tu_usuario -p
 Enter password: **************
 
 mysql> use nombre_de_tu_base_de_datos;
-mysql> source "C:/ruta/hasta/el/proyecto/AAAHOSTUR/aaahosturdb/50_InsertsIniciales.sql";
+mysql> source C:/ruta/hasta/el/proyecto/AAAHOSTUR/aaahosturdb/50_InsertsIniciales.sql;
 ```
 
 
