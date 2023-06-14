@@ -18,7 +18,7 @@ Lo primero de todo necesitamos instalar las dependencias, para ello podemos ejec
 Windows
 
 ```commandline
-pip install python-dotenv passlib mysqlclient Flask SQLAlchemy flask-sqlalchemy SQLAlchemy-Utils bcrypt PyJWT user_agents uuid
+pip install -r requirements.txt
 ```
 
 Linux (puede que tengas *pip3*, si es así, el comando es el mismo pero con *pip3*)
@@ -26,7 +26,7 @@ Linux (puede que tengas *pip3*, si es así, el comando es el mismo pero con *pip
 ```commandline
 sudo apt install libmysqlclient-dev
 
-pip install python-dotenv passlib Flask SQLAlchemy flask-sqlalchemy SQLAlchemy-Utils bcrypt PyJWT user_agents uuid
+pip install -r requirements.txt
 ```
 
 Por si estas líneas no funcionan dejamos las librerías con sus respectivas versiones:
@@ -34,6 +34,7 @@ Por si estas líneas no funcionan dejamos las librerías con sus respectivas ver
 ```text
 python-dotenv==0.21.0
 mysqlclient==2.1.1  # Esta no en Linux
+passlib==1.7.4
 Flask==2.2.2
 SQLAlchemy==2.0.13
 flask-sqlalchemy==3.0.2
