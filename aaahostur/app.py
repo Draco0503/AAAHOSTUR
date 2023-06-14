@@ -1615,7 +1615,7 @@ def api_register_member():
             else bool(data["geographical_mobility"])
         disability_grade = 0 if not key_in_request_form('disability_grade') or data["disability_grade"] == "" \
             else int(data["disability_grade"])
-        profile_pic = None if not key_in_request_form('profile_picture') else b64decode(data["profile_picture"])
+        profile_pic = None if not key_in_request_form('profile_picture') or data["profile_picture"] == "" else b64decode(data["profile_picture"])
         # BEGINNING OF THE INSERTS
         db.session.add(user)
         # TODO MAYBE WE SHOULD DO A SELECT TO VERIFY THAT THE USER HAS BEEN CREATED
