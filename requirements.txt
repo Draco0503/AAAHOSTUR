@@ -7,7 +7,7 @@ colorama==0.4.6
 Flask==2.2.2
 Flask-SQLAlchemy==3.0.2
 greenlet==2.0.2
-idna==3.4
+idna==3.7
 itsdangerous==2.1.2
 Jinja2==3.1.2
 MarkupSafe==2.1.3
