@@ -20,7 +20,7 @@ SQLAlchemy==2.0.13
 SQLAlchemy-Utils==0.38.3
 typing_extensions==4.6.3
 ua-parser==0.16.1
-urllib3==2.0.3
+urllib3==2.2.2
 user-agents==2.2.0
 uuid==1.30
 Werkzeug==2.3.6
